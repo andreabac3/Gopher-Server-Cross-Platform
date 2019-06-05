@@ -1,3 +1,0 @@
-/opt/projects/gopher/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/opt/projects/gopher/cmake-build-debug/CMakeFiles/gopher.dir
-/opt/projects/gopher/cmake-build-debug/CMakeFiles/edit_cache.dir
