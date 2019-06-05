@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -pedantic-errors -lm -g   CMakeFiles/gopher.dir/main.c.o CMakeFiles/gopher.dir/general/lib/utils/utils.c.o  -o gopher  -L/opt/projects/gopher/general/lib  -L/opt/projects/gopher/windows/lib  -L/opt/projects/gopher/linux/lib 
