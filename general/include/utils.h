@@ -5,12 +5,9 @@
 #ifndef GOPHER_UTILS_H
 #define GOPHER_UTILS_H
 
-void print(int i);
-int mul(int a);
-int mul2(int a, int b);
-int utParseConfigurationFile(char *path);
+void help();
 #endif //GOPHER_UTILS_H
-
-
+int ut_strtoint(char* str);
+int Assert(int cond, char* message);
 
 
