@@ -77,3 +77,133 @@ int conf_read_opt(int argc, char *argv[], struct Configs configs){
     }
     return 0;
 }
+
+int parseConfiguration(char* path, struct Configs config){
+
+    char* port = "port";
+    char* mod = "mode_concurrency";
+    char* rootdir = "root_dir";
+    int numerodiporta = 0;
+    int modalita=-1;
+    char* rootdirectory = "bau";
+    int cnt = 0;
+
+    char **array = NULL;        /* array of pointers to char        */
+    char *ln = NULL;            /* NULL forces getline to allocate  */
+    size_t n = 0;               /* buf size, 0 use getline default  */
+    ssize_t nchr = 0;           /* number of chars actually read    */
+    size_t idx = 0;             /* array index for number of lines  */
+    size_t it = 0;              /* general iterator variable        */
+    size_t lmax = 1024;         /* current array pointer allocation */
+    FILE *fp = NULL;            /* file pointer                     */
+
+    if (!(fp = fopen (path, "r"))) { /* open file for reading    */
+        fprintf (stderr, "error: file open failed '%s'.", path);
+        return 1;
+    }
+
+    /* allocate LMAX pointers and set to NULL. Each of the 255 pointers will
+       point to (hold the address of) the beginning of each string read from
+       the file below. This will allow access to each string with array[x].
+    */
+    if (!(array = calloc (lmax, sizeof *array))) {
+        fprintf (stderr, "error: memory allocation failed.");
+        return 1;
+    }
+
+    /* prototype - ssize_t getline (char **ln, size_t *n, FILE *fp)
+       above we declared: char *ln and size_t n. Why don't they match? Simple,
+       we will be passing the address of each to getline, so we simply precede
+       the variable with the urinary '&' which forces an addition level of
+       dereference making char* char** and size_t size_t *. Now the arguments
+       match the prototype.
+    */
+    while ((nchr = getline (&ln, &n, fp)) != -1)    /* read line    */
+    {
+        while (nchr > 0 && (ln[nchr-1] == '\n' || ln[nchr-1] == '\r'))
+            ln[--nchr] = 0;     /* strip newline or carriage rtn    */
+
+        /* allocate & copy ln to array - this will create a block of memory
+           to hold each character in ln and copy the characters in ln to that
+           memory address. The address will then be stored in array[idx].
+           (idx++ just increases idx by 1 so it is ready for the next address)
+           There is a lot going on in that simple: array[idx++] = strdup (ln);
+        */
+        array[idx++] = strdup (ln);
+
+        if (idx == lmax) {      /* if lmax lines reached, realloc   */
+            char **tmp = realloc (array, lmax * 2 * sizeof *array);
+            if (!tmp)
+                return -1;
+            array = tmp;
+            lmax *= 2;
+        }
+    }
+
+    if (fp) fclose (fp);        /* close file */
+    if (ln) free (ln);          /* free memory allocated to ln  */
+
+    /*
+        process/use lines in array as needed
+        (simple print all lines example below)
+    */
+
+    char *single_word;
+
+    for (it = 0; it < idx; it++) {
+        //printf("  array [%3zu]  %s\n", it, array[it]);
+        single_word = strtok(array[it], " ");
+        //printf("\n Sono iooo %s", pch);
+        while (single_word != NULL) {
+            cnt++;
+            if (strcmp(port , single_word) == 0){
+                single_word = strtok(NULL, " ");
+                if (single_word == NULL){
+                    fprintf(stderr , "Missing port value");
+                }
+                numerodiporta =  atoi(single_word); // FUNZIONE VALERIO
+            }
+            else if(strcmp( mod , single_word) == 0){
+                cnt++;
+                single_word = strtok(NULL, " ");
+                if (single_word == NULL){
+                    fprintf(stderr , "Missing mod value");
+                }
+                if(strcmp("Thread" , single_word) == 0){
+                    modalita = 1; // VALERIO LA SUA FUNZIONE!!!
+
+                }
+                config.port_number =  atoi(single_word);
+
+
+            }else if(strcmp( rootdir , single_word) == 0){
+                single_word = strtok(NULL, " ");
+                cnt++;
+                if (single_word == NULL){
+
+                    fprintf(stderr , "Missing root dir value");
+                }
+                rootdirectory = "okkk";
+
+            }
+            else{
+                fprintf(stderr , "manca asserzioneeeeeeee");
+                for (it = 0; it < idx; it++) {        /* free array memory    */
+                    free(array[it]);
+                }
+                free (array);
+                exit(1);
+            }
+            single_word = NULL;
+        }
+        if (cnt != 3){
+            fprintf(stderr , "manca asserzioneeeeeeee");
+            exit(1);
+        }
+    }
+    printf ("\n");
+    for (it = 0; it < idx; it++)        /* free array memory    */
+        free (array[it]);
+    free (array);
+    return 0;
+}
