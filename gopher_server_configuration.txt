@@ -1,0 +1,3 @@
+port 70
+mode_concurrency Thread
+root_dir /opt/

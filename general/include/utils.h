@@ -8,5 +8,9 @@
 void print(int i);
 int mul(int a);
 int mul2(int a, int b);
-
+int utParseConfigurationFile(char *path);
 #endif //GOPHER_UTILS_H
+
+
+
+
