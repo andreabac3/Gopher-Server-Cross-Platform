@@ -1,7 +1,7 @@
 //
 // Created by Valerio Neri on 2019-06-06.
 //
-
+#pragma once
 #ifndef GOPHER_DEFINITIONS_H
 #define GOPHER_DEFINITIONS_H
 

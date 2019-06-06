@@ -15,6 +15,6 @@ char conf_opts_mode_concurrency(char* opt);
 
 char* conf_opts_root_dir(char* opt);
 
-int conf_read_opt(int argc, char *argv[], struct Configs configs);
+int conf_read_opt(int argc, char *argv[], struct Configs* configs);
 
-int parseConfiguration(char* path, struct Configs config);
+int conf_parseConfigFile(char *path, struct Configs *config);

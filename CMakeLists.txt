@@ -18,4 +18,4 @@ include_directories(${CMAKE_SOURCE_DIR}/linux/include)
 link_directories(${CMAKE_SOURCE_DIR}/linux/lib)
 
 
-add_executable(gopher main.c general/lib/utils/utils.c general/include/utils.h general/lib/io/config_file.c general/include/config_file.h linux/lib/io/gopher_server_configuration_linux.c linux/include/gopher_server_configuration_linux.h linux/lib/utils/utils.c linux/include/utils.h general/lib/portable/portables.c general/include/portables.h general/include/definitions.h)
+add_executable(gopher main.c general/lib/utils/utils.c general/include/utils.h general/lib/io/config_file.c general/include/config_file.h linux/lib/utils/linux_portable_lib.c linux/include/linux_portable_lib.h linux/lib/utils/utils.c linux/include/utils.h general/lib/portable/portables.c general/include/portables.h general/include/definitions.h)

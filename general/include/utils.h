@@ -9,5 +9,6 @@ void help();
 #endif //GOPHER_UTILS_H
 int ut_strtoint(char* str);
 int Assert(int cond, char* message);
+int Assert_nb(int cond, char* message);
 
 

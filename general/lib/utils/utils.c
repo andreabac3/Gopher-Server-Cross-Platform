@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 #include "config_file.h"
 
 #ifdef __unix__
@@ -26,6 +27,7 @@ char* concat(const char *s1, const char *s2) {
     // in real code you would check for errors in malloc here
     strcpy(result, s1);
     strcat(result, s2);
+
     return result;
 }
 
@@ -36,14 +38,24 @@ int ut_strtoint(char* str){
     Assert(strcmp(end, "") == 0 , "ut_strtoint, The value is not a valid integer");
     return i;
 }
-
+/*
+ * Assert return 0 if success, no error.
+ */
 int Assert(int cond, char* message){
     if(!cond){
-        fprintf(stderr, "%s", message);
+        fprintf(stderr, "%s\n", message);
         exit(3);
     }
-    return cond;
+    return !cond;
 }
-
+/*
+ * Assert_nb return 0 if success, no error.
+ */
+int Assert_nb(int cond, char* message){
+    if(!cond){
+        fprintf(stderr, "%s\n", message);
+    }
+    return !cond;
+}
 
 

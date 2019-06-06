@@ -2,7 +2,7 @@
 // Created by andreabacciu on 6/6/19.
 //
 
-#include "gopher_server_configuration_linux.h"
+#include "linux_portable_lib.h"
 #include <zconf.h>
 
 int __cd(char* path){

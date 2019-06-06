@@ -3,7 +3,7 @@
 //
 
 #include "portables.h"
-#include "gopher_server_configuration_linux.h"
+#include "linux_portable_lib.h"
 
 int po_cd(char* path){
 
