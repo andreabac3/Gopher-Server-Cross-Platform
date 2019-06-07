@@ -16,3 +16,41 @@ struct Configs {
     char*  root_dir;
 };
 
+struct dict_entry {
+    char *str;
+    int n;
+};
+
+
+
+enum item_types {
+    ITEM_FILE='0',
+    ITEM_DIR='1',
+    ERROR='3',
+    ITEM_ARCHIVE='5',
+    ITEM_BINARY='9',
+    ITEM_IMAGE='I',
+    ITEM_INFO='i',
+    ITEM_GIF='g',
+    ITEM_PNG='p',
+    ITEM_PDF='d',
+    NO_ITEM=0
+};
+
+
+struct menu_item {
+    char type;
+    char * display;
+    char * selector;
+    char * host;
+    unsigned int port;
+    char delimiter;
+};
+
+//struct request_t {
+//    int fd;
+//    char * selector;
+//    size_t selector_len;
+//    char * path;
+//    size_t path_len;
+//};
