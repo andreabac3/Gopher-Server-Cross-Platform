@@ -8,3 +8,5 @@
 #endif //GOPHER_PROTOCOL_H
 
 void keep();
+
+void keep2();
