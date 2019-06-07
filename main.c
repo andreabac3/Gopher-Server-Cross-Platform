@@ -3,10 +3,12 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <assert.h>
+#include <stdbool.h>
 #include "definitions.h"
 #include "utils.h"
 #include "config_file.h"
 #include "files_interaction.h"
+
 
 // reformat Sh + ò
 // comment Sh + ù
@@ -26,9 +28,7 @@ int main(int argc, char *argv[]) {
 
     printf("%d %d <-inizio dir'    %s   'fine dir ->\n", configs.port_number, configs.mode_concurrency, configs.root_dir);
 
-    if (files_append("prova1", "../gopher_log_file.txt") != 0){
-        return 1;
-    }
+    printf("Hello World %d", Assert_nb(5<4+2, "") == true);
 
     return 0;
 }
