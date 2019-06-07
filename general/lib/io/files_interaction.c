@@ -11,9 +11,12 @@ int files_append(char *string, char *path) {
     fp = fopen(path, "a");
     if (fp == NULL) {
         perror("Error opening file.");
-    } else {
-        fprintf(fp, string);
+        return 1;
     }
+
+    fprintf(fp, string);
+
     fclose(fp);
+    return 0;
 
 }
