@@ -156,14 +156,14 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
             if (strcmp(port, single_word) == 0) {
                 single_word = strtok_r(NULL, " ", &saveptr1);
                 wrong |= Assert_nb(single_word != NULL, "Missing port value");
-                printf("\n%d\n\n", wrong);
+//                printf("\n%d\n\n", wrong);
                 config->port_number = conf_opts_port_number(single_word); // FUNZIONE VALERIO
-                printf("%d", config->port_number);
+//                printf("%d", config->port_number);
 
             } else if (strcmp(mod, single_word) == 0) {
                 single_word = strtok_r(NULL, " ", &saveptr1);
                 wrong |= Assert_nb(single_word != NULL, "Missing mod value");
-                printf("\n%d\n\n", wrong);
+//                printf("\n%d\n\n", wrong);
 
                 config->mode_concurrency = conf_opts_mode_concurrency(single_word);
 
@@ -181,11 +181,10 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
             single_word = NULL;
         }
     }
-    printf("\n");
     for (it = 0; it < idx; it++)        /* free array memory    */
         free(StringsArray[it]);
     free(StringsArray);
-    printf("\n%d\n", wrong);
+//    printf("\n%d\n", wrong);
     Assert(wrong == 0, "Something goes wrong in configuration file");
     return 0;
 

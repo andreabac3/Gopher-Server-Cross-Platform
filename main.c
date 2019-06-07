@@ -26,9 +26,7 @@ int main(int argc, char *argv[]) {
 
     if(conf_read_opt(argc, argv, &configs) != 0) return 1;
 
-    printf("%d %d <-inizio dir'    %s   'fine dir ->\n", configs.port_number, configs.mode_concurrency, configs.root_dir);
-
-    printf("Hello World %d", Assert_nb(5<4+2, "") == true);
+    printf("port:%d mode:%d dir:|%s|\n", configs.port_number, configs.mode_concurrency, configs.root_dir);
 
     return 0;
 }
