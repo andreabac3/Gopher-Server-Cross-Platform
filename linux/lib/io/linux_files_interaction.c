@@ -164,7 +164,7 @@ int mappLinux(char* filename, int mod){
 
     //Execute mmap
 
-    size_t filesize = 894; //getFilesize(filename);
+    // size_t filesize = 894; //getFilesize(filename);
 
     // printf("%zu", filesize);
 
