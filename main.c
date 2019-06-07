@@ -33,6 +33,8 @@ int main(int argc, char *argv[]) {
     getGopherCode("/bin/cat");
     getGopherCode("/Users/valerioneri/tmp");
     getGopherCode("non-existing-file");
+    mappLinux("../gopher_server_configuration.txt", 1); // chiama direttamente la funzione linux.
+
 
     return 0;
 }

@@ -29,7 +29,7 @@ int files_append(char  *string, char *path) {
 #include "linux_files_interaction.h"
 
 
-int mmap(char* filename, int mode){
+int files_memory_map(char* filename, int mode){
     mappLinux(filename, mode);
 }
 
