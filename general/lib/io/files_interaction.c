@@ -18,5 +18,18 @@ int files_append(char  *string, char *path) {
 
     fclose(fp);
     return 0;
-
 }
+
+
+
+
+#if __linux__
+#include "linux_files_interaction.h"
+#endif
+#include "linux_files_interaction.h"
+
+
+int mmap(char* filename, int mode){
+    mappLinux(filename, mode);
+}
+

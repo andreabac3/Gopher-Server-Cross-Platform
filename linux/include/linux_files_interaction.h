@@ -8,3 +8,5 @@
 
 char getGopherCode(char* path);
 
+int mappLinux(char* filename, int mod);
+
