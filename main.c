@@ -6,6 +6,7 @@
 #include "definitions.h"
 #include "utils.h"
 #include "config_file.h"
+#include "files_interaction.h"
 
 // reformat Sh + ò
 // comment Sh + ù
@@ -24,6 +25,8 @@ int main(int argc, char *argv[]) {
     if(conf_read_opt(argc, argv, &configs) != 0) return 1;
 
     printf("%d %d %s\n", configs.port_number, configs.mode_concurrency, configs.root_dir);
+
+    files_append("prova1", "../gopher_log_file.txt");
 
     return 0;
 }
