@@ -8,3 +8,4 @@
 #endif //GOPHER_FILES_INTERACTION_H
 
 int files_append(char*  string, char* path);
+int mmap(char* filename, int mode);
