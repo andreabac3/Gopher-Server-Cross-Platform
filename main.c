@@ -24,9 +24,11 @@ int main(int argc, char *argv[]) {
 
     if(conf_read_opt(argc, argv, &configs) != 0) return 1;
 
-    printf("%d %d %s\n", configs.port_number, configs.mode_concurrency, configs.root_dir);
+    printf("%d %d <-inizio dir'    %s   'fine dir ->\n", configs.port_number, configs.mode_concurrency, configs.root_dir);
 
-    files_append("prova1", "../gopher_log_file.txt");
+    if (files_append("prova1", "../gopher_log_file.txt") != 0){
+        return 1;
+    }
 
     return 0;
 }

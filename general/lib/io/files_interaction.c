@@ -3,14 +3,14 @@
 //
 
 #include <stdio.h>
+#include "utils.h"
 #include "files_interaction.h"
 
-int files_append(char *string, char *path) {
+int files_append(char  *string, char *path) {
     FILE *fp;
 
     fp = fopen(path, "a");
-    if (fp == NULL) {
-        perror("Error opening file.");
+    if (Assert_nb(fp != NULL, "Error opening file.") ){
         return 1;
     }
 

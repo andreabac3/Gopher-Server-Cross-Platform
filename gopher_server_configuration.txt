@@ -1,3 +1,3 @@
 port 7070
-root_dir "/Users/andrea/CLionProjects/gopher-project/ cmake-build-debug/gopher"
+root_dir "ciao bau lol 11" "cazzo"
 mode_concurrency Thread

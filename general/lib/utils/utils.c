@@ -21,7 +21,11 @@ void help(){
     printf("%s\n", helpString);
 }
 
-// Note that free is needed.
+/*
+ * CONCAT
+ * Note that free is needed.
+ *
+ */
 char* concat(const char *s1, const char *s2) {
     char *result = malloc(strlen(s1) + strlen(s2) + 1); // +1 for the null-terminator
     // in real code you would check for errors in malloc here

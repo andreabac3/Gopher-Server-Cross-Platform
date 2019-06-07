@@ -90,7 +90,7 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
 
     int wrong = 0;
 
-    char **array = NULL;        /* array of pointers to char        */
+    char **StringsArray = NULL;        /* array of pointers to char        */
     char *ln = NULL;            /* NULL forces getline to allocate  */
     size_t n = 0;               /* buf size, 0 use getline default  */
     ssize_t nchr = 0;           /* number of chars actually read    */
@@ -99,19 +99,15 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
     size_t lmax = 1024;         /* current array pointer allocation */
     FILE *fp = NULL;            /* file pointer                     */
 
-    if (!(fp = fopen(path, "r"))) { /* open file for reading    */
-        fprintf(stderr, "error: file open failed '%s'.", path);
-        return 1;
-    }
+
+    Assert((fp = fopen(path, "r")) != NULL, "error: file open failed");
 
     /* allocate LMAX pointers and set to NULL. Each of the 255 pointers will
        point to (hold the address of) the beginning of each string read from
        the file below. This will allow access to each string with array[x].
     */
-    if (!(array = calloc(lmax, sizeof *array))) {
-        fprintf(stderr, "error: memory allocation failed.");
-        return 1;
-    }
+    Assert((StringsArray = calloc(lmax, sizeof *StringsArray)) != NULL, "error: memory allocation failed.");
+
 
     /* prototype - ssize_t getline (char **ln, size_t *n, FILE *fp)
        above we declared: char *ln and size_t n. Why don't they match? Simple,
@@ -131,13 +127,13 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
            (idx++ just increases idx by 1 so it is ready for the next address)
            There is a lot going on in that simple: array[idx++] = strdup (ln);
         */
-        array[idx++] = strdup(ln);
+        StringsArray[idx++] = strdup(ln);
 
         if (idx == lmax) {      /* if lmax lines reached, realloc   */
-            char **tmp = realloc(array, lmax * 2 * sizeof *array);
+            char **tmp = realloc(StringsArray, lmax * 2 * sizeof *StringsArray);
             if (!tmp)
                 return -1;
-            array = tmp;
+            StringsArray = tmp;
             lmax *= 2;
         }
     }
@@ -154,7 +150,7 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
     char *saveptr1;
 
     for (it = 0; it < idx; it++) {
-        single_word = strtok_r(array[it], " ", &saveptr1);
+        single_word = strtok_r(StringsArray[it], " ", &saveptr1);
         while (single_word != NULL) {
 
             if (strcmp(port, single_word) == 0) {
@@ -177,9 +173,9 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
                 config->root_dir = single_word;
             } else {
                 for (it = 0; it < idx; it++) {        /* free array memory    */
-                    free(array[it]);
+                    free(StringsArray[it]);
                 }
-                free(array);
+                free(StringsArray);
                 Assert(0, "Unknow parameters in configuration file");
             }
             single_word = NULL;
@@ -187,8 +183,8 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
     }
     printf("\n");
     for (it = 0; it < idx; it++)        /* free array memory    */
-        free(array[it]);
-    free(array);
+        free(StringsArray[it]);
+    free(StringsArray);
     printf("\n%d\n", wrong);
     Assert(wrong == 0, "Something goes wrong in configuration file");
     return 0;
