@@ -16,13 +16,6 @@ struct Configs {
     char*  root_dir;
 };
 
-struct dict_entry {
-    char *str;
-    int n;
-};
-
-
-
 enum item_types {
     ITEM_FILE='0',
     ITEM_DIR='1',

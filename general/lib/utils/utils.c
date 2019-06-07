@@ -61,22 +61,4 @@ int Assert_nb(int cond, char *message) {
     return !cond;
 }
 
-int compare(const void *s1, const void *s2) {
-    const struct dict_entry *e1 = s1;
-    const struct dict_entry *e2 = s2;
-
-    return strcmp(e1->str, e2->str);
-}
-
-int struct_testint (char* arg, struct dict_entry dict[]){
-    struct dict_entry *result, key = {arg};
-
-    result = bsearch(&key, dict, sizeof(dict) / sizeof(dict[0]),
-                     sizeof dict[0], compare);
-    if (result)
-        printf("%d\n", result->n);
-
-    return 0;
-}
-
 

@@ -8,7 +8,7 @@
 #include "utils.h"
 #include "config_file.h"
 #include "files_interaction.h"
-// #include "linux_files_interaction.h"
+#include "linux_files_interaction.h"
 
 
 // reformat Sh + ò
@@ -29,7 +29,10 @@ int main(int argc, char *argv[]) {
 
     printf("port:%d mode:%d dir:|%s|\n", configs.port_number, configs.mode_concurrency, configs.root_dir);
 
-    // getGopherCode("/Users/valerioneri/tmp/tennant.gif");
+    getGopherCode("/Users/valerioneri/tmp/tennant.gif");
+    getGopherCode("/bin/cat");
+    getGopherCode("/Users/valerioneri/tmp");
+    getGopherCode("non-existing-file");
 
     return 0;
 }
