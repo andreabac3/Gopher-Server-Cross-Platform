@@ -151,27 +151,28 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
     */
 
     char *single_word;
+    char *saveptr1;
 
     for (it = 0; it < idx; it++) {
-        single_word = strtok(array[it], " ");
+        single_word = strtok_r(array[it], " ", &saveptr1);
         while (single_word != NULL) {
 
             if (strcmp(port, single_word) == 0) {
-                single_word = strtok(NULL, " ");
+                single_word = strtok_r(NULL, " ", &saveptr1);
                 wrong |= Assert_nb(single_word != NULL, "Missing port value");
                 printf("\n%d\n\n", wrong);
                 config->port_number = conf_opts_port_number(single_word); // FUNZIONE VALERIO
                 printf("%d", config->port_number);
 
             } else if (strcmp(mod, single_word) == 0) {
-                single_word = strtok(NULL, " ");
+                single_word = strtok_r(NULL, " ", &saveptr1);
                 wrong |= Assert_nb(single_word != NULL, "Missing mod value");
                 printf("\n%d\n\n", wrong);
 
                 config->mode_concurrency = conf_opts_mode_concurrency(single_word);
 
             } else if (strcmp(rootdir, single_word) == 0) {
-                single_word = strtok(NULL, "\"");
+                single_word = strtok_r(NULL, "\"", &saveptr1);
                 wrong |= Assert_nb(single_word != NULL, "Missing root dir value");
                 config->root_dir = single_word;
             } else {
