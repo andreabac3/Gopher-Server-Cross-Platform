@@ -12,8 +12,6 @@
 #include "utils.h"
 
 
-
-
 #ifdef __unix__
 #endif
 
@@ -35,8 +33,6 @@ v
     (void) fclose(file);
     return EXIT_SUCCESS;
 }
-
-
 
 */
 
@@ -62,7 +58,7 @@ char *conf_opts_root_dir(char *opt) {
 }
 
 
-int conf_read_opt(int argc, char *argv[], struct Configs* configs) {
+int conf_read_opt(int argc, char *argv[], struct Configs *configs) {
     int opt;
 
     while ((opt = getopt(argc, argv, "m:d:p:")) != -1) {
@@ -90,7 +86,7 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
     char *mod = "mode_concurrency";
     char *rootdir = "root_dir";
 
-    int wrong = 0;
+    unsigned int wrong = 0;
 
     char **StringsArray = NULL;        /* array of pointers to char        */
     char *ln = NULL;            /* NULL forces getline to allocate  */
@@ -102,12 +98,13 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
     FILE *fp = NULL;            /* file pointer                     */
 
 
-    Assert((fp = fopen(path, "r")) != NULL, "error: file open failed");
+    Assert((fp = fopen(path, "r")) != NULL, "error: configuration file open failed");
 
     /* allocate LMAX pointers and set to NULL. Each of the 255 pointers will
        point to (hold the address of) the beginning of each string read from
        the file below. This will allow access to each string with array[x].
     */
+    printf("size %zu %zu \n", sizeof *StringsArray, sizeof(char **)),
     Assert((StringsArray = calloc(lmax, sizeof *StringsArray)) != NULL, "error: memory allocation failed.");
 
 
@@ -151,43 +148,51 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
     char *single_word;
     char *saveptr1;
 
+    // for all lines
     for (it = 0; it < idx; it++) {
+        // name of the option
         single_word = strtok_r(StringsArray[it], " ", &saveptr1);
-        while (single_word != NULL) {
+
+        // option value evaluation
+        if (single_word != NULL) {
 
             if (strcmp(port, single_word) == 0) {
+                // if the option is port
                 single_word = strtok_r(NULL, " ", &saveptr1);
-                wrong |= Assert_nb(single_word != NULL, "Missing port value");
-//                printf("\n%d\n\n", wrong);
+                wrong |= (unsigned) Assert_nb(single_word != NULL, "Missing port value");
                 config->port_number = conf_opts_port_number(single_word); // FUNZIONE VALERIO
-//                printf("%d", config->port_number);
 
             } else if (strcmp(mod, single_word) == 0) {
+                // if the option is mode_concurrency
                 single_word = strtok_r(NULL, " ", &saveptr1);
-                wrong |= Assert_nb(single_word != NULL, "Missing mod value");
-//                printf("\n%d\n\n", wrong);
+                wrong |= (unsigned) Assert_nb(single_word != NULL, "Missing mod value");
 
                 config->mode_concurrency = conf_opts_mode_concurrency(single_word);
 
             } else if (strcmp(rootdir, single_word) == 0) {
+                // if the option is root_dir
                 single_word = strtok_r(NULL, "\"", &saveptr1);
-                wrong |= Assert_nb(single_word != NULL, "Missing root dir value");
+                wrong |= (unsigned) Assert_nb(single_word != NULL, "Missing root dir value");
                 config->root_dir = single_word;
+                printf("%s %s \n", single_word, config->root_dir);
             } else {
+                // if the option is unknown (Error)
                 for (it = 0; it < idx; it++) {        /* free array memory    */
                     free(StringsArray[it]);
                 }
                 free(StringsArray);
                 Assert(0, "Unknow parameters in configuration file");
             }
-            single_word = NULL;
+            printf("%s %s \n", single_word, config->root_dir);
         }
+        printf("%s %s \n", single_word, config->root_dir);
     }
     for (it = 0; it < idx; it++)        /* free array memory    */
         free(StringsArray[it]);
     free(StringsArray);
 //    printf("\n%d\n", wrong);
     Assert(wrong == 0, "Something goes wrong in configuration file");
+    printf("%s \n", config->root_dir);
     return 0;
 
 }
