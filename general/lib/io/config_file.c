@@ -104,7 +104,7 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
        point to (hold the address of) the beginning of each string read from
        the file below. This will allow access to each string with array[x].
     */
-    printf("size %zu %zu \n", sizeof *StringsArray, sizeof(char **)),
+    //printf("size %zu %zu \n", sizeof *StringsArray, sizeof(char **)),
     Assert((StringsArray = calloc(lmax, sizeof *StringsArray)) != NULL, "error: memory allocation failed.");
 
 

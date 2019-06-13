@@ -11,8 +11,11 @@
 #include "utils.h"
 #include "config_file.h"
 #include "files_interaction.h"
+
+#ifdef __unix__
 #include "linux_files_interaction.h"
 #include "linux_thread.h"
+#endif
 
 
 
@@ -45,12 +48,10 @@ int main(int argc, char *argv[]) {
 //    getGopherCode("non-existing-file");
 //    mappLinux("../gopher_server_configuration.txt", 1); // chiama direttamente la funzione linux.
 
-    pthread_t t_id;
-
+#ifdef __unix__
     thr_pthread_create(&t_id, &thr_test_func, (void *) "ciao");
-
     sleep(2);
-
-
+    pthread_t t_id;
+#endif
     return 0;
 }
