@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <getopt.h>
-#include <mach/boolean.h>
+#include <stdbool.h>
 #include "config_file.h"
 #include "definitions.h"
 #include "utils.h"

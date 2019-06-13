@@ -14,7 +14,7 @@ int files_append(char  *string, char *path) {
         return 1;
     }
 
-    fprintf(fp, string);
+    fprintf(fp, "%s", string);
 
     fclose(fp);
     return 0;
@@ -30,6 +30,6 @@ int files_append(char  *string, char *path) {
 
 
 int files_memory_map(char* filename, int mode){
-    mappLinux(filename, mode);
+    return mappLinux(filename, mode);
 }
 
