@@ -49,9 +49,10 @@ int main(int argc, char *argv[]) {
 //    mappLinux("../gopher_server_configuration.txt", 1); // chiama direttamente la funzione linux.
 
 #ifdef __unix__
+    pthread_t t_id;
+
     thr_pthread_create(&t_id, &thr_test_func, (void *) "ciao");
     sleep(2);
-    pthread_t t_id;
 #endif
     return 0;
 }

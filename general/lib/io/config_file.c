@@ -151,27 +151,27 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
     // for all lines
     for (it = 0; it < idx; it++) {
         // name of the option
-        single_word = strtok_r(StringsArray[it], " ", &saveptr1);
+        single_word = ut_strtok(StringsArray[it], " ", &saveptr1);
 
         // option value evaluation
         if (single_word != NULL) {
 
             if (strcmp(port, single_word) == 0) {
                 // if the option is port
-                single_word = strtok_r(NULL, " ", &saveptr1);
+                single_word = ut_strtok(NULL, " ", &saveptr1);
                 wrong |= (unsigned) Assert_nb(single_word != NULL, "Missing port value");
                 config->port_number = conf_opts_port_number(single_word); // FUNZIONE VALERIO
 
             } else if (strcmp(mod, single_word) == 0) {
                 // if the option is mode_concurrency
-                single_word = strtok_r(NULL, " ", &saveptr1);
+                single_word = ut_strtok(NULL, " ", &saveptr1);
                 wrong |= (unsigned) Assert_nb(single_word != NULL, "Missing mod value");
 
                 config->mode_concurrency = conf_opts_mode_concurrency(single_word);
 
             } else if (strcmp(rootdir, single_word) == 0) {
                 // if the option is root_dir
-                single_word = strtok_r(NULL, "\"", &saveptr1);
+                single_word = ut_strtok(NULL, "\"", &saveptr1);
                 wrong |= (unsigned) Assert_nb(single_word != NULL, "Missing root dir value");
                 config->root_dir = single_word;
                 printf("%s %s \n", single_word, config->root_dir);

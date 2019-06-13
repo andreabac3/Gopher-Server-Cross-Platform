@@ -40,6 +40,16 @@ int ut_strtoint(char *str) {
     return i;
 }
 
+char* ut_strtok(char* str, const char* delimiters, char** context){
+#ifdef __unix__
+    return strtok_r(str, delimiters, context);
+#endif
+
+#ifdef __win32__
+    return strtok_s(str, delimiters, context);
+#endif
+}
+
 /*
  * Assert return 0 if success, no error.
  */
