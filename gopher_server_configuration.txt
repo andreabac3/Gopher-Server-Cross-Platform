@@ -1,3 +1,4 @@
 port 7070
-root_dir "/folder/mysub/other"
+root_dir "ciao"
 mode_concurrency Thread
+
