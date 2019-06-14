@@ -17,9 +17,7 @@
 #include "linux_thread.h"
 #endif
 
-
 #ifdef _WIN32
-
 #include "windows_socket.h"
 #endif
 // reformat Sh + ò
@@ -54,7 +52,7 @@ int main(int argc, char *argv[]) {
     sleep(2);
 #endif
 #ifdef _WIN32
-   windows_socket();
+   windows_socket(configs);
 #endif
     return 0;
 }

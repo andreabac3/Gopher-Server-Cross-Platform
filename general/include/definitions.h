@@ -1,14 +1,9 @@
 //
 // Created by Valerio Neri on 2019-06-06.
 //
-#pragma once
+//#pragma once
 #ifndef GOPHER_DEFINITIONS_H
 #define GOPHER_DEFINITIONS_H
-
-#endif //GOPHER_DEFINITIONS_H
-
-#define M_PROCESS 0
-#define M_THREAD 1
 
 struct Configs {
     int  port_number;
@@ -16,7 +11,7 @@ struct Configs {
     char*  root_dir;
 };
 
-enum item_types {
+/*enum item_types {
     ITEM_FILE='0',
     ITEM_DIR='1',
     ERROR='3',
@@ -28,7 +23,7 @@ enum item_types {
     ITEM_PNG='p',
     ITEM_PDF='d',
     NO_ITEM=0
-};
+};*/
 
 
 struct menu_item {
@@ -47,3 +42,9 @@ struct menu_item {
 //    char * path;
 //    size_t path_len;
 //};
+
+#define M_PROCESS 0
+#define M_THREAD 1
+
+#endif //GOPHER_DEFINITIONS_H
+

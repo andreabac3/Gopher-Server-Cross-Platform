@@ -6,7 +6,7 @@
 #include "windows_socket.h"
 
 // int windows_socket(struct Configs configs) {
-int windows_socket() {
+int windows_socket(struct Configs configs) {
 
     WSADATA WSAData;
     SOCKET server, client;
@@ -17,7 +17,7 @@ int windows_socket() {
 
     serverAddr.sin_addr.s_addr = INADDR_ANY;
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(5000);
+    serverAddr.sin_port = htons(configs.port_number);
 
     bind(server, (SOCKADDR *) &serverAddr, sizeof(serverAddr));
     listen(server, 0);
