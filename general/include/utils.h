@@ -12,6 +12,3 @@ int Assert(int cond, char* message);
 int Assert_nb(int cond, char* message);
 char* concat(const char *s1, const char *s2);
 char* ut_strtok(char* str, const char* delimiters, char** context);
-
-
-
