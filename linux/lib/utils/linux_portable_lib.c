@@ -3,7 +3,6 @@
 //
 
 #include <unistd.h>
-#include "linux_portable_lib.h"
 
 int __cd(char* path){
     return chdir(path);

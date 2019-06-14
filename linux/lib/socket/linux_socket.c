@@ -13,7 +13,7 @@
 #include <time.h>
 #include "linux_socket.h"
 
-int linux_socket(int argc, char *argv[])
+int linux_socket(struct Configs configs)
 {
     int listenfd = 0, connfd = 0;
     struct sockaddr_in serv_addr;

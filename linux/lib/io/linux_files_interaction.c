@@ -7,6 +7,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
+
 #include "definitions.h"
 #include "utils.h"
 #include "linux_files_interaction.h"
@@ -62,7 +63,7 @@ char check_type(char *arg) {
 }
 
 // map
-#include <sys/mman.h>
+//#include <sys/mman.h>
 #include <sys/types.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -103,7 +104,8 @@ char getGopherCode(char* path){
     char *mime_type = NULL;
     size_t len = 0;
 
-    if (getline(&mime_type, &len, fp) == -1) {
+    if (/*getline(&mime_type, &len, fp) == -1*/ 1) {
+        return 1;
         fputs("file command failed", stderr);
         return -1;
     }

@@ -3,24 +3,27 @@
 //
 
 #include <stdio.h>
-#include "utils.h"
 #include <stdlib.h>
 #include <string.h>
-
-
-#include "config_file.h"
-
+#include "utils.h"
+#include "definitions.h"
 #ifdef __unix__
+
+//#include "gopher_server_configuration_linux.h"
 
 #endif
 
-void help(){
-    char* helpString = "";
+void help() {
+    char *helpString = "";
     printf("%s\n", helpString);
 }
 
-// Note that free is needed.
-char* concat(const char *s1, const char *s2) {
+/*
+ * CONCAT
+ * Note that free is needed.
+ *
+ */
+char *concat(const char *s1, const char *s2) {
     char *result = malloc(strlen(s1) + strlen(s2) + 1); // +1 for the null-terminator
     // in real code you would check for errors in malloc here
     strcpy(result, s1);
@@ -29,28 +32,41 @@ char* concat(const char *s1, const char *s2) {
     return result;
 }
 
-int ut_strtoint(char* str){
-    char* end;
+int ut_strtoint(char *str) {
+    char *end;
     int i = (int) strtol(str, &end, 10);
 
-    Assert(strcmp(end, "") == 0 , "ut_strtoint, The value is not a valid integer");
+    Assert(strcmp(end, "") == 0, "ut_strtoint, The value is not a valid integer");
     return i;
 }
+
+char* ut_strtok(char* str, const char* delimiters, char** context){
+#ifdef __unix__
+    return strtok_r(str, delimiters, context);
+#endif
+
+#ifdef _WIN32
+    return "ciao";
+    //return strtok_s(str, delimiters, context);
+#endif
+}
+
 /*
  * Assert return 0 if success, no error.
  */
-int Assert(int cond, char* message){
-    if(!cond){
+int Assert(int cond, char *message) {
+    if (!cond) {
         fprintf(stderr, "%s\n", message);
         exit(3);
     }
     return !cond;
 }
+
 /*
  * Assert_nb return 0 if success, no error.
  */
-int Assert_nb(int cond, char* message){
-    if(!cond){
+int Assert_nb(int cond, char *message) {
+    if (!cond) {
         fprintf(stderr, "%s\n", message);
     }
     return !cond;

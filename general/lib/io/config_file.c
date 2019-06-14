@@ -80,8 +80,19 @@ int conf_read_opt(int argc, char *argv[], struct Configs *configs) {
     return 0;
 }
 
+#include <stdio.h>  /* defines FILENAME_MAX */
+//#define WINDOWS  /* uncomment this line to use it for windows.*/
+#ifdef WINDOWS
+#include <direct.h>
+#define GetCurrentDir _getcwd
+#else
+#include <unistd.h>
+#define GetCurrentDir getcwd
+#endif
 int conf_parseConfigFile(char *path, struct Configs *config) {
-
+    char buff[FILENAME_MAX];
+    GetCurrentDir( buff, FILENAME_MAX );
+    printf("%s" , buff);
     char *port = "port";
     char *mod = "mode_concurrency";
     char *rootdir = "root_dir";
@@ -152,7 +163,6 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
     for (it = 0; it < idx; it++) {
         // name of the option
         single_word = ut_strtok(StringsArray[it], " ", &saveptr1);
-
         // option value evaluation
         if (single_word != NULL) {
 
@@ -163,6 +173,7 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
                 config->port_number = conf_opts_port_number(single_word); // FUNZIONE VALERIO
 
             } else if (strcmp(mod, single_word) == 0) {
+
                 // if the option is mode_concurrency
                 single_word = ut_strtok(NULL, " ", &saveptr1);
                 wrong |= (unsigned) Assert_nb(single_word != NULL, "Missing mod value");
