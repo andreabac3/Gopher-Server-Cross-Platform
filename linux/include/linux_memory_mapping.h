@@ -3,13 +3,13 @@
 //
 
 // map
-#include <sys/mman.h>
 #include <sys/types.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <assert.h>
 #if __linux__
+#include <sys/mman.h>
 #include <linux/version.h>
 #if LINUX_VERSION_CODE > KERNEL_VERSION(2,6,22)
 #define _MAP_POPULATE_AVAILABLE

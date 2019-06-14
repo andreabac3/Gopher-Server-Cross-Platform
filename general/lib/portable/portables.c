@@ -3,7 +3,6 @@
 //
 
 #include "portables.h"
-#include "linux_portable_lib.h"
 
 int po_cd(char* path){
 

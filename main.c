@@ -18,7 +18,10 @@
 #endif
 
 
+#ifdef _WIN32
 
+#include "windows_socket.h"
+#endif
 // reformat Sh + ò
 // comment Sh + ù
 // run Sh + Enter
@@ -29,30 +32,29 @@ void* thr_test_func(void* str){
     return 0;
 }
 
-
-
 int main(int argc, char *argv[]) {
 
     struct Configs configs;
     // configs.root_dir = malloc(50 * sizeof(char));
     // chiamata alla lettura del file di configurazione
-    conf_parseConfigFile("../gopher_server_configuration.txt", &configs);
+
+    //
+    //
+    //
+    // int windows_socket()conf_parseConfigFile("../gopher_server_configuration.txt", &configs);
 
     if(conf_read_opt(argc, argv, &configs) != 0) return 1;
 
     printf("port:%d mode:%d %lu dir:%s\n", configs.port_number, configs.mode_concurrency, strlen(configs.root_dir), configs.root_dir);
-
-//    getGopherCode("/Users/valerioneri/tmp/tennant.gif");
-//    getGopherCode("/bin/cat");
-//    getGopherCode("/Users/valerioneri/tmp");
-//    getGopherCode("non-existing-file");
-//    mappLinux("../gopher_server_configuration.txt", 1); // chiama direttamente la funzione linux.
 
 #ifdef __unix__
     pthread_t t_id;
 
     thr_pthread_create(&t_id, &thr_test_func, (void *) "ciao");
     sleep(2);
+#endif
+#ifdef _WIN32
+   windows_socket();
 #endif
     return 0;
 }

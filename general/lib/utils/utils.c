@@ -45,8 +45,9 @@ char* ut_strtok(char* str, const char* delimiters, char** context){
     return strtok_r(str, delimiters, context);
 #endif
 
-#ifdef __win32__
-    return strtok_s(str, delimiters, context);
+#ifdef _WIN32
+    return "ciao";
+    //return strtok_s(str, delimiters, context);
 #endif
 }
 
