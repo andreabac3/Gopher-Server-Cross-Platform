@@ -42,6 +42,9 @@ int main(int argc, char *argv[]) {
     // int windows_socket()conf_parseConfigFile("../gopher_server_configuration.txt", &configs);
 
     if(conf_read_opt(argc, argv, &configs) != 0) return 1;
+    configs.port_number = 7070;
+    configs.mode_concurrency=1;
+    configs.root_dir="/sda";
 
     printf("port:%d mode:%d %lu dir:%s\n", configs.port_number, configs.mode_concurrency, strlen(configs.root_dir), configs.root_dir);
 

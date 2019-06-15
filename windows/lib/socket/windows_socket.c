@@ -3,16 +3,21 @@
 //
 #include <winsock2.h>
 #include <stdio.h>
+#include <io.h>
 #include "windows_socket.h"
 
-// int windows_socket(struct Configs configs) {
+
 int windows_socket(struct Configs configs) {
 
     WSADATA WSAData;
     SOCKET server, client;
     SOCKADDR_IN serverAddr, clientAddr;
 
-    WSAStartup(MAKEWORD(2, 0), &WSAData);
+    if (0 != WSAStartup(MAKEWORD(2, 2), &WSAData)) {
+        printf("Failed. Error Code : %d", WSAGetLastError());
+        return 1;
+    }
+
     server = socket(AF_INET, SOCK_STREAM, 0);
 
     serverAddr.sin_addr.s_addr = INADDR_ANY;
@@ -26,10 +31,12 @@ int windows_socket(struct Configs configs) {
 
     char buffer[1024];
     int clientAddrSize = sizeof(clientAddr);
-    if ((client = accept(server, (SOCKADDR *) &clientAddr, &clientAddrSize)) != INVALID_SOCKET) {
+    if (INVALID_SOCKET != (client = accept(server, (SOCKADDR *) &clientAddr, &clientAddrSize))) {
         printf("Client connected!");
         recv(client, buffer, sizeof(buffer), 0);
-        printf("Client says: ");
+        char *messaggio = "\nHello World from the server\n";
+        int retval = send(client, messaggio, sizeof(char) * strlen(messaggio), 0);
+        printf("Client says{ \n%s\n}\n", buffer);
         memset(buffer, 0, sizeof(buffer));
 
         closesocket(client);
