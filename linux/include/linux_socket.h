@@ -7,5 +7,6 @@
 
 #include "definitions.h"
 int linux_socket(struct Configs configs);
+void * handle_request(void * args);
 
 #endif //GOPHER_LINUX_SOCKET_H
