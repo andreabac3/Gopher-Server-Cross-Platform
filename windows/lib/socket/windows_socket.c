@@ -32,7 +32,9 @@ int windows_socket(struct Configs configs) {
     char buffer[1024];
     int clientAddrSize = sizeof(clientAddr);
     if (INVALID_SOCKET != (client = accept(server, (SOCKADDR *) &clientAddr, &clientAddrSize))) {
-        printf("Client connected!");
+        printf("Client connected!\n");
+        printf("IP address is: %s\n", inet_ntoa(clientAddr.sin_addr));
+
         recv(client, buffer, sizeof(buffer), 0);
         char *messaggio = "\nHello World from the server\n";
         int retval = send(client, messaggio, sizeof(char) * strlen(messaggio), 0);

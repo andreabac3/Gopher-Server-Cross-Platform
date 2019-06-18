@@ -14,7 +14,14 @@
 //#include "gopher_server_configuration_linux.h"
 
 #endif
+#ifdef __cplusplus
+#include <string>
 
+#include <iostream>
+
+using namespace std;
+#endif
+#include <string.h>
 void help() {
     char *helpString = "";
     printf("%s\n", helpString);
@@ -41,15 +48,34 @@ int ut_strtoint(char *str) {
     Assert(strcmp(end, "") == 0, "ut_strtoint, The value is not a valid integer");
     return i;
 }
+char *strtok_r(char *str, const char *delim, char **save)
+{
+    char *res, *last;
 
+    if( !save )
+        return strtok(str, delim);
+    if( !str && !(str = *save) )
+        return NULL;
+    last = str + strlen(str);
+    if( (*save = res = strtok(str, delim)) )
+    {
+        *save += strlen(res);
+        if( *save < last )
+            (*save)++;
+        else
+            *save = NULL;
+    }
+    return res;
+}
 char* ut_strtok(char* str, const char* delimiters, char** context){
 #if defined(__unix__) || defined(__APPLE__)
+
     return strtok_r(str, delimiters, context);
 #endif
 
 #ifdef _WIN32
-    return "ciao";
-    //return strtok_s(str, delimiters, context);
+    //return "ciao";
+    return (char *) strtok_r(str, delimiters, context);
 #endif
 }
 

@@ -1,11 +1,11 @@
+#include <assert.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <getopt.h>
 #include <stdlib.h>
 #include <memory.h>
-#include <assert.h>
-#include <stdbool.h>
-
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "definitions.h"
 #include "utils.h"
@@ -28,10 +28,7 @@
 // run Sh + Enter
 // Ctrl + Enter
 
-void *thr_test_func(void *str) {
-    printf("%s %s\n", "Thread print", (char *) str);
-    return 0;
-}
+
 
 int main(int argc, char *argv[]) {
 

@@ -159,9 +159,13 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
     char *saveptr1;
 
     // for all lines
+    for(int j = 0; j < idx; j++){
+        printf(StringsArray[j]);
+    }
     for (it = 0; it < idx; it++) {
         // name of the option
         single_word = ut_strtok(StringsArray[it], " ", &saveptr1);
+        printf("\n singleword->  %s \n" , single_word);
         // option value evaluation
         if (single_word != NULL) {
 
@@ -179,14 +183,15 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
 
                 config->mode_concurrency = conf_opts_mode_concurrency(single_word);
 
-            } else if (strcmp(rootdir, single_word) == 0) {
+            } else if (strcmp(rootdir, single_word) == 0 ) {
                 // if the option is root_dir
                 single_word = ut_strtok(NULL, "\"", &saveptr1);
                 wrong |= (unsigned) Assert_nb(single_word != NULL, "Missing root dir value");
                 config->root_dir = calloc(sizeof(char), strlen(single_word)+1);
-                stpcpy(config->root_dir , single_word);
+                strcpy(config->root_dir , single_word);
                 printf("%s %s \n", single_word, config->root_dir);
             } else {
+
                 // if the option is unknown (Error)
                 for (it = 0; it < idx; it++) {        /* free array memory    */
                     free(StringsArray[it]);
