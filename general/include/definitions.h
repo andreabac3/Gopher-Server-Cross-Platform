@@ -6,7 +6,7 @@
 #define GOPHER_DEFINITIONS_H
 
 struct Configs {
-    int  port_number;
+    unsigned int  port_number;
     char  mode_concurrency;
     char*  root_dir;
 };

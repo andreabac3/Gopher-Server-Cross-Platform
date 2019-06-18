@@ -9,7 +9,7 @@
 #include "definitions.h"
 
 
-#ifdef __unix__
+#if defined(__unix__) || defined(__APPLE__)
 
 //#include "gopher_server_configuration_linux.h"
 
@@ -43,7 +43,7 @@ int ut_strtoint(char *str) {
 }
 
 char* ut_strtok(char* str, const char* delimiters, char** context){
-#ifdef __unix__
+#if defined(__unix__) || defined(__APPLE__)
     return strtok_r(str, delimiters, context);
 #endif
 

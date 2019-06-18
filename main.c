@@ -12,10 +12,11 @@
 #include "config_file.h"
 #include "files_interaction.h"
 
-#ifdef __unix__
+#if defined(__unix__) || defined(__APPLE__)
 
 #include "linux_files_interaction.h"
 #include "linux_thread.h"
+#include "linux_socket.h"
 
 #endif
 
@@ -52,7 +53,8 @@ int main(int argc, char *argv[]) {
     printf("port:%d mode:%d %lu dir:%s\n", configs.port_number, configs.mode_concurrency, strlen(configs.root_dir),
            configs.root_dir);
 
-#ifdef __unix__
+#if defined(__unix__) || defined(__APPLE__)
+
     //pthread_t t_id;
 
     //thr_pthread_create(&t_id, &thr_test_func, (void *) "lol");
