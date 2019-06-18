@@ -7,6 +7,8 @@
 #include <string.h>
 #include "utils.h"
 #include "definitions.h"
+
+
 #ifdef __unix__
 
 //#include "gopher_server_configuration_linux.h"

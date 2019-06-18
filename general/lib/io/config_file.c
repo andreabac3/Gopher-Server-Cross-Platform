@@ -1,7 +1,6 @@
 //
 // Created by andreabacciu on 6/6/19.
 //
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -184,7 +183,8 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
                 // if the option is root_dir
                 single_word = ut_strtok(NULL, "\"", &saveptr1);
                 wrong |= (unsigned) Assert_nb(single_word != NULL, "Missing root dir value");
-                config->root_dir = single_word;
+                config->root_dir = calloc(sizeof(char), strlen(single_word)+1);
+                stpcpy(config->root_dir , single_word);
                 printf("%s %s \n", single_word, config->root_dir);
             } else {
                 // if the option is unknown (Error)
@@ -194,16 +194,19 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
                 free(StringsArray);
                 Assert(0, "Unknow parameters in configuration file");
             }
-            printf("%s %s \n", single_word, config->root_dir);
         }
-        printf("%s %s \n", single_word, config->root_dir);
     }
-    for (it = 0; it < idx; it++)        /* free array memory    */
+
+    for (it = 0; it < idx; it++)
         free(StringsArray[it]);
+
     free(StringsArray);
 //    printf("\n%d\n", wrong);
-    Assert(wrong == 0, "Something goes wrong in configuration file");
-    printf("%s \n", config->root_dir);
+    if (Assert_nb(wrong == 0, "Something goes wrong in configuration file") == ASS_CRASH){
+        free(config->root_dir);
+        exit(1);
+    }
+    printf("\n prima di fare return  -->  %s\n " , config->root_dir);
     return 0;
 
 }

@@ -13,7 +13,7 @@
 #include <signal.h>
 
 #include "linux_socket.h"
-
+/*
 int linux_socket(struct Configs configs)
 {
     printf("%s\n", "Starting gophd...");
@@ -59,6 +59,7 @@ int end_server(int fd){
     shutdown(fd, 2);
     return close( fd );
 }
+*/
 
 int start_server(unsigned int port, unsigned int queue_size ){
     int fd = 0;

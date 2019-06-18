@@ -104,7 +104,7 @@ char getGopherCode(char* path){
     char *mime_type = NULL;
     size_t len = 0;
 
-    if (/*getline(&mime_type, &len, fp) == -1*/ 1) {
+    if (getline(&mime_type, &len, fp) == -1) {
         return 1;
         fputs("file command failed", stderr);
         return -1;

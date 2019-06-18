@@ -5,8 +5,13 @@
 #ifndef GOPHER_UTILS_H
 #define GOPHER_UTILS_H
 
-void help();
+#define ASS_CRASH 1
+#define ASS_SUCCESS 0
+
 #endif //GOPHER_UTILS_H
+
+
+void help();
 int ut_strtoint(char* str);
 int Assert(int cond, char* message);
 int Assert_nb(int cond, char* message);
