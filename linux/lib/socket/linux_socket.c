@@ -14,8 +14,11 @@
 #include <sys/socket.h>
 #include <pthread.h>
 #include <signal.h>
+#include <arpa/inet.h>
 
 #include "linux_socket.h"
+#include "linux_files_interaction.h"
+
 
 #define CONNECTION_QUEUE 5
 
@@ -70,17 +73,30 @@ int linux_socket(struct Configs configs)
     //atexit(&main_shutdown);
 
     printf("%s\n", "Going to acceptance");
+    struct sockaddr_in client_addr;
+    socklen_t slen = sizeof(client_addr);
 
-    while( (accept_fd = accept(fd, addr, length_ptr)) != -1 ) {
+    while( (accept_fd = accept(fd, (struct sockaddr *)&client_addr, &slen)) != -1 ) {
         int * req_fd = malloc(sizeof(int));
         *req_fd = accept_fd;
+        printf("%u\n" , client_addr.sin_addr.s_addr);
+        char clientname[500] ;
+        printf("Client Adress = %s\n",inet_ntop(AF_INET,&client_addr.sin_addr, clientname, sizeof(clientname)));
+        printf("Client Adress = %s\n",clientname);
+
+
+        /*
+         * conntfd=accept(socketfd,(struct sockaddr*)&cli,&len);
+    printf(“\nACCEPTED\n);
+
+         */
         pthread_t thread;
         printf("%s\n", "Accepted request");
         if( pthread_create(&thread, NULL, handle_request, req_fd) != 0 ){
             printf("%s\n", "Could not create thread, continue non-threaded...");
             // handle_request(req_fd);
         }
-        free(addr);
+        //free(addr);
         free(length_ptr);
     }
 
@@ -110,6 +126,8 @@ void * handle_request(void * args){
     printf("%s\n", "Running in thread");
 
     int * fd = (int *)args;
+
+
     int run = 1;
     int ptr = 0;
     ssize_t got_bytes = 0;
@@ -125,6 +143,10 @@ void * handle_request(void * args){
             break;
         }
     }
+    printf("sono qui %s\n", buf);
+    if (file_exist(buf))
+        printf("FILE ESISTEEEE");
+
 
 //    send(*fd, "ciao", 5, 0);
 

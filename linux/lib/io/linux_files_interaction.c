@@ -13,7 +13,10 @@
 #include "linux_files_interaction.h"
 #include "linux_dict.h"
 
-
+int file_exist (char *filename){
+    struct stat   buffer;
+    return (stat (filename, &buffer) == 0); // ritorna diverso da zero se vero
+}
 int compare(const void *s1, const void *s2) {
     const struct dict_entry *e1 = s1;
     const struct dict_entry *e2 = s2;
