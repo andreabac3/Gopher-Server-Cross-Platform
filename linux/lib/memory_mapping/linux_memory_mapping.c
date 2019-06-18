@@ -5,9 +5,13 @@
 #include <utils.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <assert.h>
+#include <sys/mman.h>
 #include "linux_memory_mapping.h"
-
-
 
 
 int mappLinux(char* filename, int mod){

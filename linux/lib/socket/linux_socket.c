@@ -50,6 +50,7 @@ int start_server(unsigned int port, unsigned int queue_size ){
     // Make it a listening socket
     if( listen(fd, queue_size) == -1 )
         return -1;
+    return fd;
 }
 
 int linux_socket(struct Configs configs)
@@ -68,10 +69,13 @@ int linux_socket(struct Configs configs)
 
     //atexit(&main_shutdown);
 
+    printf("%s\n", "Going to acceptance");
+
     while( (accept_fd = accept(fd, addr, length_ptr)) != -1 ) {
         int * req_fd = malloc(sizeof(int));
         *req_fd = accept_fd;
         pthread_t thread;
+        printf("%s\n", "Accepted request");
         if( pthread_create(&thread, NULL, handle_request, req_fd) != 0 ){
             printf("%s\n", "Could not create thread, continue non-threaded...");
             // handle_request(req_fd);
@@ -121,6 +125,19 @@ void * handle_request(void * args){
             break;
         }
     }
+
+//    send(*fd, "ciao", 5, 0);
+
+    printf("%s\n", "Responding");
+    char* m = "bienvenue\n";
+    send(*fd, m, sizeof(char) * strlen(m), 0);
+    printf("%s\n", "Rresponded!");
+
+    shutdown(*fd, SHUT_WR);
+
+    //close(*fd);
+
+    return 0;
 
 }
 

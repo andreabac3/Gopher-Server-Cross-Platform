@@ -3,11 +3,7 @@
 //
 
 // map
-#include <sys/types.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <assert.h>
+
 #if __linux__
 #include <sys/mman.h>
 #include <linux/version.h>
@@ -28,14 +24,5 @@
 
 
 int files_memory_map(char* filename, int mode);
-
-
-
-
-
-
-
-
-
 
 #endif //GOPHER_LINUX_MEMORY_MAPPING_H

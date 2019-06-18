@@ -55,6 +55,8 @@ int main(int argc, char *argv[]) {
 
 #if defined(__unix__) || defined(__APPLE__)
 
+    linux_socket(configs);
+
     //pthread_t t_id;
 
     //thr_pthread_create(&t_id, &thr_test_func, (void *) "lol");
