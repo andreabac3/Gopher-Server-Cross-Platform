@@ -22,12 +22,12 @@
 
 #ifdef _WIN32
 #include "windows_socket.h"
+#include <windows.h>
 #endif
 // reformat Sh + ò
 // comment Sh + ù
 // run Sh + Enter
 // Ctrl + Enter
-
 
 
 int main(int argc, char *argv[]) {
@@ -61,6 +61,7 @@ int main(int argc, char *argv[]) {
 #endif
 #ifdef _WIN32
     windows_socket(configs);
+
 #endif
     free(configs.root_dir);
     return 0;

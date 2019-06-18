@@ -14,7 +14,7 @@ if (WIN32)
 include_directories(${CMAKE_SOURCE_DIR}/windows/include)
 link_directories(${CMAKE_SOURCE_DIR}/windows/lib)
 project(gopherWin C)
-add_executable(gopherWin main.c general/lib/utils/utils.c general/include/utils.h general/lib/io/config_file.c general/include/config_file.h   general/include/portables.h general/include/definitions.h general/lib/io/files_interaction.c general/include/files_interaction.h general/lib/gopher/protocol.c general/include/protocol.h windows/lib/socket/windows_socket.c windows/include/windows_socket.h)
+add_executable(gopherWin main.c general/lib/utils/utils.c general/include/utils.h general/lib/io/config_file.c general/include/config_file.h   general/include/portables.h general/include/definitions.h general/lib/io/files_interaction.c general/include/files_interaction.h general/lib/gopher/protocol.c general/include/protocol.h windows/lib/socket/windows_socket.c windows/include/windows_socket.h windows/lib/thead/winThread.c windows/include/winThread.h)
 target_link_libraries(gopherWin ws2_32)
 endif (WIN32)
 
