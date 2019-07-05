@@ -15,12 +15,14 @@
 #include <pthread.h>
 #include <signal.h>
 #include <arpa/inet.h>
+#include <avfs.h>
+#include <glob.h>
 
 #include "linux_socket.h"
 #include "linux_files_interaction.h"
 
 
-#define CONNECTION_QUEUE 5
+#define CONNECTION_QUEUE 500
 
 int end_server(int fd){
     shutdown(fd, 2);
@@ -51,8 +53,10 @@ int start_server(unsigned int port, unsigned int queue_size ){
     printf("Socket bound to port %d\n", port);
 
     // Make it a listening socket
-    if( listen(fd, queue_size) == -1 )
+    if( listen(fd, queue_size) == -1 ) {
+        perror("Listen crrashed");
         return -1;
+    }
     return fd;
 }
 
@@ -93,18 +97,21 @@ int linux_socket(struct Configs configs)
         pthread_t thread;
         printf("%s\n", "Accepted request");
         if( pthread_create(&thread, NULL, handle_request, req_fd) != 0 ){
-            printf("%s\n", "Could not create thread, continue non-threaded...");
+            // printf("%s\n", "Could not create thread, continue non-threaded...");
+            perror("Could not create thread, continue non-threaded...");
             // handle_request(req_fd);
         }
         //free(addr);
         free(length_ptr);
     }
 
+    perror("Accept Failes");
+
     // End server
     if( end_server(fd) < 0 ) {
         perror(NULL);
         return EXIT_FAILURE;
-    };
+    }
     printf("%s\n", "Socket released");
     return EXIT_SUCCESS;
 }
@@ -122,6 +129,8 @@ int get_line( char * buf, size_t size ){
 
 
 void * handle_request(void * args){
+    pthread_detach(pthread_self());
+
 
     printf("%s\n", "Running in thread");
 
@@ -155,11 +164,13 @@ void * handle_request(void * args){
     send(*fd, m, sizeof(char) * strlen(m), 0);
     printf("%s\n", "Rresponded!");
 
-    shutdown(*fd, SHUT_WR);
+    //shutdown(*fd, SHUT_WR);
 
-    //close(*fd);
+    close(*fd);
+    int ret = 0;
+    pthread_exit(&ret);
 
-    return 0;
+    //return 0;
 
 }
 
