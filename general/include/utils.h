@@ -8,6 +8,15 @@
 #define ASS_CRASH 1
 #define ASS_SUCCESS 0
 
+
+struct dict_entry {
+    char *str;
+    char n;
+};
+
+
+int compare(const void *s1, const void *s2);
+
 #endif //GOPHER_UTILS_H
 
 

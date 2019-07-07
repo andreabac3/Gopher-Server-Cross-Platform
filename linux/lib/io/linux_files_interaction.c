@@ -11,17 +11,11 @@
 #include "definitions.h"
 #include "utils.h"
 #include "linux_files_interaction.h"
-#include "linux_dict.h"
+#include "ut_dict.h"
 
 int file_exist (char *filename){
     struct stat   buffer;
     return (stat (filename, &buffer) == 0); // ritorna diverso da zero se vero
-}
-int compare(const void *s1, const void *s2) {
-    const struct dict_entry *e1 = s1;
-    const struct dict_entry *e2 = s2;
-
-    return strcmp(e1->str, e2->str);
 }
 
 char check_subtype(char *arg) {
@@ -109,8 +103,8 @@ char getGopherCode(char* path){
 
     if (getline(&mime_type, &len, fp) == -1) {
         return 1;
-        fputs("file command failed", stderr);
-        return -1;
+        //fputs("file command failed", stderr);
+        //return -1;
     }
 
     char *file_not_found_respond = "cannot open `non-existing-file'";
@@ -138,7 +132,7 @@ char getGopherCode(char* path){
     free(command);
     pclose(fp);
 
-    return 0;
+    return gopher_code;
 }
 
 size_t getFilesize(const char* filename) {

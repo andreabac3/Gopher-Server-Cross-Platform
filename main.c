@@ -15,6 +15,7 @@
 #if defined(__unix__) || defined(__APPLE__)
 
 #include "linux_files_interaction.h"
+#include "files_interaction.h"
 #include "linux_thread.h"
 #include "linux_socket.h"
 
@@ -50,9 +51,11 @@ int main(int argc, char *argv[]) {
     printf("port:%d mode:%d %lu dir:%s\n", configs.port_number, configs.mode_concurrency, strlen(configs.root_dir),
            configs.root_dir);
 
+    printf("%c \n", getGopherCode("C:/Users/valerio/file.png"));
+
 #if defined(__unix__) || defined(__APPLE__)
 
-    linux_socket(configs);
+    //linux_socket(configs);
 
     //pthread_t t_id;
 

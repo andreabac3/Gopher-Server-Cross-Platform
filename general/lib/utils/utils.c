@@ -48,7 +48,7 @@ int ut_strtoint(char *str) {
     Assert(strcmp(end, "") == 0, "ut_strtoint, The value is not a valid integer");
     return i;
 }
-char *strtok_r(char *str, const char *delim, char **save)
+/*char *strtok_r(char *str, const char *delim, char **save)
 {
     char *res, *last;
 
@@ -66,7 +66,7 @@ char *strtok_r(char *str, const char *delim, char **save)
             *save = NULL;
     }
     return res;
-}
+}*/
 char* ut_strtok(char* str, const char* delimiters, char** context){
 #if defined(__unix__) || defined(__APPLE__)
 
@@ -100,4 +100,11 @@ int Assert_nb(int cond, char *message) {
     return !cond;
 }
 
+
+int compare(const void *s1, const void *s2) {
+    const struct dict_entry *e1 = s1;
+    const struct dict_entry *e2 = s2;
+
+    return strcmp(e1->str, e2->str);
+}
 
