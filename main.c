@@ -50,6 +50,20 @@ int main(int argc, char *argv[]) {
     printf("port:%d mode:%d %lu dir:%s\n", configs.port_number, configs.mode_concurrency, strlen(configs.root_dir),
            configs.root_dir);
 
+
+
+    char *bufferTESToutputSocket = calloc( 300 , sizeof(  char) );
+    // protocolResponse(unsigned int type, char* filename, char* path, const char * host, unsigned int port, char* result );
+    int risultato = protocolResponse(1, "prova.txt", "/var/", "localhost", 7070, bufferTESToutputSocket);
+    if (0 != risultato){
+        free(bufferTESToutputSocket);
+        exit(1);
+    }
+    printf("%s\n", bufferTESToutputSocket);
+    free(bufferTESToutputSocket);
+
+
+
 #if defined(__unix__) || defined(__APPLE__)
 
     linux_socket(configs);
@@ -64,5 +78,6 @@ int main(int argc, char *argv[]) {
 
 #endif
     free(configs.root_dir);
+
     return 0;
 }

@@ -15,8 +15,13 @@
 #include <pthread.h>
 #include <signal.h>
 #include <arpa/inet.h>
-#include <avfs.h>
+
 #include <glob.h>
+
+#if defined(__unix__)
+    #include <avfs.h>
+#endif
+
 
 #include "linux_socket.h"
 #include "linux_files_interaction.h"
