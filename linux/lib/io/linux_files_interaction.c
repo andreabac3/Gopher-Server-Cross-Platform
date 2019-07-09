@@ -102,7 +102,7 @@ char getGopherCode(char* path){
     size_t len = 0;
 
     if (getline(&mime_type, &len, fp) == -1) {
-        return 1;
+        return -2;
         //fputs("file command failed", stderr);
         //return -1;
     }
@@ -110,7 +110,7 @@ char getGopherCode(char* path){
     char *file_not_found_respond = "cannot open `non-existing-file'";
 //    printf("!!cmp:%s %d!!\n", mime_type, strncmp(file_not_found_respond, mime_type, strlen(file_not_found_respond)));
     if (strncmp(file_not_found_respond, mime_type, strlen(file_not_found_respond)) == 0) {
-        return -2;
+        return -3;
     }
 
     type = strtok_r(mime_type, "/", &strtok_ptr);

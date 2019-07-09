@@ -6,6 +6,7 @@
 #include <memory.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <protocol.h>
 
 #include "definitions.h"
 #include "utils.h"
@@ -53,15 +54,15 @@ int main(int argc, char *argv[]) {
 
 
 
-    char *bufferTESToutputSocket = calloc( 300 , sizeof(  char) );
-    // protocolResponse(unsigned int type, char* filename, char* path, const char * host, unsigned int port, char* result );
-    int risultato = protocolResponse(1, "prova.txt", "/var/", "localhost", 7070, bufferTESToutputSocket);
-    if (0 != risultato){
-        free(bufferTESToutputSocket);
-        exit(1);
-    }
-    printf("%s\n", bufferTESToutputSocket);
-    free(bufferTESToutputSocket);
+//    char *bufferTESToutputSocket = calloc( 300 , sizeof(  char) );
+//    // protocol_response(unsigned int type, char* filename, char* path, const char * host, unsigned int port, char* result );
+//    int risultato = protocol_response(1, "prova.txt", "/var/", "localhost", 7070, bufferTESToutputSocket);
+//    if (0 != risultato){
+//        free(bufferTESToutputSocket);
+//        exit(1);
+//    }
+//    printf("%s\n", bufferTESToutputSocket);
+//    free(bufferTESToutputSocket);
 
 
 
@@ -69,7 +70,7 @@ int main(int argc, char *argv[]) {
 
 #if defined(__unix__) || defined(__APPLE__)
 
-    //linux_socket(configs);
+    linux_socket(configs);
 
     //pthread_t t_id;
 

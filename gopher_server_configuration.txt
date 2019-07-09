@@ -1,4 +1,4 @@
 port 7070
-root_dir "loop"
+root_dir "../gopher_root"
 mode_concurrency Thread
 
