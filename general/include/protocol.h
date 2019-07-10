@@ -10,4 +10,6 @@
 int protocol_response(char type, char *filename, char *path, const char *host, int port, char *result);
 char * resolve_selector( char * filepath, const char * selector );
 int print_directory(char* path, void (*socket_send_f)(int*, char*), int* fd);
+char win_getGopherCode(char* path);
+
 
