@@ -11,10 +11,20 @@ struct Configs {
     char*  root_dir;
 };
 
+
+#if defined(__unix__) || defined(__APPLE__)
+struct ThreadArgs {
+    int fd;
+    struct Configs configs;
+};
+#endif
+#ifdef _WIN32
 struct ThreadArgs {
     int* fd;
     struct Configs configs;
 };
+#endif
+
 
 /*enum item_types {
     ITEM_FILE='0',

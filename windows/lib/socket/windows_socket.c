@@ -104,7 +104,6 @@ int windows_socket(struct Configs configs) {
     int clientAddrSize = sizeof(clientAddr);
 
     struct ThreadArgs args;
-
     args.configs = configs;
 
     //Windows

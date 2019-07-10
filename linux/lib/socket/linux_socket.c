@@ -18,9 +18,13 @@
 
 #include <glob.h>
 
-#if defined(__unix__)
+#include "definitions.h"
 
-#include <avfs.h>
+
+
+#if defined(__unix__) || defined(__APPLE__)
+
+//#include <avfs.h>
 #include <protocol.h>
 
 #endif
@@ -78,7 +82,7 @@ int linux_socket(struct Configs configs) {
 
     // Accept connections, blocking
     int accept_fd;
-    //struct sockaddr *addr = NULL;
+    //struct sockaddr *addr = NULL;*args->fd
     socklen_t *length_ptr = NULL;
 
     //atexit(&main_shutdown);
@@ -86,6 +90,9 @@ int linux_socket(struct Configs configs) {
     printf("%s\n", "Going to acceptance");
     struct sockaddr_in client_addr;
     socklen_t slen = sizeof(client_addr);
+
+    struct ThreadArgs args;
+    args.configs = configs;
 
     while ((accept_fd = accept(fd, (struct sockaddr *) &client_addr, &slen)) != -1) {
         int *req_fd = malloc(sizeof(int));
@@ -96,14 +103,11 @@ int linux_socket(struct Configs configs) {
         printf("Client Adress = %s\n", clientname);
 
 
-        /*
-         * conntfd=accept(socketfd,(struct sockaddr*)&cli,&len);
-    printf(“\nACCEPTED\n);
+        args.fd = (int) accept_fd;
 
-         */
         pthread_t thread;
         printf("%s\n", "Accepted request");
-        if (pthread_create(&thread, NULL, handle_request, req_fd) != 0) {
+        if (pthread_create(&thread, NULL, handle_request, (void *) &args) != 0) {
             // printf("%s\n", "Could not create thread, continue non-threaded...");
             perror("Could not create thread, continue non-threaded...");
             // handle_request(req_fd);
@@ -144,21 +148,28 @@ void linux_sock_send_message(int *fd, char *error) {
 }
 
 
-void *handle_request(void *args) {
+void *handle_request(void *params) {
     pthread_detach(pthread_self());
 
 
     printf("%s\n", "Running in thread");
 
-    int *fd = (int *) args;
+    struct ThreadArgs *args;
+    args = (struct ThreadArgs *) params;
+    printf("port: %d\n",  args->configs.port_number);
 
+    char *mm = "Directory\n";
+    send(args->fd, mm, sizeof(char) * strlen(mm), 0);
+
+    printf("%s\n", "Send ok");
+    perror("Send");
 
     int run = 1;
     int ptr = 0;
     ssize_t got_bytes = 0;
     char *buf = malloc(BUFFER_SIZE);
     while (run) {
-        got_bytes = read(*fd, buf + ptr, BUFFER_SIZE - ptr);
+        got_bytes = read(args->fd, buf + ptr, BUFFER_SIZE - ptr);
         if (got_bytes <= 0) {
             buf[ptr] = 0; // Terminate string
             break;
@@ -178,13 +189,13 @@ void *handle_request(void *args) {
         char *m = malloc(1);
         int err = protocol_response('3', buf, "/path/", "localhost", 7070, m);
         if (err != 0) {
-            linux_sock_send_error(fd);
+            //linux_sock_send_error(args->fd);
             // No need to free m, because calloc crashed.
         } else {
-            send(*fd, m, sizeof(char) * strlen(m), 0);
+            send(args->fd, m, sizeof(char) * strlen(m), 0);
             free(m);
 
-            close(*fd);
+            close(args->fd);
             int ret = 1;
             pthread_exit(&ret);
         }
@@ -193,8 +204,8 @@ void *handle_request(void *args) {
     char code = getGopherCode(path);
     if (code < 0) {
         // error
-        linux_sock_send_error(fd);
-        close(*fd);
+        //linux_sock_send_error(args->fd);
+        close(args->fd);
         int ret = 0;
         pthread_exit(&ret);
     }
@@ -203,8 +214,8 @@ void *handle_request(void *args) {
         // it's a directory
         printf("%s\n", "Directory");
         char *m = "Directory\n";
-        send(*fd, m, sizeof(char) * strlen(m), 0);
-        print_directory(path, &linux_sock_send_message, fd);
+        send(args->fd, m, sizeof(char) * strlen(m), 0);
+        //print_directory(path, &linux_sock_send_message, args->fd);
     } else {
         // it's some kind of files
     }
@@ -212,13 +223,13 @@ void *handle_request(void *args) {
 
     printf("%s\n", "Responding");
     char *m = "bienvenue\n";
-    send(*fd, m, sizeof(char) * strlen(m), 0);
+    send(args->fd, m, sizeof(char) * strlen(m), 0);
     printf("%s\n", "Rresponded!");
 
 
     //shutdown(*fd, SHUT_WR);
 
-    close(*fd);
+    close(args->fd);
     int ret = 0;
     pthread_exit(&ret);
 
