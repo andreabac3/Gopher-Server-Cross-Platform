@@ -1,6 +1,3 @@
-//
-// Created by valerioneri on 6/13/19.
-//
 #include <sys/socket.h>
 
 #include <stdlib.h>
@@ -26,47 +23,22 @@
 #include <protocol.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+// #include <tclDecls.h>
+#include <errno.h>
 
 
 #include "linux_socket.h"
 #include "linux_files_interaction.h"
-
+#include "socket.h"
 
 #define CONNECTION_QUEUE 500
-int SendFile(int write_fd, int read_fd, off_t filesize);
+
 int end_server(int fd) {
     shutdown(fd, 2);
     return close(fd);
 }
 
 
-int sendFileToClient(char* pathFilename){
-    int fd = open(pathFilename, O_RDONLY);
-    if (fd == -1)
-    {
-        fprintf(stderr, "Error opening file --> %s", strerror(errno));
-
-        exit(EXIT_FAILURE);
-    }
-    return fd;
-
-
-}
-
-off_t getFileSize(int fd){
-    struct stat file_stat;
-
-    /* Get file stats */
-    if (fstat(fd, &file_stat) < 0)
-    {
-        fprintf(stderr, "Error fstat --> %s", strerror(errno));
-
-        exit(EXIT_FAILURE);
-    }
-
-    fprintf(stdout, "File Size: \n%d bytes\n", file_stat.st_size);
-    return file_stat.st_size;
-}
 
 int start_server(unsigned int port, unsigned int queue_size) {
     int fd = 0;
@@ -207,14 +179,14 @@ void *handle_request(void *params) {
         }
     }
 
-    char *path = resolve_selector(NULL, buf);
+    char *path = resolve_selector(args->configs.root_dir, NULL, buf);
 
     if (!file_exist(path)) {
         printf("SEND: Il file non esiste");
 
         // tell to client that file do not exists
         char *m = malloc(1);
-        int err = protocol_response('3', buf, "/path/", "localhost", 7070, m);
+        int err = protocol_response('3', buf, "/path/", "localhost", 7070, &m);
         if (err != 0) {
             //linux_sock_send_error(args->fd);
             // No need to free m, because calloc crashed.
@@ -242,15 +214,15 @@ void *handle_request(void *params) {
         printf("%s\n", "Directory");
         char *m = "Directory\n";
         send(args->fd, m, sizeof(char) * strlen(m), 0);
-        print_directory(path, &linux_sock_send_message, args->fd);
+        print_directory(path, &linux_sock_send_message, &args->fd);
     } else {
         printf("%s\n", "filesssss");
         //printf("MIA FILE SIZE %jd\n", (intmax_t)sendFile(path));
-        int fd_FileToSend = sendFileToClient(path);
-        off_t remain_data = getFileSize(fd_FileToSend);
+        FILE* fp_FileToSend = sendFileToClient(path);
+        int remain_data = fsize(fp_FileToSend);
         // int, int, off_t, off_t *, struct sf_hdtr *, int);
         //sendfile (write_fd, read_fd, &offset, stat_buf.st_size);
-        SendFile(args->fd, fd_FileToSend, remain_data);
+        printf("%d", SendFile(args->fd, fp_FileToSend, remain_data));
         // it's some kind of files
     }
 
@@ -271,22 +243,7 @@ void *handle_request(void *params) {
 
 }
 
-int SendFile(int write_fd, int read_fd, off_t filesize){
-    size_t dim = 100;
-    ssize_t n = 0;
-    char buffer[dim];
-    while(filesize > 0){
 
-        if ((n = fread(read_fd, buffer, dim)) == -1){
-            return -1;
-        }
-        if (send(write_fd, buffer, (size_t) n, 0) == -1){
-            return -2;
-        }
-        filesize -= dim;
-    }
-    return 0;
-}
 
 
 
