@@ -20,7 +20,7 @@
 #define GM_MIN_LINESIZE 5
 
 char *resolve_selector(char *filepath, const char *selector) {
-    char* gopher_root = "/opt/local_projects/gopher-project/";
+    char* gopher_root = "/Users/andrea/CLionProjects/gopher-project/gopher_server_configuration.txt";
     filepath = calloc(strlen(gopher_root) + 1 + strlen(selector) + 4 , sizeof(char));
     sprintf(filepath, "%s/%s", gopher_root, selector + (selector[0] == '/' ? 1 : 0));
     return filepath;
