@@ -9,14 +9,13 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <stdbool.h>
-#include "linux_files_interaction.h"
 #include "protocol.h"
 
 #define GM_MAX_LINESIZE 200
 #define GM_MIN_LINESIZE 5
 
 char *resolve_selector(char *filepath, const char *selector) {
-    asprintf(&filepath, "%s%s", "/opt/local_projects/gopher-project/", selector + (selector[0] == '/' ? 1 : 0));
+    sprintf(filepath, "%s%s", "/opt/local_projects/gopher-project/", selector + (selector[0] == '/' ? 1 : 0));
     return filepath;
 }
 
@@ -95,7 +94,7 @@ int print_directory(char *path, void (*socket_send_f)(int *, char *), int *fd) {
             return -1;
         }
 
-        char code = getGopherCode(fullpath);
+        char code = '1'; // getGopherCode(fullpath); FIX QUI
         //err |= (code < 0);
 
         // get line for gopher

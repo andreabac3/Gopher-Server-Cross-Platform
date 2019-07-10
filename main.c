@@ -66,9 +66,9 @@ int main(int argc, char *argv[]) {
 
 
 
-    printf("%c \n", getGopherCode("C:/Users/valerio/file.png"));
 
 #if defined(__unix__) || defined(__APPLE__)
+    printf("%c \n", getGopherCode("C:/Users/valerio/file.png"));
 
     linux_socket(configs);
 

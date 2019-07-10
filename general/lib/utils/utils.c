@@ -48,7 +48,7 @@ int ut_strtoint(char *str) {
     Assert(strcmp(end, "") == 0, "ut_strtoint, The value is not a valid integer");
     return i;
 }
-/*char *strtok_r(char *str, const char *delim, char **save)
+char *strtok_r(char *str, const char *delim, char **save)
 {
     char *res, *last;
 
@@ -66,7 +66,7 @@ int ut_strtoint(char *str) {
             *save = NULL;
     }
     return res;
-}*/
+}
 char* ut_strtok(char* str, const char* delimiters, char** context){
 #if defined(__unix__) || defined(__APPLE__)
 
