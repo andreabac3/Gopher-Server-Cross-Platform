@@ -5,6 +5,14 @@
 #ifndef GOPHER_DEFINITIONS_H
 #define GOPHER_DEFINITIONS_H
 
+#if defined(__unix__) || defined(__APPLE__)
+#define OS_SEPARATOR '/'
+
+#endif
+#ifdef _WIN32
+#define OS_SEPARATOR '\\'
+#endif
+
 struct Configs {
     unsigned int  port_number;
     char  mode_concurrency;
@@ -19,8 +27,9 @@ struct ThreadArgs {
 };
 #endif
 #ifdef _WIN32
+#include <afxres.h>
 struct ThreadArgs {
-    int* fd;
+    SOCKET fd;
     struct Configs configs;
 };
 #endif

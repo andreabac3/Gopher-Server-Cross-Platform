@@ -215,7 +215,7 @@ void *handle_request(void *params) {
         printf("%s\n", "Directory");
         char *m = "Directory\n";
         send(args->fd, m, sizeof(char) * strlen(m), 0);
-        //print_directory(path, &linux_sock_send_message, args->fd);
+        print_directory(path, &linux_sock_send_message, args->fd);
     } else {
         // it's some kind of files
     }

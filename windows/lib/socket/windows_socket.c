@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <io.h>
 #include <unistd.h>
+#include <protocol.h>
+#include <windows_protocol.h>
 #include "windows_socket.h"
 #include "winThread.h"
 #include "definitions.h"
@@ -21,59 +23,110 @@ int get_line(char *buf, size_t size) {
 
 #define BUFFER_SIZE 1024
 
+void linux_sock_send_message(int *fd, char *error) {
+
+    printf("linux_sock_send_message: %d, %s", *fd, error);
+    send(*fd, error, sizeof(char) * strlen(error), 0);
+    perror("linux_sock_send_message");
+}
+
 DWORD WINAPI handle_request(void *params) {
 //    int * fd = (int *)args;
 //    SOCKET* client = (SOCKET*) args;
 
-    struct ThreadArgs * args;
-    args = (struct ThreadArgs*) params;
+    struct ThreadArgs *args;
+    args = (struct ThreadArgs *) params;
 
-    char* m2 = "\nbienvenue\n";
-    send(*args->fd, m2, sizeof(char) * strlen(m2), 0);
+    char *m2 = "\nbienvenue\n";
+    int serr = send(args->fd, m2, sizeof(char) * strlen(m2), 0);
+    if (serr != 0) {
+        printf("%s\n", "Unable to send Socket");
+        perror("Send");
+    }
 
     printf("%s\n", "Running in thread - handle request");
 
-    printf("args: %d\n", *args->fd);
+    printf("args: %d\n", args->fd);
 
-//    int err = shutdown(*client, SD_BOTH);
-    int err = closesocket(*args->fd);
-    printf("%s %d\n", "Close Socket return", err);
-    if (err != 0){
-        printf("%s\n", "Unable to close Socket");
-    }
-    printf("Client disconnected.");
-
-
-    /*int run = 1;
+    /*Code for gopher protocol*/
+    int run = 1;
     int ptr = 0;
     ssize_t got_bytes = 0;
-    char * buf = malloc(BUFFER_SIZE);
-    while( run ) {
-        got_bytes = read( *fd, buf + ptr, BUFFER_SIZE - ptr);
-        if(got_bytes <= 0){
+    char *buf = calloc(BUFFER_SIZE, sizeof(char));
+
+    //recv()
+
+    while (run) {
+        got_bytes = recv(args->fd, buf + ptr, BUFFER_SIZE - ptr, 0);
+        if (got_bytes <= 0) {
             buf[ptr] = 0; // Terminate string
             break;
         }
         ptr += got_bytes;
-        if( get_line(buf, ptr) ){
+        if (get_line(buf, ptr)) {
             break;
         }
     }
-    printf("sono qui %s\n", buf);
 
+    printf("Selector string: %s\n", buf);
 
-//    send(*fd, "ciao", 5, 0);
+    char *path = resolve_selector(args->configs.root_dir, NULL, buf);
+    printf("full path %s \n", path);
 
-    printf("%s\n", "Responding");
-    char* m = "bienvenue\n";
-    send(*fd, m, sizeof(char) * strlen(m), 0);
-    printf("%s\n", "Rresponded!");
+    /* if (!file_exist(path)) {
+         printf("SEND: Il file non esiste");
 
-    close(*fd);*/
+         // tell to client that file do not exists
+         char *m = malloc(1);
+         int err = protocol_response('3', buf, "/path/", "localhost", 7070, m);
+         if (err != 0) {
+             //linux_sock_send_error(args->fd);
+             // No need to free m, because calloc crashed.
+         } else {
+             send(args->fd, m, sizeof(char) * strlen(m), 0);
+             free(m);
+
+             close(args->fd);
+             int ret = 1;
+             //pthread_exit(&ret);
+         }
+     }*/
+
+    char code = getGopherCode(path);
+    if (code < 0) {
+        // error
+        //linux_sock_send_error(args->fd);
+        close(args->fd);
+        int ret = 0;
+        //pthread_exit(&ret);
+    }
+    printf("Code: %d\n", code);
+    if (code == '1') {
+        // it's a directory
+        printf("%s\n", "Directory");
+        char *m = "Directory\n";
+        send(args->fd, m, sizeof(char) * strlen(m), 0);
+        print_directory(path, &linux_sock_send_message, (int *) &(args->fd));
+    } else {
+        // it's some kind of files
+    }
+
+    /*End code*/
+
+    //int err = shutdown(args->fd, SD_BOTH);
+    int err = closesocket(args->fd);
+//    int err = close(args->fd);
+
+    printf("%s %d\n", "Close Socket return", err);
+    if (err != 0) {
+        printf("%s\n", "Unable to close Socket");
+        perror("Close");
+    }
+    printf("Client disconnected.");
+
     return 0;
 
 }
-
 
 
 int windows_socket(struct Configs configs) {
@@ -110,9 +163,9 @@ int windows_socket(struct Configs configs) {
     while (INVALID_SOCKET != (client = accept(server, (SOCKADDR *) &clientAddr, &clientAddrSize))) {
         printf("Client connected!\n");
         printf("IP address is: %s\n", inet_ntoa(clientAddr.sin_addr));
-        int* req_fd = (int *) client;
+        //int* req_fd = (int *) client;
 
-        args.fd = (int *) &client;
+        args.fd = client;
         HANDLE thread;
         if (0 != (thread = CreateThread(NULL, 0, handle_request, (PVOID) &args, 0, NULL))) {
             printf("funziona\n");

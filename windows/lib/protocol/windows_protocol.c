@@ -2,7 +2,7 @@
 // Created by valerioneri on 7/10/19.
 //
 
-
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "utils.h"
@@ -35,11 +35,11 @@ char getGopherCode(char *p) {
 
     char *path= strdup(p);
     char *saveptr;
-    char *ext;
+    char *name, *ext;
 
 //    printf("%s %s %lu %lu", path, str, strlen(path), strlen(str) );
 
-    ext = ut_strtok(path, ".", &saveptr);
+    name = ut_strtok(path, ".", &saveptr);
     ext = ut_strtok(NULL, ".", &saveptr);
 
 //    printf("token: %s \n", name);
@@ -48,7 +48,10 @@ char getGopherCode(char *p) {
     // Bisogna fare la free dopo strdup
     //free(path);
 
+    printf("strtok: %s %s\n", name, ext);
+
     if (ext == NULL) {
+        printf("strtok directory: %s %s\n", name, ext);
         return '1';
     }
     return check_code(ext);
