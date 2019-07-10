@@ -3,6 +3,10 @@
 //
 
 
+#include <stdlib.h>
+#include <string.h>
+#include "utils.h"
+
 /*Gopher Code for Windows*/
 char check_code(char *arg) {
 

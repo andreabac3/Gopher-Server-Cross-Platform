@@ -1,12 +1,14 @@
 //
 // Created by andrea on 14-Jun-19.
 //
+#include <windows.h>
 #include <winsock2.h>
 #include <stdio.h>
 #include <io.h>
 #include <unistd.h>
 #include "windows_socket.h"
 #include "winThread.h"
+#include "definitions.h"
 
 int get_line(char *buf, size_t size) {
     char *pos = memchr(buf, '\n', size);
@@ -19,18 +21,30 @@ int get_line(char *buf, size_t size) {
 
 #define BUFFER_SIZE 1024
 
-DWORD WINAPI handle_request(void *args) {
-    int * fd = (int *)args;
+DWORD WINAPI handle_request(void *params) {
+//    int * fd = (int *)args;
+//    SOCKET* client = (SOCKET*) args;
 
-    char* m2 = "bienvenue\n";
-    send(*fd, m2, sizeof(char) * strlen(m2), 0);
+    struct ThreadArgs * args;
+    args = (struct ThreadArgs*) params;
+
+    char* m2 = "\nbienvenue\n";
+    send(*args->fd, m2, sizeof(char) * strlen(m2), 0);
 
     printf("%s\n", "Running in thread - handle request");
 
-    printf("%d", args);
+    printf("args: %d\n", *args->fd);
+
+//    int err = shutdown(*client, SD_BOTH);
+    int err = closesocket(*args->fd);
+    printf("%s %d\n", "Close Socket return", err);
+    if (err != 0){
+        printf("%s\n", "Unable to close Socket");
+    }
+    printf("Client disconnected.");
 
 
-    int run = 1;
+    /*int run = 1;
     int ptr = 0;
     ssize_t got_bytes = 0;
     char * buf = malloc(BUFFER_SIZE);
@@ -55,8 +69,7 @@ DWORD WINAPI handle_request(void *args) {
     send(*fd, m, sizeof(char) * strlen(m), 0);
     printf("%s\n", "Rresponded!");
 
-    close(*fd);
-    sleep(320);
+    close(*fd);*/
     return 0;
 
 }
@@ -85,9 +98,43 @@ int windows_socket(struct Configs configs) {
 
     printf("Listening for incoming connections...");
 
-    char buffer[1024] = {0}; // memset per velocità.
+    char request_path[1024] = {0}; // memset per velocità.
+
+    // int accept_fd;
     int clientAddrSize = sizeof(clientAddr);
-    if (INVALID_SOCKET != (client = accept(server, (SOCKADDR *) &clientAddr, &clientAddrSize))) {
+
+    struct ThreadArgs args;
+
+    args.configs = configs;
+
+    //Windows
+    while (INVALID_SOCKET != (client = accept(server, (SOCKADDR *) &clientAddr, &clientAddrSize))) {
+        printf("Client connected!\n");
+        printf("IP address is: %s\n", inet_ntoa(clientAddr.sin_addr));
+        int* req_fd = (int *) client;
+
+        args.fd = (int *) &client;
+        HANDLE thread;
+        if (0 != (thread = CreateThread(NULL, 0, handle_request, (PVOID) &args, 0, NULL))) {
+            printf("funziona\n");
+        }
+        /*recv(client, request_path, sizeof(request_path), 0);
+        char* m2 = "\nBENVENUTI nel server gopher\n";
+        send(client, m2, sizeof(char) * strlen(m2), 0);
+
+        printf("Client says{ \n%s\n}\n fine", request_path);
+        memset(request_path, 0, sizeof(request_path));
+
+        int err = shutdown(client, SD_BOTH);
+        printf("%s %d\n", "Close Socket return", err);
+        if (err != 0){
+            printf("%s\n", "Unable to close Socket");
+        }
+        printf("Client disconnected.");*/
+    }
+
+    //Backup Windows
+    /*if (INVALID_SOCKET != (client = accept(server, (SOCKADDR *) &clientAddr, &clientAddrSize))) {
         printf("Client connected!\n");
         printf("IP address is: %s\n", inet_ntoa(clientAddr.sin_addr));
         int* req_fd = (int *) client;
@@ -95,15 +142,20 @@ int windows_socket(struct Configs configs) {
         if (0 != (thread = CreateThread(NULL, 0, handle_request, (PVOID) client, 0, NULL))) {
             printf("funziona\n");
         }
-        recv(client, buffer, sizeof(buffer), 0);
+        recv(client, request_path, sizeof(request_path), 0);
         char* m2 = "\nBENVENUTI nel server gopher\n";
         send(client, m2, sizeof(char) * strlen(m2), 0);
 
-        printf("Client says{ \n%s\n}\n fine", buffer);
-        memset(buffer, 0, sizeof(buffer));
+        printf("Client says{ \n%s\n}\n fine", request_path);
+        memset(request_path, 0, sizeof(request_path));
 
-        closesocket(client);
+        int err = closesocket(client);
+        printf("%s %d\n", "Close Socket return", err);
+        if (err != 0){
+            printf("%s\n", "Unable to close Socket");
+        }
         printf("Client disconnected.");
-    }
+    }*/
+
     return 0;
 }

@@ -11,6 +11,11 @@ struct Configs {
     char*  root_dir;
 };
 
+struct ThreadArgs {
+    int* fd;
+    struct Configs configs;
+};
+
 /*enum item_types {
     ITEM_FILE='0',
     ITEM_DIR='1',
