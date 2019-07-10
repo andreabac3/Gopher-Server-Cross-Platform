@@ -1,6 +1,12 @@
 #include <memory.h>
 #include <stdlib.h>
+#ifdef _WIN32
+#include <winsock.h>
+#endif
+#if defined(__unix__) || defined(__APPLE__)
 #include <sys/socket.h>
+#endif
+
 #include "socket.h"
 #include "errno.h"
 #include "socket.h"

@@ -71,6 +71,8 @@ static bool is_valid_gopher_line(const char *line) {
 
 
 int print_directory(char *path, void (*socket_send_f)(int *, char *), int *fd) {
+    // TODO Fix path
+    path = "C:\\Users\\andrea\\CLionProjects\\gopher-project\\";
     DIR *dir = opendir(path);
     struct dirent *entry = NULL;
 

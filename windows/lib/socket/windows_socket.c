@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <protocol.h>
 #include <windows_protocol.h>
+#include "socket.h"
 #include "windows_socket.h"
 #include "winThread.h"
 #include "definitions.h"
@@ -109,6 +110,12 @@ DWORD WINAPI handle_request(void *params) {
         print_directory(path, &linux_sock_send_message, (int *) &(args->fd));
     } else {
         // it's some kind of files
+        printf("%s\n", "filesssss");
+        FILE* fp_FileToSend = sendFileToClient(path);
+        int remain_data = fsize(fp_FileToSend);
+        // int, int, off_t, off_t *, struct sf_hdtr *, int);
+        //sendfile (write_fd, read_fd, &offset, stat_buf.st_size);
+        printf("%d", SendFile(args->fd, fp_FileToSend, remain_data));
     }
 
     /*End code*/
