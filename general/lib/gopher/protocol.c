@@ -41,7 +41,7 @@ int protocol_response(char type, char *filename, char *path, const char *host, i
                          (1 /*char len*/ + strlen(path) + strlen(filename) + strlen(error) + 6 /*port len*/ +
                           4 /*spaces*/ +
                           4 /*extra space*/) * sizeof(char));
-        if (result == NULL) {
+        if (*result == NULL) {
             return 1;
         }
         sprintf(*result, "%c%s%s\t%s\t%d\n", '3', path, filename, error, port);
@@ -52,7 +52,7 @@ int protocol_response(char type, char *filename, char *path, const char *host, i
                          (1 /*type len*/ + strlen(path) + strlen(filename) + strlen(host) + 6 /*port len*/ +
                           4 /*spaces*/ +
                           4 /*extra space*/) * sizeof(char));
-        if (result == NULL) {
+        if (*result == NULL) {
             return 1;
         }
         sprintf(*result, "%c %s\t%s\t%s\t%d\n", type, filename, path, host, port);

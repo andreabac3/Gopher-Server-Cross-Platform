@@ -22,12 +22,10 @@
 
 
 
-#if defined(__unix__) || defined(__APPLE__)
 
-//#include <avfs.h>
 #include <protocol.h>
-
-#endif
+#include <fcntl.h>
+#include <sys/stat.h>
 
 
 #include "linux_socket.h"
@@ -35,10 +33,39 @@
 
 
 #define CONNECTION_QUEUE 500
-
+int SendFile(int write_fd, int read_fd, off_t filesize);
 int end_server(int fd) {
     shutdown(fd, 2);
     return close(fd);
+}
+
+
+int sendFileToClient(char* pathFilename){
+    int fd = open(pathFilename, O_RDONLY);
+    if (fd == -1)
+    {
+        fprintf(stderr, "Error opening file --> %s", strerror(errno));
+
+        exit(EXIT_FAILURE);
+    }
+    return fd;
+
+
+}
+
+off_t getFileSize(int fd){
+    struct stat file_stat;
+
+    /* Get file stats */
+    if (fstat(fd, &file_stat) < 0)
+    {
+        fprintf(stderr, "Error fstat --> %s", strerror(errno));
+
+        exit(EXIT_FAILURE);
+    }
+
+    fprintf(stdout, "File Size: \n%d bytes\n", file_stat.st_size);
+    return file_stat.st_size;
 }
 
 int start_server(unsigned int port, unsigned int queue_size) {
@@ -209,7 +236,7 @@ void *handle_request(void *params) {
         int ret = 0;
         pthread_exit(&ret);
     }
-    printf("Code: %d\n", code);
+    printf("Code: %c\n", code);
     if (code == '1') {
         // it's a directory
         printf("%s\n", "Directory");
@@ -217,6 +244,13 @@ void *handle_request(void *params) {
         send(args->fd, m, sizeof(char) * strlen(m), 0);
         print_directory(path, &linux_sock_send_message, args->fd);
     } else {
+        printf("%s\n", "filesssss");
+        //printf("MIA FILE SIZE %jd\n", (intmax_t)sendFile(path));
+        int fd_FileToSend = sendFileToClient(path);
+        off_t remain_data = getFileSize(fd_FileToSend);
+        // int, int, off_t, off_t *, struct sf_hdtr *, int);
+        //sendfile (write_fd, read_fd, &offset, stat_buf.st_size);
+        SendFile(args->fd, fd_FileToSend, remain_data);
         // it's some kind of files
     }
 
@@ -235,6 +269,23 @@ void *handle_request(void *params) {
 
     //return 0;
 
+}
+
+int SendFile(int write_fd, int read_fd, off_t filesize){
+    size_t dim = 100;
+    ssize_t n = 0;
+    char buffer[dim];
+    while(filesize > 0){
+
+        if ((n = fread(read_fd, buffer, dim)) == -1){
+            return -1;
+        }
+        if (send(write_fd, buffer, (size_t) n, 0) == -1){
+            return -2;
+        }
+        filesize -= dim;
+    }
+    return 0;
 }
 
 
