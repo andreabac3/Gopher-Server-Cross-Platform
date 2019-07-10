@@ -48,7 +48,7 @@ int ut_strtoint(char *str) {
     Assert(strcmp(end, "") == 0, "ut_strtoint, The value is not a valid integer");
     return i;
 }
-char *strtok_r(char *str, const char *delim, char **save)
+char *ut_win_strtok_r(char *str, const char *delim, char **save)
 {
     char *res, *last;
 
@@ -75,7 +75,7 @@ char* ut_strtok(char* str, const char* delimiters, char** context){
 
 #ifdef _WIN32
     //return "ciao";
-    return (char *) strtok_r(str, delimiters, context);
+    return (char *) ut_win_strtok_r(str, delimiters, context);
 #endif
 }
 

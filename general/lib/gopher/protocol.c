@@ -15,7 +15,9 @@
 #define GM_MIN_LINESIZE 5
 
 char *resolve_selector(char *filepath, const char *selector) {
-    sprintf(filepath, "%s%s", "/opt/local_projects/gopher-project/", selector + (selector[0] == '/' ? 1 : 0));
+    char* gopher_root = "/opt/local_projects/gopher-project/";
+    filepath = calloc(strlen(gopher_root) + 1 + strlen(selector) + 4 , sizeof(char));
+    sprintf(filepath, "%s/%s", gopher_root, selector + (selector[0] == '/' ? 1 : 0));
     return filepath;
 }
 
@@ -94,7 +96,7 @@ int print_directory(char *path, void (*socket_send_f)(int *, char *), int *fd) {
             return -1;
         }
 
-        char code = '1'; // getGopherCode(fullpath); FIX QUI
+        char code = getGopherCode(fullpath); //FIX QUI
         //err |= (code < 0);
 
         // get line for gopher
@@ -128,4 +130,52 @@ int print_directory(char *path, void (*socket_send_f)(int *, char *), int *fd) {
     return 0;
 }
 
+/*Gopher Code for Windows*/
+char check_code(char *arg) {
+
+    /* sorted according to str */
+    struct dict_entry dict[] = {
+            {"bin",                 '9'},
+            {"gif",                 'g'},
+            {"jpg",                 'I'},
+            //{"jpeg",                'I'}, Per qualche motivo non funziona
+            {"png",                 'I'},
+    };
+
+    struct dict_entry *result, key = {arg};
+
+    result = bsearch(&key, dict, sizeof(dict) / sizeof(dict[0]),
+                     sizeof dict[0], compare);
+    if (!result)
+        return '0';
+
+//    printf("Dict Result: %c\n", result->n);
+    return result->n;
+}
+
+// Gopher Code for windows
+char win_getGopherCode(char *p) {
+
+    char *path= strdup(p);
+    char *saveptr;
+    char *ext;
+
+//    printf("%s %s %lu %lu", path, str, strlen(path), strlen(str) );
+
+    ext = ut_strtok(path, ".", &saveptr);
+    ext = ut_strtok(NULL, ".", &saveptr);
+
+//    printf("token: %s \n", name);
+//    printf("token: %s \n", ext);
+
+    // Bisogna fare la free dopo strdup
+    //free(path);
+
+    if (ext == NULL) {
+        return '1';
+    }
+    return check_code(ext);
+
+}
+/*End Gopher Code for Windows*/
 
