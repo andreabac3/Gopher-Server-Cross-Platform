@@ -85,7 +85,7 @@ int windows_socket(struct Configs configs) {
 
     printf("Listening for incoming connections...");
 
-    char buffer[1024];
+    char buffer[1024] = {0}; // memset per velocità.
     int clientAddrSize = sizeof(clientAddr);
     if (INVALID_SOCKET != (client = accept(server, (SOCKADDR *) &clientAddr, &clientAddrSize))) {
         printf("Client connected!\n");
@@ -99,8 +99,7 @@ int windows_socket(struct Configs configs) {
         char* m2 = "\nBENVENUTI nel server gopher\n";
         send(client, m2, sizeof(char) * strlen(m2), 0);
 
-
-        printf("Client says{ \n%s\n}\n", buffer);
+        printf("Client says{ \n%s\n}\n fine", buffer);
         memset(buffer, 0, sizeof(buffer));
 
         closesocket(client);
