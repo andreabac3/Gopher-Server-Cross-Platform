@@ -64,7 +64,7 @@ int protocol_response(char type, char *filename, char *path, const char *host, i
             return 1;
         }
         sprintf(*result, "%c%s\t%s\t%s\t%d\n", type, filename, path, host, port);
-        printf("protocol_response/result %s\n", result);
+        printf("protocol_response/result %s\n", *result);
     }
     return 0;
 }
