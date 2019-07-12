@@ -16,7 +16,8 @@
 struct Configs {
     unsigned int  port_number;
     char  mode_concurrency;
-    char*  root_dir;
+    char* root_dir;
+    int useOPTARG;
 };
 
 
@@ -69,6 +70,7 @@ struct menu_item {
 
 #define M_PROCESS 0
 #define M_THREAD 1
-
+#define NEED_TO_FREE -2
+#define NO_FREE -3
 #endif //GOPHER_DEFINITIONS_H
 

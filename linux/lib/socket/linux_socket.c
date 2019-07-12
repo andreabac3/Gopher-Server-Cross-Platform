@@ -18,8 +18,6 @@
 #include "definitions.h"
 
 
-
-
 #include <protocol.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -27,18 +25,17 @@
 #include <errno.h>
 
 
+#include <socket.h>
 #include "linux_socket.h"
 #include "linux_files_interaction.h"
-#include "socket.h"
 
 #define CONNECTION_QUEUE 500
+#define MAX_CONNECTIONS_ALLOWED cnt++ < 1000
 
 int end_server(int fd) {
     shutdown(fd, 2);
     return close(fd);
 }
-
-
 
 int start_server(unsigned int port, unsigned int queue_size) {
     int fd = 0;
@@ -71,7 +68,40 @@ int start_server(unsigned int port, unsigned int queue_size) {
     return fd;
 }
 
+int run_concurrency(struct ThreadArgs *args) {
+
+    if (args->configs.mode_concurrency == M_THREAD) {
+        pthread_t thread;
+        pthread_attr_t attr;
+        pthread_attr_init(&attr);
+        pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+        if ((pthread_create(&thread, &attr, handle_request_thread, (void *) args)) != 0) {
+            // printf("%s\n", "Could not create thread, continue non-threaded...");
+            perror("Could not create thread, continue non-threaded...");
+            // handle_request(req_fd);
+        }
+        pthread_attr_destroy(&attr);
+        return 0;
+    } else if (args->configs.mode_concurrency == M_PROCESS) {
+        if (fork() == 0) {
+            // child
+            handle_request(args);
+            exit(0);
+        } else {
+            close(args->fd);
+        }
+        return 0;
+    } else {
+        fprintf(stderr, "linux_socket.c/run_concurrency");
+        return -1;
+    }
+}
+
+
 int linux_socket(struct Configs configs) {
+    int cnt = 0;
+    fd_set rset;
+    int n_ready;
     printf("%s\n", "Starting gophd...");
     int fd;
     if ((fd = start_server(configs.port_number, CONNECTION_QUEUE)) < 0) {
@@ -81,41 +111,60 @@ int linux_socket(struct Configs configs) {
 
     // Accept connections, blocking
     int accept_fd;
-    //struct sockaddr *addr = NULL;*args->fd
-    socklen_t *length_ptr = NULL;
-
-    //atexit(&main_shutdown);
 
     printf("%s\n", "Going to acceptance");
     struct sockaddr_in client_addr;
     socklen_t slen = sizeof(client_addr);
 
-    struct ThreadArgs args;
-    args.configs = configs;
 
-    while ((accept_fd = accept(fd, (struct sockaddr *) &client_addr, &slen)) != -1) {
-        int *req_fd = malloc(sizeof(int));
-        *req_fd = accept_fd;
-        printf("%u\n", client_addr.sin_addr.s_addr);
-        char clientname[500];
-        printf("Client Adress = %s\n", inet_ntop(AF_INET, &client_addr.sin_addr, clientname, sizeof(clientname)));
-        printf("Client Adress = %s\n", clientname);
+    FD_ZERO(&rset);
+    int maxfdp1 = fd + 1;
 
 
-        args.fd = (int) accept_fd;
+    while (MAX_CONNECTIONS_ALLOWED) {
+        FD_SET(fd, &rset);
 
-        pthread_t thread;
-        printf("%s\n", "Accepted request");
-        if (pthread_create(&thread, NULL, handle_request, (void *) &args) != 0) {
-            // printf("%s\n", "Could not create thread, continue non-threaded...");
-            perror("Could not create thread, continue non-threaded...");
-            // handle_request(req_fd);
+        // TODO if ((accept_fd = accept(fd, (struct sockaddr *) &client_addr, &slen)) == -1) { break; }
+
+        if ((n_ready = select(maxfdp1, &rset, NULL, NULL, NULL)) < 0) {
+            if (errno == EINTR) continue;
+            else {
+                perror("select");
+                exit(1);
+            }
         }
-        //free(addr);
-        free(length_ptr);
+        if (FD_ISSET(fd, &rset)) { /* richiesta proveniente da client TCP */
+            if ((accept_fd = accept(fd, (struct sockaddr *) &client_addr, &slen)) < 0) {
+                if (errno == EINTR) continue;
+                else {
+                    perror("accept");
+                    exit(1);
+                }
+            }
+
+
+            //int *req_fd = malloc(sizeof(int));
+            //*req_fd = accept_fd;
+            printf("%u\n", client_addr.sin_addr.s_addr);
+            char clientname[500];
+            printf("Client Adress = %s\n", inet_ntop(AF_INET, &client_addr.sin_addr, clientname, sizeof(clientname)));
+            printf("Client Adress = %s\n", clientname);
+
+            struct ThreadArgs *args = calloc(1, sizeof(struct ThreadArgs));
+            args->configs = configs;
+
+            args->fd = accept_fd;
+
+            // QUI VA MULTICORE
+            run_concurrency(args);
+
+            printf("%s\n", "Accepted request");
+
+        }
+
     }
 
-    perror("Accept Failes");
+    perror("Accept Failes or while terminated");
 
     // End server
     if (end_server(fd) < 0) {
@@ -146,19 +195,41 @@ void linux_sock_send_message(int *fd, char *error) {
     send(*fd, error, sizeof(char) * strlen(error), 0);
 }
 
+void clean_request(char *path, char *buf, struct ThreadArgs *args) {
+
+    if (path != NULL) {
+        free(path);
+    }
+    free(buf);
+
+    // shutdown(*fd, SHUT_WR);
+
+    int err = close(args->fd);
+    if (err != 0) {
+        perror("Close in clean request");
+    }
+    int ret = 0;
+    if (args->configs.mode_concurrency == M_THREAD) {
+        free(args);
+        pthread_exit(&ret);
+    } else { // mode_concurrency == M_PROCESS
+        free(args);
+        exit(ret);
+    }
+}
+
+void *handle_request_thread(void *params) {
+    pthread_detach(pthread_self());
+    handle_request(params);
+}
 
 void *handle_request(void *params) {
-    pthread_detach(pthread_self());
-
 
     printf("%s\n", "Running in thread");
 
     struct ThreadArgs *args;
     args = (struct ThreadArgs *) params;
-    printf("port: %d\n",  args->configs.port_number);
-
-    char *mm = "Directory\n";
-    send(args->fd, mm, sizeof(char) * strlen(mm), 0);
+    printf("port: %d\n", args->configs.port_number);
 
     printf("%s\n", "Send ok");
     perror("Send");
@@ -178,47 +249,45 @@ void *handle_request(void *params) {
             break;
         }
     }
-
-    char *path = resolve_selector(args->configs.root_dir, NULL, buf);
-
+    char *path; // = calloc(1, sizeof(char));
+    int retResolveSelector = resolve_selector(args->configs.root_dir, &path, buf);
+    printf("%s", path);
+    if (retResolveSelector == NO_FREE) {
+        clean_request(NULL, buf, args);
+    } else if (retResolveSelector == NEED_TO_FREE) {
+        clean_request(path, buf, args);
+    }
     if (!file_exist(path)) {
         printf("SEND: Il file non esiste");
 
         // tell to client that file do not exists
-        char *m = malloc(1);
+        char *m;
         int err = protocol_response('3', buf, "/path/", "localhost", 7070, &m);
+
         if (err != 0) {
             //linux_sock_send_error(args->fd);
             // No need to free m, because calloc crashed.
         } else {
             send(args->fd, m, sizeof(char) * strlen(m), 0);
             free(m);
-
-            close(args->fd);
-            int ret = 1;
-            pthread_exit(&ret);
+            clean_request(path, buf, args);
         }
     }
-
     char code = getGopherCode(path);
     if (code < 0) {
         // error
         //linux_sock_send_error(args->fd);
-        close(args->fd);
-        int ret = 0;
-        pthread_exit(&ret);
+        clean_request(path, buf, args);
     }
     printf("Code: %c\n", code);
     if (code == '1') {
         // it's a directory
         printf("%s\n", "Directory");
-        char *m = "Directory\n";
-        send(args->fd, m, sizeof(char) * strlen(m), 0);
         print_directory(path, &linux_sock_send_message, &args->fd);
     } else {
         printf("%s\n", "filesssss");
         //printf("MIA FILE SIZE %jd\n", (intmax_t)sendFile(path));
-        FILE* fp_FileToSend = sendFileToClient(path);
+        FILE *fp_FileToSend = sendFileToClient(path);
         int remain_data = fsize(fp_FileToSend);
         // int, int, off_t, off_t *, struct sf_hdtr *, int);
         //sendfile (write_fd, read_fd, &offset, stat_buf.st_size);
@@ -226,18 +295,8 @@ void *handle_request(void *params) {
         // it's some kind of files
     }
 
-
-    printf("%s\n", "Responding");
-    char *m = "bienvenue\n";
-    send(args->fd, m, sizeof(char) * strlen(m), 0);
-    printf("%s\n", "Rresponded!");
-
-
-    //shutdown(*fd, SHUT_WR);
-
-    close(args->fd);
-    int ret = 0;
-    pthread_exit(&ret);
+    clean_request(path, buf, args);
+    fprintf(stderr, "%s Clean request morto\n", "sono messaggio di errore");
 
     //return 0;
 

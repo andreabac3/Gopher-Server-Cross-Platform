@@ -34,7 +34,7 @@ void linux_sock_send_message(int *fd, char *error) {
 DWORD WINAPI handle_request(void *params) {
 //    int * fd = (int *)args;
 //    SOCKET* client = (SOCKET*) args;
-
+    // TODO thread detached
     struct ThreadArgs *args;
     args = (struct ThreadArgs *) params;
 
@@ -72,6 +72,7 @@ DWORD WINAPI handle_request(void *params) {
     printf("Selector string: %s\n", buf);
 
     char *path = resolve_selector(args->configs.root_dir, NULL, buf);
+    // todo fix resolve_selector come su linux
     printf("full path %s \n", path);
 
     /* if (!file_exist(path)) {

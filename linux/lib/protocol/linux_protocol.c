@@ -66,7 +66,7 @@ char getGopherCode(char* path){
     FILE *fp = popen(command, "r");
 
     if (!fp) {
-        fprintf(stderr, "Could not open pipe for output.\n");
+        perror("Could not open pipe for output.");
         return -1;
     }
 

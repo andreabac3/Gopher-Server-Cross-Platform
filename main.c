@@ -37,7 +37,6 @@ int main(int argc, char *argv[]) {
     struct Configs configs;
     // configs.root_dir = malloc(50 * sizeof(char));
     // chiamata alla lettura del file di configurazione
-
     //
     //
     //
@@ -81,6 +80,16 @@ int main(int argc, char *argv[]) {
     windows_socket(configs);
 
 #endif
-    free(configs.root_dir);
-    return 0;
+    //printf("%s", configs.root_dir);
+    if (configs.useOPTARG == false){
+        free(configs.root_dir);
+    }
+    //sleep(2);
+    //return 0;
+
+    int ret = 0;
+    sleep(1);
+    pthread_exit(NULL);
+    exit(0);
+    pthread_exit(&ret);
 }

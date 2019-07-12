@@ -69,6 +69,7 @@ int conf_read_opt(int argc, char *argv[], struct Configs *configs) {
                 configs->mode_concurrency = conf_opts_mode_concurrency(optarg);
                 break;
             case 'd':
+                configs->useOPTARG = true;
                 configs->root_dir = conf_opts_root_dir(optarg);
                 break;
             default:
@@ -160,7 +161,7 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
 
     // for all lines
     for(int j = 0; j < idx; j++){
-        printf(StringsArray[j]);
+        printf("%s" ,StringsArray[j]);
     }
     for (it = 0; it < idx; it++) {
         // name of the option
@@ -207,10 +208,11 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
 
     free(StringsArray);
 //    printf("\n%d\n", wrong);
-    if (Assert_nb(wrong == 0, "Something goes wrong in configuration file") == ASS_CRASH){
+    if (Assert_nb(wrong == 0, "Something gone wrong in configuration file") == ASS_CRASH){
         free(config->root_dir);
         exit(1);
     }
+    config->useOPTARG = 0;
     printf("\n prima di fare return  -->  %s\n " , config->root_dir);
     return 0;
 

@@ -20,11 +20,19 @@
 #define GM_MAX_LINESIZE 200
 #define GM_MIN_LINESIZE 5
 
-char *resolve_selector(char* gopher_root, char *filepath, const char *selector) {
+int resolve_selector(char* gopher_root, char** filepath, const char *selector) {
     //char* gopher_root = "/opt/local_projects/gopher-project/";
-    filepath = calloc(strlen(gopher_root) + 1 + strlen(selector) + 4 , sizeof(char));
-    sprintf(filepath, "%s%c%s", gopher_root, OS_SEPARATOR, selector + (selector[0] == '/' ? 1 : 0));
-    return filepath;
+    *filepath = calloc( strlen(gopher_root) + 1 + strlen(selector) + 4 , sizeof(char));
+    if (*filepath == NULL){
+        perror("calloc fail in protocol.c/resolve_selector");
+        return NO_FREE;
+    }
+    int ret = sprintf(*filepath, "%s%c%s", gopher_root, OS_SEPARATOR, selector + (selector[0] == '/' ? 1 : 0));
+    if (ret < 0) {
+        perror("sprintf fail in protocol.c/resolve_selector");
+        return NEED_TO_FREE;
+    }
+    return 0;
 }
 
 int protocol_response(char type, char *filename, char *path, const char *host, int port, char **result) {
@@ -55,7 +63,7 @@ int protocol_response(char type, char *filename, char *path, const char *host, i
         if (*result == NULL) {
             return 1;
         }
-        sprintf(*result, "%c %s\t%s\t%s\t%d\n", type, filename, path, host, port);
+        sprintf(*result, "%c%s\t%s\t%s\t%d\n", type, filename, path, host, port);
         printf("protocol_response/result %s\n", result);
     }
     return 0;
