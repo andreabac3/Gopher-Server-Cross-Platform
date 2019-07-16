@@ -238,8 +238,10 @@ void *handle_request(void *params) {
     int ptr = 0;
     ssize_t got_bytes = 0;
     char *buf = malloc(BUFFER_SIZE);
+    // TODO CONTROLLARE MALLOC
     while (run) {
         got_bytes = read(args->fd, buf + ptr, BUFFER_SIZE - ptr);
+        // TODO CONTROLLARE valore ritorno di read.
         if (got_bytes <= 0) {
             buf[ptr] = 0; // Terminate string
             break;
