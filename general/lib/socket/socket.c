@@ -2,7 +2,9 @@
 #include <stdlib.h>
 
 #ifdef _WIN32
+
 #include <winsock.h>
+
 #endif
 #if defined(__unix__) || defined(__APPLE__)
 
@@ -40,18 +42,23 @@ FILE *sendFileToClient(char *pathFilename) {
     FILE *fp = fopen(pathFilename, "rb");
     if (fp == NULL) {
         fprintf(stderr, "Error opening file --> %s", strerror(errno));
-
         exit(EXIT_FAILURE);
     }
     return fp;
-
-
 }
 
 int fsize(FILE *fp) {
     int prev = ftell(fp);
+    if (prev == -1L) {
+        fclose(fp);
+        return -1;
+    }
     fseek(fp, 0L, SEEK_END);
     int sz = ftell(fp);
+    if (sz == -1L) {
+        fclose(fp);
+        return -1;
+    }
     fseek(fp, prev, SEEK_SET); //go back to where we were
     return sz;
 }

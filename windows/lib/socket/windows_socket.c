@@ -38,10 +38,10 @@ DWORD WINAPI handle_request(void *params) {
     struct ThreadArgs *args;
     args = (struct ThreadArgs *) params;
 
-    char *m2 = "\nbienvenue\n";
+    char *m2 = "\niBienvenue\n";
     int serr = send(args->fd, m2, sizeof(char) * strlen(m2), 0);
     if (serr != 0) {
-        printf("%s\n", "Unable to send Socket");
+        printf("%s %d\n", "Unable to send Socket", WSAGetLastError());
         perror("Send");
     }
 
@@ -55,11 +55,26 @@ DWORD WINAPI handle_request(void *params) {
     ssize_t got_bytes = 0;
     char *buf = calloc(BUFFER_SIZE, sizeof(char));
 
+    if (buf == NULL) {
+        printf("errore calloc in windows_socket, per buffer_size");
+        int err = closesocket(args->fd);
+        if (err != 0) {
+            printf("%s", "errore in windows_socket.c/closesocket after got bytes < 0");
+        }
+        return -1;
+    }
     //recv()
 
     while (run) {
         got_bytes = recv(args->fd, buf + ptr, BUFFER_SIZE - ptr, 0);
-        if (got_bytes <= 0) {
+        if (0 > got_bytes) {
+            int err = closesocket(args->fd);
+            if (err != 0) {
+
+                printf("%s %d", "errore in windows_socket.c/closesocket after got bytes < 0", WSAGetLastError());
+            }
+        }
+        if (0 == got_bytes) {
             buf[ptr] = 0; // Terminate string
             break;
         }
@@ -70,8 +85,9 @@ DWORD WINAPI handle_request(void *params) {
     }
 
     printf("Selector string: %s\n", buf);
+    char *path;
+    int ret_resolve_relector = resolve_selector(args->configs.root_dir, &path, buf);
 
-    char *path = resolve_selector(args->configs.root_dir, NULL, buf);
     // todo fix resolve_selector come su linux
     printf("full path %s \n", path);
 
@@ -99,24 +115,25 @@ DWORD WINAPI handle_request(void *params) {
         // error
         //linux_sock_send_error(args->fd);
         close(args->fd);
-        int ret = 0;
+        //int ret = 0;
         //pthread_exit(&ret);
     }
     printf("Code: %d\n", code);
     if (code == '1') {
         // it's a directory
-        printf("%s\n", "Directory");
-        char *m = "Directory\n";
+        printf("%s\n", "iDirectory");
+        char *m = "iDirectory\n";
         send(args->fd, m, sizeof(char) * strlen(m), 0);
         print_directory(path, &linux_sock_send_message, (int *) &(args->fd));
     } else {
         // it's some kind of files
         printf("%s\n", "filesssss");
-        FILE* fp_FileToSend = sendFileToClient(path);
+        FILE *fp_FileToSend = sendFileToClient(path);
         int remain_data = fsize(fp_FileToSend);
         // int, int, off_t, off_t *, struct sf_hdtr *, int);
         //sendfile (write_fd, read_fd, &offset, stat_buf.st_size);
         printf("%d", SendFile(args->fd, fp_FileToSend, remain_data));
+        fclose(fp_FileToSend);
     }
 
     /*End code*/

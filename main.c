@@ -86,10 +86,15 @@ int main(int argc, char *argv[]) {
     }
     //sleep(2);
     //return 0;
+    #if defined(__unix__) || defined(__APPLE__)
 
     int ret = 0;
-    sleep(1);
-    pthread_exit(NULL);
+    if (configs.mode_concurrency = M_THREAD) {
+        sleep(1);
+        pthread_exit(NULL);
+    }
+#endif
+
     exit(0);
-    pthread_exit(&ret);
+    //pthread_exit(&ret);
 }
