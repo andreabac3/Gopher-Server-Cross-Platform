@@ -7,7 +7,7 @@
 
 #endif
 #if defined(__unix__) || defined(__APPLE__)
-
+#include "linux_files_interaction.h"
 #include <sys/socket.h>
 
 #endif
@@ -15,6 +15,9 @@
 #include "socket.h"
 #include "errno.h"
 #include "socket.h"
+
+
+
 
 int SendFile(int write_fd, FILE *read_fd, int filesize) {
     ssize_t n = 0;
@@ -38,8 +41,10 @@ int SendFile(int write_fd, FILE *read_fd, int filesize) {
 }
 
 
-FILE *sendFileToClient(char *pathFilename) {
-    FILE *fp = fopen(pathFilename, "rb");
+FILE *sendFileToClient(int fd) {
+    //FILE *fp = fopen(pathFilename, "rb");
+    FILE *fp = fdopen(fd, "r");
+    printf("sono qui");
     if (fp == NULL) {
         fprintf(stderr, "Error opening file --> %s", strerror(errno));
         exit(EXIT_FAILURE);

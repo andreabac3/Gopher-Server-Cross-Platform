@@ -26,6 +26,7 @@
 
 
 #include <socket.h>
+#include <sys/mman.h>
 #include "linux_socket.h"
 #include "linux_files_interaction.h"
 #include "files_interaction.h"
@@ -240,9 +241,9 @@ void *handle_request(void *params) {
     ssize_t got_bytes = 0;
     char *buf = malloc(BUFFER_SIZE);
     // TODO CONTROLLARE MALLOC
-    if (buf == NULL){
+    if (buf == NULL) {
         perror("malloc fail in linux_socket.c");
-        int retValue= -1;
+        int retValue = -1;
         close(args->fd);
         pthread_exit(&retValue);
 
@@ -250,10 +251,10 @@ void *handle_request(void *params) {
     while (run) {
         got_bytes = read(args->fd, buf + ptr, BUFFER_SIZE - ptr);
 
-        if (0 < got_bytes && 0){
+        if (0 < got_bytes && 0) {
             // TODO CONTROLLARE valore ritorno di read.
             perror("(got_bytes < 0)   read fail in linux_socket.c");
-            int retValue= -1;
+            int retValue = -1;
             close(args->fd);
             pthread_exit(&retValue);
         }
@@ -304,11 +305,22 @@ void *handle_request(void *params) {
     } else {
         printf("%s\n", "filesssss");
         //printf("MIA FILE SIZE %jd\n", (intmax_t)sendFile(path));
-        FILE *fp_FileToSend = sendFileToClient(path);
+        struct mapFileStruct mfile_struct;
+        mappLinux(path, &mfile_struct);
+        printf(mfile_struct.addr);
+        FILE *fp_FileToSend = sendFileToClient(mfile_struct.fd);
+        mfile_struct.fp = fp_FileToSend;
         int remain_data = fsize(fp_FileToSend);
         // int, int, off_t, off_t *, struct sf_hdtr *, int);
         //sendfile (write_fd, read_fd, &offset, stat_buf.st_size);
-        printf("%d", SendFile(args->fd, fp_FileToSend, remain_data));
+        printf("Sono send file -> %d\n", SendFile(args->fd, fp_FileToSend, remain_data));
+        if (munmap(mfile_struct.addr, mfile_struct.sb.st_size) < 0) {
+            int err = errno;
+            perror("linux_socket.c/munmap failed: ");
+        }
+        fclose(mfile_struct.fp);
+        close(mfile_struct.fd);
+
         // it's some kind of files
     }
 

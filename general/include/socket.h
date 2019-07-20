@@ -9,6 +9,6 @@
 #define GOPHERLINUX_SOCKET_H
 #define SEND_BUFFER_SIZE 4
 int SendFile(int write_fd, FILE* read_fd, int filesize);
-FILE* sendFileToClient(char* pathFilename);
+FILE* sendFileToClient(int fd);
 int fsize(FILE *fp);
 #endif //GOPHERLINUX_SOCKET_H

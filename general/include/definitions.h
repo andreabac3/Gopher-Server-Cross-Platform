@@ -1,6 +1,3 @@
-//
-// Created by Valerio Neri on 2019-06-06.
-//
 //#pragma once
 #ifndef GOPHER_DEFINITIONS_H
 #define GOPHER_DEFINITIONS_H
@@ -13,14 +10,21 @@
 #define OS_SEPARATOR '\\'
 #endif
 
+#include <sys/stat.h>
+
 struct Configs {
-    unsigned int  port_number;
-    char  mode_concurrency;
+    unsigned int port_number;
+    char mode_concurrency;
     char* root_dir;
     int useOPTARG;
 };
 
-
+struct mapFileStruct {
+    int fd;
+    void* addr;
+    struct stat sb;
+    FILE* fp;
+};
 #if defined(__unix__) || defined(__APPLE__)
 struct ThreadArgs {
     int fd;
@@ -53,9 +57,9 @@ struct ThreadArgs {
 
 struct menu_item {
     char type;
-    char * display;
-    char * selector;
-    char * host;
+    char *display;
+    char *selector;
+    char *host;
     unsigned int port;
     char delimiter;
 };

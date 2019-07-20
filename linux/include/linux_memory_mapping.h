@@ -1,9 +1,3 @@
-//
-// Created by Andrea Bacciu on 2019-06-07.
-//
-
-// map
-
 #if __linux__
 #include <sys/mman.h>
 #include <linux/version.h>
@@ -24,5 +18,5 @@
 
 
 int files_memory_map(char* filename, int mode);
-
+int mappLinux(char* filename, struct mapFileStruct* mfile_struct);
 #endif //GOPHER_LINUX_MEMORY_MAPPING_H
