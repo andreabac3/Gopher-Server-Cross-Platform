@@ -13,12 +13,6 @@
 #include "linux_files_interaction.h"
 
 
-int file_exist (char *filename){
-    struct stat   buffer;
-    return (stat (filename, &buffer) == 0); // ritorna diverso da zero se vero
-}
-
-
 // map
 //#include <sys/mman.h>
 #include <sys/types.h>

@@ -1,15 +1,14 @@
-//
-// Created by Valerio Neri on 2019-06-07.
-//
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 #include "utils.h"
 #include "files_interaction.h"
 #include "ut_dict.h"
-
-
+int file_exist (char *filename){
+    struct stat   buffer;
+    return (stat (filename, &buffer) == 0); // ritorna diverso da zero se vero
+}
 int files_append(char  *string, char *path) {
     FILE *fp;
 

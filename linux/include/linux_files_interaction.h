@@ -5,6 +5,7 @@
 #ifndef GOPHER_LINUX_FILES_INTERACTION_H
 #define GOPHER_LINUX_FILES_INTERACTION_H
 #endif //GOPHER_LINUX_FILES_INTERACTION_H
+#include "files_interaction.h"
 
 int file_exist (char *filename);
 char getGopherCode(char* path);

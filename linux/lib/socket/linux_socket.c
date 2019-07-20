@@ -28,6 +28,7 @@
 #include <socket.h>
 #include "linux_socket.h"
 #include "linux_files_interaction.h"
+#include "files_interaction.h"
 
 #define CONNECTION_QUEUE 500
 #define MAX_CONNECTIONS_ALLOWED cnt++ < 1000

@@ -1,109 +1,186 @@
-main(int argc, char **argv) {
-    int listenfd, connfd, udpfd, nready, maxfdp1;
-    char buffTCP[DIM_BUFF], buffUDP[DIM_BUFF];
-    fd_set rset;
-    int n, len, nread, nwrite;
-    const int on = 1;
-    struct sockaddr_in cliaddr, servaddr;
-    void gestore(int signo) {
-        int stato;
-        printf("esecuzione gestore di SIGCHLD\n");
-        wait(&stato);
-    }
-/* creazione socket d’ascolto */
-    listenfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (listenfd < 0) {
-        perror("apertura socket d’ascolto");
-        exit(1);
-    }
-    printf("Server: creata la socket d’ascolto fd=%d\n", listenfd);
-/* inizializzazione indirizzo server */
-    memset((char *) &servaddr, 0, sizeof(servaddr));
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    servaddr.sin_port = 12345;
-    if (setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0) {
-        perror("settaggio opzioni socket d’ascolto");
-        exit(1);
-    }
-    printf("Server: settaggio opzioni socket d’ascolto ok\n");
-    if (bind(listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
-        perror("bind socket d’ascolto");
-        exit(1);
-    }
-    printf("Server: bind socket d’ascolto ok\n");
-    if (listen(listenfd, 5) < 0) {
-        perror("listen");
-        exit(1);
-    }
-    printf("Server: listen ok\n");
-/* creazione socket UDP */
-    udpfd = socket(AF_INET, SOCK_DGRAM, 0);
-    4if(udpfd < 0)
+/*
+	TCP Echo server example in winsock
+	Live Server on port 8888
+*/
+#include&lt;stdio.h&gt;
+#include&lt;winsock2.h&gt;
+
+#pragma comment(lib, &quot;ws2_32.lib&quot;) //Winsock Library
+
+int main(int argc , char *argv[])
+{
+    WSADATA wsa;
+    SOCKET master , new_socket , client_socket[30] , s;
+    struct sockaddr_in server, address;
+    int max_clients = 30 , activity, addrlen, i, valread;
+    char *message = "ECHO Daemon v10";
+
+    //size of our receive buffer, this is string length.
+    int MAXRECV = 1024;
+    //set of socket descriptors
+    fd_set readfds;
+    //1 extra for null character, string termination
+    char *buffer;
+    buffer =  (char*) malloc((MAXRECV + 1) * sizeof(char));
+
+    for(i = 0 ; i &lt; 30;i++)
     {
-        perror("apertura socket UDP");
-        exit(1);
+        client_socket[i] = 0;
     }
-    printf("Server: creata la socket UDP fd=%d\n", udpfd);
-/* inizializzazione indirizzo server */
-    memset((char *) &servaddr, 0, sizeof(servaddr));
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    servaddr.sin_port = 12345;
-    if (bind(udpfd, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
-        perror("bind socket udp");
-        exit(1);
+
+    printf("\nInitialising Winsock...&quot");
+    if (WSAStartup(MAKEWORD(2,2),&amp;wsa) != 0)
+    {
+        printf(&quot;Failed. Error Code : %d&quot;,WSAGetLastError());
+        exit(EXIT_FAILURE);
     }
-    printf("Server: bind socket udp ok\n");
-    sigset(SIGCHLD, gestore);
-    FD_ZERO(&rset);
-    maxfdp1 = max(listenfd, udpfd) + 1;
-    for (;;) {
-        FD_SET(listenfd, &rset);
-        FD_SET(udpfd, &rset);
-        if ((nready = select(maxfdp1, &rset, NULL, NULL, NULL)) < 0) {
-            if (errno == EINTR) continue;
-            else {
-                perror("select");
-                exit(1);
+
+    printf("Initialised.");
+
+    //Create a socket
+    if((master = socket(AF_INET , SOCK_STREAM , 0 )) == INVALID_SOCKET)
+    {
+        printf(&quot;Could not create socket : %d&quot; , WSAGetLastError());
+        exit(EXIT_FAILURE);
+    }
+
+
+    //Prepare the sockaddr_in structure
+    server.sin_family = AF_INET;
+    server.sin_addr.s_addr = INADDR_ANY;
+    server.sin_port = htons( 8888 );
+
+    //Bind
+    if( bind(master ,(struct sockaddr *)&amp ;server , sizeof(server)) == SOCKET_ERROR)
+    {
+        printf(&quot;Bind failed with error code : %d&quot; , WSAGetLastError());
+        exit(EXIT_FAILURE);
+    }
+
+    puts(&quot;Bind done&quot;);
+
+    //Listen to incoming connections
+    listen(master , 3);
+
+    //Accept and incoming connection
+    puts(&quot;Waiting for incoming connections...&quot;);
+
+    addrlen = sizeof(struct sockaddr_in);
+
+    while(TRUE)
+    {
+        //clear the socket fd set
+        FD_ZERO(&amp;readfds);
+
+        //add master socket to fd set
+        FD_SET(master, &amp;readfds);
+
+        //add child sockets to fd set
+        for (  i = 0 ; i &lt; max_clients ; i++)
+        {
+            s = client_socket[i];
+            if(s &gt; 0)
+            {
+                FD_SET( s , &amp;readfds);
             }
         }
-        if (FD_ISSET(listenfd, &rset)) { /* richiesta proveniente da client TCP */
-            len = sizeof(cliaddr);
-            if ((connfd = accept(listenfd, (struct sockaddr *) &cliaddr, &len)) < 0) {
-                if (errno == EINTR) continue;
-                else {
-                    perror("accept");
-                    exit(1);
+
+        //wait for an activity on any of the sockets, timeout is NULL , so wait indefinitely
+        activity = select( 0 , &amp;readfds , NULL , NULL , NULL);
+
+        if ( activity == SOCKET_ERROR )
+        {
+            printf(&quot;select call failed with error code : %d&quot; , WSAGetLastError());
+            exit(EXIT_FAILURE);
+        }
+
+        //If something happened on the master socket , then its an incoming connection
+        if (FD_ISSET(master , &amp;readfds))
+        {
+            if ((new_socket = accept(master , (struct sockaddr *)&amp;address, (int *)&amp;addrlen))&lt;0)
+            {
+                perror(&quot;accept&quot;);
+                exit(EXIT_FAILURE);
+            }
+
+            //inform user of socket number - used in send and receive commands
+            printf(&quot;New connection , socket fd is %d , ip is : %s , port : %d \n&quot; , new_socket , inet_ntoa(address.sin_addr) , ntohs(address.sin_port));
+
+            //send new connection greeting message
+            if( send(new_socket, message, strlen(message), 0) != strlen(message) )
+            {
+                perror(&quot;send failed&quot;);
+            }
+
+            puts(&quot;Welcome message sent successfully&quot;);
+
+            //add new socket to array of sockets
+            for (i = 0; i &lt; max_clients; i++)
+            {
+                if (client_socket[i] == 0)
+                {
+                    client_socket[i] = new_socket;
+                    printf(&quot;Adding to list of sockets at index %d \n&quot; , i);
+                    break;
                 }
             }
-            if (fork() == 0) {
-                close(listenfd);
-                if (nread = read(connfd, buffTCP, DIM_BUFF) < 0) {
-                    perror("read");
-                    exit(1);
+        }
+
+        //else its some IO operation on some other socket :)
+        for (i = 0; i &lt; max_clients; i++)
+        {
+            s = client_socket[i];
+            //if client presend in read sockets
+            if (FD_ISSET( s , &amp;readfds))
+            {
+                //get details of the client
+                getpeername(s , (struct sockaddr*)&amp;address , (int*)&amp;addrlen);
+
+                //Check if it was for closing , and also read the incoming message
+                //recv does not place a null terminator at the end of the string (whilst printf %s assumes there is one).
+                valread = recv( s , buffer, MAXRECV, 0);
+
+                if( valread == SOCKET_ERROR)
+                {
+                    int error_code = WSAGetLastError();
+                    if(error_code == WSAECONNRESET)
+                    {
+                        //Somebody disconnected , get his details and print
+                        printf(&quot;Host disconnected unexpectedly , ip %s , port %d \n&quot; , inet_ntoa(address.sin_addr) , ntohs(address.sin_port));
+
+                        //Close the socket and mark as 0 in list for reuse
+                        closesocket( s );
+                        client_socket[i] = 0;
+                    }
+                    else
+                    {
+                        printf(&quot;recv failed with error code : %d&quot; , error_code);
+                    }
                 }
-                printf("Server: stringa ricevuta da client TCP -> %s\n", buffTCP);
-                if (nwrite = write(connfd, buffTCP, DIM_BUFF) < 0) {
-                    perror("write");
-                    exit(1);
+                if ( valread == 0)
+                {
+                    //Somebody disconnected , get his details and print
+                    printf(&quot;Host disconnected , ip %s , port %d \n&quot; , inet_ntoa(address.sin_addr) , ntohs(address.sin_port));
+
+                    //Close the socket and mark as 0 in list for reuse
+                    closesocket( s );
+                    client_socket[i] = 0;
                 }
-                exit(0);
+
+                    //Echo back the message that came in
+                else
+                {
+                    //add null character, if you want to use with printf/puts or other string handling functions
+                    buffer[valread] = '&#92;&#48;';
+                    printf(&quot;%s:%d - %s \n&quot; , inet_ntoa(address.sin_addr) , ntohs(address.sin_port), buffer);
+                    send( s , buffer , valread , 0 );
+                }
             }
-            close(connfd);
-        } /* if TCP */
-        if (FD_ISSET(udpfd, &rset)) { /* richiesta proveniente da client UDP */
-            len = sizeof(cliaddr);
-            if ((n = recvfrom(udpfd, buffUDP, DIM_BUFF, 0, (struct sockaddr *) &cliaddr,
-                              &len)) < 0) {
-                perror("recvfrom");
-                exit(1);
-            }
-            printf("Server: stringa ricevuta da client UDP -> %s\n", buffUDP);
-            if (sendto(udpfd, buffUDP, n, 0, (struct sockaddr *) &cliaddr, len) < 0) {
-                perror("sendto");
-                exit(1);
-            }
-        } /* if UDP */
-    } /* for */
+        }
+    }
+
+    closesocket(s);
+    WSACleanup();
+
+    return 0;
 }
