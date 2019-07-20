@@ -240,10 +240,24 @@ void *handle_request(void *params) {
     ssize_t got_bytes = 0;
     char *buf = malloc(BUFFER_SIZE);
     // TODO CONTROLLARE MALLOC
+    if (buf == NULL){
+        perror("malloc fail in linux_socket.c");
+        int retValue= -1;
+        close(args->fd);
+        pthread_exit(&retValue);
+
+    }
     while (run) {
         got_bytes = read(args->fd, buf + ptr, BUFFER_SIZE - ptr);
-        // TODO CONTROLLARE valore ritorno di read.
-        if (got_bytes <= 0) {
+
+        if (0 < got_bytes && 0){
+            // TODO CONTROLLARE valore ritorno di read.
+            perror("(got_bytes < 0)   read fail in linux_socket.c");
+            int retValue= -1;
+            close(args->fd);
+            pthread_exit(&retValue);
+        }
+        if (got_bytes == 0) {
             buf[ptr] = 0; // Terminate string
             break;
         }
@@ -265,7 +279,7 @@ void *handle_request(void *params) {
 
         // tell to client that file do not exists
         char *m;
-        int err = protocol_response('3', buf, "/path/", "localhost", 7070, &m);
+        int err = protocol_response('3', buf, "/path/", "localhost", args->configs.port_number, &m);
 
         if (err != 0) {
             //linux_sock_send_error(args->fd);
