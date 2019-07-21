@@ -136,7 +136,12 @@ DWORD WINAPI handle_request(void *params) {
     } else {
         // it's some kind of files
         printf("%s\n", "filesssss");
-        FILE *fp_FileToSend = sendFileToClient(path);
+        FILE *fp_FileToSend = fopen(path, "r");
+        if (fp_FileToSend == NULL) {
+            fprintf(stderr, "Error opening file --> %s", strerror(errno));
+            return -1;
+        }
+        //FILE *fp_FileToSend = sendFileToClient(path);
         int remain_data = fsize(fp_FileToSend);
         // int, int, off_t, off_t *, struct sf_hdtr *, int);
         //sendfile (write_fd, read_fd, &offset, stat_buf.st_size);
