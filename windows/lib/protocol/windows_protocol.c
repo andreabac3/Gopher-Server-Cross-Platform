@@ -60,7 +60,10 @@ char check_code(char *arg) {
 char getGopherCode(char *p) {
 
     char* ext = strrchr(p, '0');
-    printf("Exention", ext);
+
+    // Todo strrchr non funziona per vie degli \ invece che i /
+
+    printf("getGopherCode %s of %s\n", ext, p);
     if(ext == NULL){
         return -1;
     }

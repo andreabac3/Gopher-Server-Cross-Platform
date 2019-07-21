@@ -117,6 +117,7 @@ DWORD WINAPI handle_request(void *params) {
         ExitThread(0);
     }
 
+    // Todo check if file or directory
     char code = getGopherCode(path);
     if (code < 0) {
         // error
