@@ -61,6 +61,9 @@ char getGopherCode(char *p) {
 
     char* ext = strrchr(p, '0');
     printf("Exention", ext);
+    if(ext == NULL){
+        return -1;
+    }
     return check_code(ext);
 
 }
