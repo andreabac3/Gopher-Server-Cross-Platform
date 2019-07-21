@@ -11,7 +11,7 @@
 #include <sys/stat.h>
 #include <assert.h>
 #include <sys/mman.h>
-#include <definitions.h>
+#include "definitions.h"
 #include "linux_memory_mapping.h"
 
 
@@ -19,7 +19,7 @@ int mappLinux(char* filename, struct mapFileStruct* mfile_struct){
 
 
     //void* addr;
-    void* addr = mfile_struct->addr;
+    //void* addr = mfile_struct->addr;
     int fd = open(filename, O_RDONLY);
 
     Assert( fd != -1 , "OpenError: ");
