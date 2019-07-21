@@ -139,6 +139,7 @@ DWORD WINAPI handle_request(void *params) {
         FILE *fp_FileToSend = fopen(path, "r");
         if (fp_FileToSend == NULL) {
             fprintf(stderr, "Error opening file --> %s", strerror(errno));
+            closesocket(args->fd);
             return -1;
         }
         //FILE *fp_FileToSend = sendFileToClient(path);
