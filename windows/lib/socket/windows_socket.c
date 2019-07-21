@@ -128,7 +128,9 @@ DWORD WINAPI handle_request(void *params) {
         //pthread_exit(&ret);
     }
     printf("Code: %d\n", code);
-    if (code == '1') {
+
+    int type = file_type(path);
+    if (type == 1) {
         // it's a directory
         printf("%s\n", "iDirectory");
         char *m = "iDirectory\n";

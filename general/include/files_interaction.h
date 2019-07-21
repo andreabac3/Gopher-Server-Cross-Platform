@@ -7,5 +7,6 @@
 
 #endif //GOPHER_FILES_INTERACTION_H
 int file_exist (char *filename);
+int file_type(char *filename);
 int files_append(char*  string, char* path);
 
