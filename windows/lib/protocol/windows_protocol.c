@@ -7,6 +7,7 @@
 #include <string.h>
 #include "utils.h"
 
+
 /*Gopher Code for Windows*/
 char check_code(char *arg) {
 
@@ -59,10 +60,14 @@ char check_code(char *arg) {
 }*/
 char getGopherCode(char *p) {
 
-    char* ext = strrchr(p, '0');
+    char* ext;
+    //replace_char(p, '\\', ' ');
+    ext = strrchr(p, '.');
 
     // Todo strrchr non funziona per vie degli \ invece che i /
 
+
+    //ext = PathFindExtensionA(p);
     printf("getGopherCode %s of %s\n", ext, p);
     if(ext == NULL){
         return -1;
