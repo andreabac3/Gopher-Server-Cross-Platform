@@ -12,11 +12,11 @@ char check_code(char *arg) {
 
     /* sorted according to str */
     struct dict_entry dict[] = {
-            {"bin",                 '9'},
-            {"gif",                 'g'},
-            {"jpg",                 'I'},
+            {".bin",                 '9'},
+            {".gif",                 'g'},
+            {".jpg",                 'I'},
             //{"jpeg",                'I'}, Per qualche motivo non funziona
-            {"png",                 'I'},
+            {".png",                 'I'},
     };
 
     struct dict_entry *result, key = {arg};
@@ -31,7 +31,7 @@ char check_code(char *arg) {
 }
 
 // Gopher Code for windows
-char getGopherCode(char *p) {
+/*char getGopherCode(char *p) {
 
     char *path= strdup(p);
     char *saveptr;
@@ -54,6 +54,13 @@ char getGopherCode(char *p) {
         printf("strtok directory: %s %s\n", name, ext);
         return '1';
     }
+    return check_code(ext);
+
+}*/
+char getGopherCode(char *p) {
+
+    char* ext = strrchr(p, '0');
+    printf("Exention", ext);
     return check_code(ext);
 
 }
