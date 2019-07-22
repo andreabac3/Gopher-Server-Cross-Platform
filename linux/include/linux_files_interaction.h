@@ -11,5 +11,4 @@ int file_exist (char *filename);
 char getGopherCode(char* path);
 //int check_type (char* arg, struct dict_entry dict[]);
 //int compare(const void *s1, const void *s2);
-int linux_memory_mapping(int fd_client, char* filename);
 

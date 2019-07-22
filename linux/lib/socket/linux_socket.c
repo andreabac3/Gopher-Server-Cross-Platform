@@ -20,15 +20,12 @@
 #include <errno.h>
 
 
-
-
 #include "definitions.h"
 #include "protocol.h"
 #include "socket.h"
 #include "linux_socket.h"
 #include "linux_files_interaction.h"
 #include "files_interaction.h"
-
 
 
 int end_server(int fd) {
@@ -97,15 +94,16 @@ int run_concurrency(struct ThreadArgs *args) {
 }
 
 
-int linux_socket(struct Configs configs) {
+int linux_socket(struct Configs *configs) {
     fd_set rset;
     int n_ready;
     printf("%s\n", "Starting gophd...");
-    int fd;
-    if ((fd = start_server(configs.port_number, CONNECTION_QUEUE)) < 0) {
+    int fd_server;
+    if ((fd_server = start_server(configs->port_number, CONNECTION_QUEUE)) < 0) {
         perror(NULL);
         abort();
     }
+
 
     // Accept connections, blocking
     int accept_fd;
@@ -116,23 +114,38 @@ int linux_socket(struct Configs configs) {
 
 
     FD_ZERO(&rset);
-    int maxfdp1 = fd + 1;
-
-
+    int maxfdp1 = fd_server + 1;
+    struct timeval timeout;
+    timeout.tv_sec = 1;
+    timeout.tv_usec = 5;
     while (MAX_CONNECTIONS_ALLOWED) {
-        FD_SET(fd, &rset);
+        FD_SET(fd_server, &rset);
 
-        // TODO if ((accept_fd = accept(fd, (struct sockaddr *) &client_addr, &slen)) == -1) { break; }
 
-        if ((n_ready = select(maxfdp1, &rset, NULL, NULL, NULL)) < 0) {
+        // TODO if ((accept_fd = accept(fd_server, (struct sockaddr *) &client_addr, &slen)) == -1) { break; }
+
+        if ((n_ready = select(maxfdp1, &rset, NULL, NULL, &timeout)) < 0) {
             if (errno == EINTR) continue;
             else {
                 perror("select");
-                exit(1);
+                return 1;
             }
         }
-        if (FD_ISSET(fd, &rset)) { /* richiesta proveniente da client TCP */
-            if ((accept_fd = accept(fd, (struct sockaddr *) &client_addr, &slen)) < 0) {
+        if (0 == n_ready) {
+            if (configs->reset_config != NULL) {
+                //end_server(fd_server);
+                printf("Reset socket break\n");
+                end_server(fd_server);
+                return -1;
+            }
+            printf("Reset socket continue %d \n", configs->reset_config);
+            timeout.tv_sec = 2;
+            timeout.tv_usec = 5;
+
+            continue;
+        }
+        if (FD_ISSET(fd_server, &rset)) {
+            if ((accept_fd = accept(fd_server, (struct sockaddr *) &client_addr, &slen)) < 0) {
                 if (errno == EINTR) continue;
                 else {
                     perror("accept");
@@ -149,7 +162,7 @@ int linux_socket(struct Configs configs) {
             printf("Client Adress = %s\n", clientname);
 
             struct ThreadArgs *args = calloc(1, sizeof(struct ThreadArgs));
-            args->configs = configs;
+            args->configs = *configs;
 
             args->fd = accept_fd;
 
@@ -165,7 +178,7 @@ int linux_socket(struct Configs configs) {
     perror("Accept Failes or while terminated");
 
     // End server
-    if (end_server(fd) < 0) {
+    if (end_server(fd_server) < 0) {
         perror(NULL);
         return EXIT_FAILURE;
     }
@@ -192,7 +205,6 @@ void linux_sock_send_error(int *fd) {
 void linux_sock_send_message(int *fd, char *error) {
     send(*fd, error, sizeof(char) * strlen(error), 0);
 }
-
 
 
 void *handle_request_thread(void *params) {

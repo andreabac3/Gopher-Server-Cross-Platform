@@ -97,6 +97,7 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
     char *mod = "mode_concurrency";
     char *rootdir = "root_dir";
 
+
     unsigned int wrong = 0;
 
     char **StringsArray = NULL;        /* array of pointers to char        */

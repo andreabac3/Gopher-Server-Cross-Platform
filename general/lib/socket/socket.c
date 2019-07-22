@@ -48,7 +48,7 @@ int SendFile(int write_fd, FILE *read_fd, int filesize) {
 
 FILE *sendFileToClient(int fd) {
     //FILE *fp = fopen(pathFilename, "rb");
-    FILE *fp = fdopen(fd, "r");
+    FILE *fp = fdopen(fd, "rb");
     printf("sono qui");
     if (fp == NULL) {
         fprintf(stderr, "Error opening file --> %s", strerror(errno));
@@ -230,7 +230,7 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args){
         printf("%d", SendFile(args->fd, fp_FileToSend, remain_data));
 #endif
 #if defined(__unix__) || defined(__APPLE__)
-        linux_memory_mapping( args->fd, path);
+        linux_memory_mapping( args->fd, path, args->configs.mode_concurrency);
 #endif
         fclose(fp_FileToSend);
         clean_request(path, buf, args);

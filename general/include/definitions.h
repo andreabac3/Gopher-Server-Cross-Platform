@@ -22,15 +22,15 @@
 #endif
 
 
-#include <sys/stat.h>
 
 struct Configs {
     unsigned int port_number;
     char mode_concurrency;
     char *root_dir;
     int useOPTARG;
+    int* reset_config;
 };
-
+struct Configs* configs;
 #if defined(__unix__) || defined(__APPLE__)
 struct ThreadArgs {
     int fd;
