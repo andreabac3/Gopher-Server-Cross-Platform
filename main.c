@@ -81,15 +81,14 @@ int main(int argc, char *argv[]) {
 
 #endif
     //printf("%s", configs.root_dir);
-    if (configs.useOPTARG == false){
+    if (configs.useOPTARG == false) {
         free(configs.root_dir);
     }
     //sleep(2);
     //return 0;
-    #if defined(__unix__) || defined(__APPLE__)
+#if defined(__unix__) || defined(__APPLE__)
 
-    int ret = 0;
-    if (configs.mode_concurrency = M_THREAD) {
+    if (M_THREAD == configs.mode_concurrency) {
         sleep(1);
         pthread_exit(NULL);
     }

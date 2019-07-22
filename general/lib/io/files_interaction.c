@@ -46,7 +46,7 @@ int files_append(char *string, char *path) {
 int files_memory_map(char* filename, int mode){
     // TODO Errore di compilazione
     return 0;
-    //return mappLinux(filename, mode);
+    //return linux_mmap(filename, mode);
 }
 #endif
 

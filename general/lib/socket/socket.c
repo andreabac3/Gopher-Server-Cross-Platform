@@ -1,23 +1,27 @@
 #include <memory.h>
 #include <stdlib.h>
-
-#ifdef _WIN32
-
-#include <winsock.h>
 #include <errno.h>
+#include <stdbool.h>
+#ifdef _WIN32
+#include <winsock.h>
 #include <windows_protocol.h>
 #endif
 
 #if defined(__unix__) || defined(__APPLE__)
-#include "linux_files_interaction.h"
 #include <sys/socket.h>
-
+#include <zconf.h>
+#include <pthread.h>
+#include "linux_memory_mapping.h"
+#include "linux_files_interaction.h"
 #endif
 
 #include "protocol.h"
 #include "socket.h"
 #include "utils.h"
 #include "files_interaction.h"
+
+
+
 
 
 int SendFile(int write_fd, FILE *read_fd, int filesize) {
@@ -121,7 +125,7 @@ void clean_request(char *path, char *buf, struct ThreadArgs *args) {
         pthread_exit(&ret);
     } else { // mode_concurrency == M_PROCESS
         free(args);
-        pthread_exit(ret);
+        pthread_exit(&ret);
     }
 }
 #endif
@@ -153,7 +157,7 @@ void socket_read_request(struct ThreadArgs *args, char **buf) {
     int ptr = 0;
     ssize_t got_bytes = 0;
 
-    while (TRUE) {
+    while (true) {
         got_bytes = recv(args->fd, *buf + ptr, BUFFER_SIZE - ptr, 0);
         if (0 > got_bytes) {
             clean_request(NULL, *buf, args);
@@ -163,7 +167,7 @@ void socket_read_request(struct ThreadArgs *args, char **buf) {
             break;
         }
         ptr += got_bytes;
-        if (get_line(*buf, ptr)) {
+        if (ut_get_line(*buf, ptr)) {
             break;
         }
     }
@@ -220,12 +224,14 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args){
             fprintf(stderr, "Error opening file --> %s", strerror(errno));
             clean_request(path, buf, args);
         }
-        //FILE *fp_FileToSend = sendFileToClient(path);
-        int remain_data = fsize(fp_FileToSend);
-        // int, int, off_t, off_t *, struct sf_hdtr *, int);
-        //sendfile (write_fd, read_fd, &offset, stat_buf.st_size);
-        printf("%d", SendFile(args->fd, fp_FileToSend, remain_data));
 
+#ifdef _WIN32
+
+        printf("%d", SendFile(args->fd, fp_FileToSend, remain_data));
+#endif
+#if defined(__unix__) || defined(__APPLE__)
+        linux_memory_mapping( args->fd, path);
+#endif
         fclose(fp_FileToSend);
         clean_request(path, buf, args);
         //return 0;

@@ -27,16 +27,10 @@
 struct Configs {
     unsigned int port_number;
     char mode_concurrency;
-    char* root_dir;
+    char *root_dir;
     int useOPTARG;
 };
 
-struct mapFileStruct {
-    int fd;
-    void* addr;
-    struct stat sb;
-    FILE* fp;
-};
 #if defined(__unix__) || defined(__APPLE__)
 struct ThreadArgs {
     int fd;

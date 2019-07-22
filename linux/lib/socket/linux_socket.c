@@ -98,7 +98,6 @@ int run_concurrency(struct ThreadArgs *args) {
 
 
 int linux_socket(struct Configs configs) {
-    int cnt = 0;
     fd_set rset;
     int n_ready;
     printf("%s\n", "Starting gophd...");
@@ -199,111 +198,27 @@ void linux_sock_send_message(int *fd, char *error) {
 void *handle_request_thread(void *params) {
     pthread_detach(pthread_self());
     handle_request(params);
+    return 0;
 }
 
 void *handle_request(void *params) {
-
-    printf("%s\n", "Running in thread");
-
+    char *buf;
+    char *path;
     struct ThreadArgs *args;
     args = (struct ThreadArgs *) params;
-    printf("port: %d\n", args->configs.port_number);
 
-    printf("%s\n", "Send ok");
-    perror("Send");
+    printf("%s\n", "Running in thread - handle request");
+    printf("args: %d\n", args->fd);
 
-    int run = 1;
-    int ptr = 0;
-    ssize_t got_bytes = 0;
-    char *buf = malloc(BUFFER_SIZE);
-    // TODO CONTROLLARE MALLOC
-    if (buf == NULL) {
-        perror("malloc fail in linux_socket.c");
-        int retValue = -1;
-        close(args->fd);
-        pthread_exit(&retValue);
+    socket_read_request(args, &buf); // fill the buffer with the request
 
-    }
-    // TODO RIMODIFICARE CON socket_read_request
-    while (run) {
-        got_bytes = read(args->fd, buf + ptr, BUFFER_SIZE - ptr);
+    socket_resolve_selector(args, buf, &path); // parse the request
 
-        if (0 < got_bytes && 0) {
-            // TODO CONTROLLARE valore ritorno di read.
-            perror("(got_bytes < 0)   read fail in linux_socket.c");
-            int retValue = -1;
-            close(args->fd);
-            pthread_exit(&retValue);
-        }
-        if (got_bytes == 0) {
-            buf[ptr] = 0; // Terminate string
-            break;
-        }
-        ptr += got_bytes;
-        if (get_line(buf, ptr)) {
-            break;
-        }
-    }
-    char *path; // = calloc(1, sizeof(char));
-    int retResolveSelector = resolve_selector(args->configs.root_dir, &path, buf);
-    printf("%s", path);
-    if (retResolveSelector == NO_FREE) {
-        clean_request(NULL, buf, args);
-    } else if (retResolveSelector == NEED_TO_FREE) {
-        clean_request(path, buf, args);
-    }
-    if (!file_exist(path)) {
-        printf("SEND: Il file non esiste");
-
-        // tell to client that file do not exists
-        char *m;
-        int err = protocol_response('3', buf, "/path/", "localhost", args->configs.port_number, &m);
-
-        if (err != 0) {
-            //linux_sock_send_error(args->fd);
-            // No need to free m, because calloc crashed.
-        } else {
-            send(args->fd, m, sizeof(char) * strlen(m), 0);
-            free(m);
-            clean_request(path, buf, args);
-        }
-    }
-    char code = getGopherCode(path);
-    if (code < 0) {
-        // error
-        //linux_sock_send_error(args->fd);
-        clean_request(path, buf, args);
-    }
-    printf("Code: %c\n", code);
-    if (code == '1') {
-        // it's a directory
-        printf("%s\n", "Directory");
-        print_directory(path, &linux_sock_send_message, &args->fd);
-    } else {
-        printf("%s\n", "filesssss");
-        //printf("MIA FILE SIZE %jd\n", (intmax_t)sendFile(path));
-        struct mapFileStruct mfile_struct;
-        mappLinux(path, &mfile_struct);
-        printf(mfile_struct.addr);
-        FILE *fp_FileToSend = sendFileToClient(mfile_struct.fd);
-        mfile_struct.fp = fp_FileToSend;
-        int remain_data = fsize(fp_FileToSend);
-        // int, int, off_t, off_t *, struct sf_hdtr *, int);
-        //sendfile (write_fd, read_fd, &offset, stat_buf.st_size);
-        printf("Sono send file -> %d\n", SendFile(args->fd, fp_FileToSend, remain_data));
-        if (munmap(mfile_struct.addr, mfile_struct.sb.st_size) < 0) {
-            int err = errno;
-            perror("linux_socket.c/munmap failed: ");
-        }
-        fclose(mfile_struct.fp);
-        close(mfile_struct.fd);
-
-        // it's some kind of files
-    }
-
+    // todo fix resolve_selector come su linux
+    printf("full path %s \n", path);
+    socket_manage_files(path, buf, args); // send response
     clean_request(path, buf, args);
-    fprintf(stderr, "%s Clean request morto\n", "sono messaggio di errore");
-
+    return 0;
     //return 0;
 
 }

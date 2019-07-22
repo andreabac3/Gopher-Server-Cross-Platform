@@ -104,7 +104,7 @@ int compare(const void *s1, const void *s2) {
     return strcmp(e1->str, e2->str);
 }
 
-int get_line(char *buf, size_t size) {
+int ut_get_line(char *buf, size_t size) {
     char *pos = memchr(buf, '\n', size);
     if (pos != NULL) {
         *(pos - 1) = 0;

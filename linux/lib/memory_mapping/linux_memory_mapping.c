@@ -11,40 +11,45 @@
 #include <sys/stat.h>
 #include <assert.h>
 #include <sys/mman.h>
+#include <socket.h>
+#include <errno.h>
 #include "definitions.h"
 #include "linux_memory_mapping.h"
 
 
-int mappLinux(char* filename, struct mapFileStruct* mfile_struct){
+int linux_memory_mapping(int fd_client, char *filename) {
+    struct stat sb;
 
-
-    //void* addr;
-    //void* addr = mfile_struct->addr;
     int fd = open(filename, O_RDONLY);
+    if (fd < 0) {
+        return -2;
+    }
 
-    Assert( fd != -1 , "OpenError: ");
-    mfile_struct->fd = fd;
-
-
-    if (fstat(fd, &mfile_struct->sb) < 0){
+    if (fstat(fd, &sb) < 0) {
         perror("fstat");
         close(fd);
-        exit(1);
+        return -1;
     }
 
-    //Execute mmap
+    void* addr = mmap(0, sb.st_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
 
-    mfile_struct->addr = mmap(0, mfile_struct->sb.st_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
-
-
-    if (mfile_struct->addr == MAP_FAILED){
+    if (addr == MAP_FAILED) {
         perror("mmap");
         close(fd);
-        exit(-1);
+        return -1;
     }
 
-    //write(1, pmap, mystat.st_size); // Va cambiato con write su socket
+    FILE *fp_FileToSend = sendFileToClient(fd);
+    int remain_data = fsize(fp_FileToSend);
 
+    SendFile(fd_client, fp_FileToSend, remain_data);
+
+    if (munmap(addr, sb.st_size) < 0) {
+        int err = errno;
+        perror("linux_socket.c/munmap failed: ");
+    }
+    fclose(fp_FileToSend);
+    close(fd);
     return 0;
-
 }
+
