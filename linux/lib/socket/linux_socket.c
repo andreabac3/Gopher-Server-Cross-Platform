@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/mman.h>
 
 #include <netinet/in.h>
 
@@ -12,27 +13,23 @@
 #include <pthread.h>
 #include <signal.h>
 #include <arpa/inet.h>
-
 #include <glob.h>
-
-#include "definitions.h"
-
-
-#include <protocol.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 // #include <tclDecls.h>
 #include <errno.h>
 
 
-#include <socket.h>
-#include <sys/mman.h>
+
+
+#include "definitions.h"
+#include "protocol.h"
+#include "socket.h"
 #include "linux_socket.h"
 #include "linux_files_interaction.h"
 #include "files_interaction.h"
 
-#define CONNECTION_QUEUE 500
-#define MAX_CONNECTIONS_ALLOWED cnt++ < 1000
+
 
 int end_server(int fd) {
     shutdown(fd, 2);
@@ -197,28 +194,7 @@ void linux_sock_send_message(int *fd, char *error) {
     send(*fd, error, sizeof(char) * strlen(error), 0);
 }
 
-void clean_request(char *path, char *buf, struct ThreadArgs *args) {
 
-    if (path != NULL) {
-        free(path);
-    }
-    free(buf);
-
-    // shutdown(*fd, SHUT_WR);
-
-    int err = close(args->fd);
-    if (err != 0) {
-        perror("Close in clean request");
-    }
-    int ret = 0;
-    if (args->configs.mode_concurrency == M_THREAD) {
-        free(args);
-        pthread_exit(&ret);
-    } else { // mode_concurrency == M_PROCESS
-        free(args);
-        exit(ret);
-    }
-}
 
 void *handle_request_thread(void *params) {
     pthread_detach(pthread_self());
@@ -248,6 +224,7 @@ void *handle_request(void *params) {
         pthread_exit(&retValue);
 
     }
+    // TODO RIMODIFICARE CON socket_read_request
     while (run) {
         got_bytes = read(args->fd, buf + ptr, BUFFER_SIZE - ptr);
 

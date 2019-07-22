@@ -2,6 +2,17 @@
 #ifndef GOPHER_DEFINITIONS_H
 #define GOPHER_DEFINITIONS_H
 
+// START FILES definition of file types
+#define FILES_NOT_EXIST 0
+#define FILES_IS_DIRECTORY 1
+#define FILES_IS_REG_FILE 2
+#define FILES_IS_UNMANAGED_FILE 3
+// END FILES definition of file types
+
+
+#define CONNECTION_QUEUE 500
+#define MAX_CONNECTIONS_ALLOWED 1
+#define BUFFER_SIZE 1024
 #if defined(__unix__) || defined(__APPLE__)
 #define OS_SEPARATOR '/'
 
@@ -9,6 +20,7 @@
 #ifdef _WIN32
 #define OS_SEPARATOR '\\'
 #endif
+
 
 #include <sys/stat.h>
 

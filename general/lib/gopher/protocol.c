@@ -20,14 +20,22 @@
 #define GM_MAX_LINESIZE 200
 #define GM_MIN_LINESIZE 5
 
-int resolve_selector(char* gopher_root, char** filepath, const char *selector) {
+int resolve_selector(char *gopher_root, char **filepath, const char *selector) {
     //char* gopher_root = "/opt/local_projects/gopher-project/";
-    *filepath = calloc( strlen(gopher_root) + 1 + strlen(selector) + 4 , sizeof(char));
-    if (*filepath == NULL){
+    *filepath = calloc(strlen(gopher_root) + 1 + strlen(selector) + 4, sizeof(char));
+
+    if (*filepath == NULL) {
         perror("calloc fail in protocol.c/resolve_selector");
         return NO_FREE;
     }
-    int ret = sprintf(*filepath, "%s%c%s", gopher_root, OS_SEPARATOR, selector + (selector[0] == '/' ? 1 : 0));
+
+    int ret;
+    if (gopher_root[strlen(gopher_root)-1] == OS_SEPARATOR) {
+        ret = sprintf(*filepath, "%s%s", gopher_root, selector + (selector[0] == OS_SEPARATOR ? 1 : 0));
+    } else {
+        ret = sprintf(*filepath, "%s%c%s", gopher_root, OS_SEPARATOR, selector + (selector[0] == OS_SEPARATOR ? 1 : 0));
+    }
+
     if (ret < 0) {
         perror("sprintf fail in protocol.c/resolve_selector");
         return NEED_TO_FREE;
@@ -46,9 +54,9 @@ int protocol_response(char type, char *filename, char *path, const char *host, i
         // 3 '/gopher/clients/sdas.txt' doesn't exist!		error.host	1
         char *error = " doesn't exist! error.host";
         *result = malloc(//result,
-                         (1 /*char len*/ + strlen(path) + strlen(filename) + strlen(error) + 6 /*port len*/ +
-                          4 /*spaces*/ +
-                          4 /*extra space*/) * sizeof(char));
+                (1 /*char len*/ + strlen(path) + strlen(filename) + strlen(error) + 6 /*port len*/ +
+                 4 /*spaces*/ +
+                 4 /*extra space*/) * sizeof(char));
         if (*result == NULL) {
             return 1;
         }
@@ -57,9 +65,9 @@ int protocol_response(char type, char *filename, char *path, const char *host, i
         // format
         // type + filename + relative_path + host + port
         *result = malloc(//result,
-                         (1 /*type len*/ + strlen(path) + strlen(filename) + strlen(host) + 6 /*port len*/ +
-                          4 /*spaces*/ +
-                          4 /*extra space*/) * sizeof(char));
+                (1 /*type len*/ + strlen(path) + strlen(filename) + strlen(host) + 6 /*port len*/ +
+                 4 /*spaces*/ +
+                 4 /*extra space*/) * sizeof(char));
         if (*result == NULL) {
             return 1;
         }
@@ -78,7 +86,7 @@ static bool is_valid_gopher_line(const char *line) {
 }
 
 
-int print_directory(char *path, void (*socket_send_f)(int *, char *), int *fd) {
+int print_directory(char *path, int (*socket_send_f)(int, char *), int fd, int port) {
     DIR *dir = opendir(path);
     struct dirent *entry = NULL;
 
@@ -117,7 +125,7 @@ int print_directory(char *path, void (*socket_send_f)(int *, char *), int *fd) {
 
         // get line for gopher
         char *line;
-        err = protocol_response(code, filename, fullpath, "localhost", 7070, &line);
+        err = protocol_response(code, filename, fullpath, "localhost", port, &line);
 
         if (err != 0) {
             //linux_sock_send_error(fd);
@@ -131,14 +139,18 @@ int print_directory(char *path, void (*socket_send_f)(int *, char *), int *fd) {
 
         printf("line: %s\n", line);
         printf("is_valid_gopher_line: %d\n", is_valid_gopher_line(line));
-        printf("sockfd: %d\n", *fd);
+        printf("sockfd: %d\n", fd);
 
         // send line
-        (*socket_send_f)(fd, line);
+        int ret = (*socket_send_f)(fd, line);
 
 
         free(fullpath);
         free(line);
+
+        if (0 > ret){
+            return -2;
+        }
 
     }
 

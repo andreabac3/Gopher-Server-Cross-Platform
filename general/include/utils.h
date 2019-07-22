@@ -19,7 +19,7 @@ int compare(const void *s1, const void *s2);
 
 #endif //GOPHER_UTILS_H
 
-
+int get_line(char *buf, size_t size);
 void help();
 int ut_strtoint(char* str);
 int Assert(int cond, char* message);

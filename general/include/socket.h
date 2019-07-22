@@ -3,12 +3,21 @@
 //
 
 #include <stdio.h>
-
+#include"definitions.h"
 
 #ifndef GOPHERLINUX_SOCKET_H
 #define GOPHERLINUX_SOCKET_H
 #define SEND_BUFFER_SIZE 4
-int SendFile(int write_fd, FILE* read_fd, int filesize);
-FILE* sendFileToClient(int fd);
+
+int SendFile(int write_fd, FILE *read_fd, int filesize);
+
+FILE *sendFileToClient(int fd);
+
 int fsize(FILE *fp);
+
+void socket_read_request(struct ThreadArgs *args, char **buf);
+void socket_resolve_selector(struct ThreadArgs *args, char* buf, char ** path);
+void clean_request(char *path, char *buf, struct ThreadArgs *args);
+int socket_send_message(int fd, char *message_string);
+void socket_manage_files(char *path, char *buf, struct ThreadArgs *args);
 #endif //GOPHERLINUX_SOCKET_H

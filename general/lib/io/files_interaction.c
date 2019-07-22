@@ -5,7 +5,7 @@
 #include "utils.h"
 #include "files_interaction.h"
 #include "ut_dict.h"
-
+#include "definitions.h"
 int file_exist(char *filename) {
     struct stat buffer;
     return (stat(filename, &buffer) == 0); // ritorna diverso da zero se vero
@@ -15,14 +15,14 @@ int file_type(char *filename) {
     struct stat s;
     if (stat(filename, &s) == 0) {
         if (s.st_mode & S_IFDIR) {
-            return 1;
+            return FILES_IS_DIRECTORY;
         } else if (s.st_mode & S_IFREG) {
-            return 2;
+            return FILES_IS_REG_FILE;
         } else {
-            return 3;
+            return FILES_IS_UNMANAGED_FILE;
         }
     } else {
-        return 0;
+        return FILES_NOT_EXIST;
     }
 }
 

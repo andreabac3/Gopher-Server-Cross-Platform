@@ -63,15 +63,16 @@ char getGopherCode(char *p) {
     char* ext;
     //replace_char(p, '\\', ' ');
     ext = strrchr(p, '.');
+    if (ext == NULL){
+        return '1';
+    }
 
     // Todo strrchr non funziona per vie degli \ invece che i /
 
 
     //ext = PathFindExtensionA(p);
     printf("getGopherCode %s of %s\n", ext, p);
-    if(ext == NULL){
-        return -1;
-    }
+
     return check_code(ext);
 
 }
