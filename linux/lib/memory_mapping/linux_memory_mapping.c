@@ -73,6 +73,6 @@ int linux_memory_mapping(int fd_client, char *filename, int modeConcurrency) {
 
     lockf(fd, F_ULOCK, 0);
     close(fd);
-    return 0;
+    return remain_data;
 }
 

@@ -9,7 +9,8 @@
 #define FILES_IS_UNMANAGED_FILE 3
 // END FILES definition of file types
 
-
+#define LOG_PATH "../gopher_log_file.txt"
+#define CONFIGURATION_PATH "../gopher_server_configuration.txt"
 #define CONNECTION_QUEUE 500
 #define MAX_CONNECTIONS_ALLOWED 1
 #define BUFFER_SIZE 1024
@@ -35,6 +36,7 @@ struct Configs* configs;
 struct ThreadArgs {
     int fd;
     struct Configs configs;
+    char* ip_client;
 };
 #endif
 #ifdef _WIN32

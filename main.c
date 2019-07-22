@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     printf("PID: %ld  PPID: %ld\n", (long)getpid(), (long)getppid());
 
     //
-    conf_parseConfigFile("../gopher_server_configuration.txt", configs);
+    conf_parseConfigFile(CONFIGURATION_PATH, configs);
     printf("\n sono conf.rootdir %s\n", configs->root_dir);
     if (conf_read_opt(argc, argv, configs) != 0) return 1;
     /*

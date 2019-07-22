@@ -116,7 +116,7 @@ int linux_socket(struct Configs *configs) {
     FD_ZERO(&rset);
     int maxfdp1 = fd_server + 1;
     struct timeval timeout;
-    timeout.tv_sec = 1;
+    timeout.tv_sec = 20;
     timeout.tv_usec = 5;
     while (MAX_CONNECTIONS_ALLOWED) {
         FD_SET(fd_server, &rset);
@@ -138,7 +138,7 @@ int linux_socket(struct Configs *configs) {
                 end_server(fd_server);
                 return -1;
             }
-            printf("Reset socket continue %d \n", configs->reset_config);
+            printf("Reset socket continue %ls \n", configs->reset_config);
             timeout.tv_sec = 2;
             timeout.tv_usec = 5;
 
@@ -161,8 +161,10 @@ int linux_socket(struct Configs *configs) {
             printf("Client Adress = %s\n", inet_ntop(AF_INET, &client_addr.sin_addr, clientname, sizeof(clientname)));
             printf("Client Adress = %s\n", clientname);
 
+
             struct ThreadArgs *args = calloc(1, sizeof(struct ThreadArgs));
             args->configs = *configs;
+            args->ip_client = clientname;
 
             args->fd = accept_fd;
 
