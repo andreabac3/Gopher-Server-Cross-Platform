@@ -240,7 +240,7 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
 
             FILE *fp_log = fopen(LOG_PATH, "a");
 
-            fprintf(fp_log, "%s%s\t%d\t%s\n", ctime(&clk), path, dim_file_to_send, args->ip_client);
+            fprintf(fp_log, "%sFileName: %s\t%d Byte \t IP Client: %s\n", ctime(&clk), path, dim_file_to_send, args->ip_client);
 
             fclose(fp_log);
             exit(0);
