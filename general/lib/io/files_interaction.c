@@ -26,17 +26,12 @@ int file_type(char *filename) {
     }
 }
 
-int files_append(char *string, char *path) {
-    FILE *fp;
+int write_log_accessFile(char *string, FILE *fp) {
 
-    fp = fopen(path, "a");
     if (Assert_nb(fp != NULL, "Error opening file.")) {
         return 1;
     }
-
     fprintf(fp, "%s", string);
-
-    fclose(fp);
     return 0;
 }
 
