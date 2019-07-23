@@ -16,7 +16,6 @@
 #define BUFFER_SIZE 1024
 #if defined(__unix__) || defined(__APPLE__)
 #define OS_SEPARATOR '/'
-
 #endif
 #ifdef _WIN32
 #define OS_SEPARATOR '\\'
@@ -28,7 +27,7 @@ struct Configs {
     unsigned int port_number;
     char mode_concurrency;
     char *root_dir;
-    int useOPTARG;
+    int used_OPTARG;
     int* reset_config;
 };
 struct Configs* configs;
