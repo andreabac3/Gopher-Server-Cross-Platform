@@ -68,7 +68,7 @@ int linux_memory_mapping(int fd_client, char *filename, int mode_concurrency) {
     FILE *fp_FileToSend = sendFileToClient(fd);
     int remain_data = fsize(fp_FileToSend);
 
-    SendFile(fd_client, fp_FileToSend, remain_data);
+    SendFile(fd_client, fp_FileToSend);
 
     if (munmap(addr, sb.st_size) < 0) {
         // int err = errno;
