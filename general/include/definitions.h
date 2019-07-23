@@ -25,6 +25,11 @@
 #endif
 
 
+struct PipeArgs {
+    char* ip_client;
+    int dim_file;
+    char* path;
+};
 
 struct Configs {
     unsigned int port_number;
