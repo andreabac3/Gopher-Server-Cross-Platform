@@ -42,7 +42,9 @@ int main(int argc, char *argv[]) {
     // configs.root_dir = malloc(50 * sizeof(char));
     // chiamata alla lettura del file di configurazione
     //
+#if defined(__unix__) || defined(__APPLE__)
     printf("PID: %ld  PPID: %ld\n", (long)getpid(), (long)getppid());
+#endif
 
     //
     conf_parseConfigFile(CONFIGURATION_PATH, configs);
@@ -55,8 +57,9 @@ int main(int argc, char *argv[]) {
     */
     printf("port:%d mode:%d %lu dir:%s\n", configs->port_number, configs->mode_concurrency, strlen(configs->root_dir),
            configs->root_dir);
-
+#if defined(__unix__) || defined(__APPLE__)
     if (signal(SIGHUP, signal_sighup_handler) == SIG_ERR)
+#endif
 
 //    char *bufferTESToutputSocket = calloc( 300 , sizeof(  char) );
 //    // protocol_response(unsigned int type, char* filename, char* path, const char * host, unsigned int port, char* result );
@@ -86,7 +89,7 @@ int main(int argc, char *argv[]) {
     //sleep(2);
 #endif
 #ifdef _WIN32
-    windows_socket(configs);
+    windows_socket(*configs);
 
 #endif
     //printf("%s", configs.root_dir);

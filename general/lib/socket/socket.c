@@ -6,6 +6,9 @@
 #ifdef _WIN32
 #include <winsock.h>
 #include <windows_protocol.h>
+#include <io.h>
+#include <fcntl.h>
+
 #endif
 
 #if defined(__unix__) || defined(__APPLE__)
@@ -24,8 +27,9 @@
 #include "files_interaction.h"
 
 
-int SendFile(int write_fd, FILE *read_fd, int filesize) {
+int SendFile(int write_fd, FILE *read_fd) {
     ssize_t n = 0;
+    int filesize = fsize(read_fd);
     char buffer[SEND_BUFFER_SIZE + 1] = {0};
     while (filesize > 0) {
         if (filesize < SEND_BUFFER_SIZE) {
@@ -221,6 +225,18 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
     } else if (FILES_IS_REG_FILE == type_file) { // FILES_IS_FILE
         // it's some kind of files
         printf("%s\n", "filesssss");
+        /*
+        int fHandle = open(path, O_CREAT|O_TEXT);
+        HANDLE osfHandle = (HANDLE) _get_osfhandle(fHandle);
+        LARGE_INTEGER fHandle_size;
+
+        GetFileSizeEx(osfHandle, &fHandle_size);
+
+        HANDLE hMapping2 = CreateFileMapping(osfHandle, 0 , PAGE_READONLY,0 , 1024, 0);
+        int nHandle = _open_osfhandle((long)osfHandle, _O_RDONLY);
+         FILE* fp_FileToSend = _fdopen(nHandle,"rb" );
+         */
+
         FILE *fp_FileToSend = fopen(path, "rb");
         if (fp_FileToSend == NULL) {
             fprintf(stderr, "Error opening file --> %s", strerror(errno));
@@ -229,11 +245,11 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
 
 #ifdef _WIN32
 
-        printf("%d", SendFile(args->fd, fp_FileToSend, remain_data));
+        printf("%d", SendFile(args->fd, fp_FileToSend));
 #endif
 #if defined(__unix__) || defined(__APPLE__)
         int dim_file_to_send = linux_memory_mapping(args->fd, path, args->configs.mode_concurrency);
-#endif
+
         printf("%s", "SONO QUII@@@@@@@@@@@@@@@");
         if (fork() == 0) {
             time_t clk = time(NULL);
@@ -245,7 +261,7 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
             fclose(fp_log);
             exit(0);
         }
-
+#endif
         fclose(fp_FileToSend);
         clean_request(path, buf, args);
         //return 0;
