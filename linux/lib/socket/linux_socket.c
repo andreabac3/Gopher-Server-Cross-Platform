@@ -112,12 +112,16 @@ int linux_socket(struct Configs *configs) {
     struct sockaddr_in client_addr;
     socklen_t slen = sizeof(client_addr);
 
+    if (configs->mode_concurrency == M_THREAD) {
+        pthread_rwlock_init(&rwlock, NULL);
+    }
 
     FD_ZERO(&rset);
     int maxfdp1 = fd_server + 1;
     struct timeval timeout;
     timeout.tv_sec = 20;
     timeout.tv_usec = 5;
+
     while (MAX_CONNECTIONS_ALLOWED) {
         FD_SET(fd_server, &rset);
 

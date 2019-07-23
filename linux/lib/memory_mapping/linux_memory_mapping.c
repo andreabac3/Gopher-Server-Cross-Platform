@@ -13,6 +13,7 @@
 #include <sys/mman.h>
 #include <socket.h>
 #include <errno.h>
+#include <pthread.h>
 #include "linux_memory_mapping.h"
 
 
@@ -32,13 +33,17 @@
 #define MMAP_FLAGS MAP_PRIVATE
 #endif
 
-int linux_memory_mapping(int fd_client, char *filename, int modeConcurrency) {
+int linux_memory_mapping(int fd_client, char *filename, int mode_concurrency) {
     struct stat sb;
 
     int fd = open(filename, O_RDWR);
 
+    if (mode_concurrency == M_PROCESS){
+        lockf(fd, F_LOCK, 0);
+    }else{
+        pthread_rwlock_rdlock(&rwlock);
+    }
 
-    lockf(fd, F_LOCK, 0);
     if (fd < 0) {
         return -2;
     }
@@ -71,7 +76,13 @@ int linux_memory_mapping(int fd_client, char *filename, int modeConcurrency) {
     }
     fclose(fp_FileToSend);
 
-    lockf(fd, F_ULOCK, 0);
+    if (mode_concurrency == M_PROCESS){
+        lockf(fd, F_ULOCK, 0);
+    }else{
+        pthread_rwlock_rdlock(&rwlock);
+    }
+
+
     close(fd);
     return remain_data;
 }
