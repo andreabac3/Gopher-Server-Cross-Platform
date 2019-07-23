@@ -10,6 +10,7 @@
 #include <windows_protocol.h>
 #include <errno.h>
 #include <ws2tcpip.h>
+#include <utils.h>
 #include "windows_socket.h"
 #include "winThread.h"
 #include "definitions.h"
@@ -49,8 +50,17 @@ int windows_socket_runner(struct Configs *configs) {
     // int accept_fd;
     int clientAddrSize = sizeof(clientAddr);
 
+
+    // new struct for thread/process
+    // TODO testare e semplificare
+    struct Configs c2;
+    struct Configs* n;
+    c2.reset_config = NULL ;
+    n = &c2;
+    ut_clone_configs(configs, n);
+
     struct ThreadArgs args;
-    args.configs = *configs;
+    args.configs = *n;
 
 
     FD_ZERO(&read_fds);

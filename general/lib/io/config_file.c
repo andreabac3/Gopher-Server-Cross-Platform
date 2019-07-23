@@ -69,7 +69,7 @@ int conf_read_opt(int argc, char *argv[], struct Configs *configs) {
                 configs->mode_concurrency = conf_opts_mode_concurrency(optarg);
                 break;
             case 'd':
-                configs->useOPTARG = true;
+                configs->used_OPTARG = true;
                 configs->root_dir = conf_opts_root_dir(optarg);
                 break;
             default:
@@ -213,7 +213,7 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
         free(config->root_dir);
         exit(1);
     }
-    config->useOPTARG = 0;
+    config->used_OPTARG = 0;
     printf("\n prima di fare return  -->  %s\n " , config->root_dir);
     return 0;
 

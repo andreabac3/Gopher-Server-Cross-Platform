@@ -6,10 +6,10 @@
 #include <memory.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <protocol.h>
 
 
 #include "definitions.h"
+#include "protocol.h"
 #include "utils.h"
 #include "config_file.h"
 #include "files_interaction.h"
@@ -61,8 +61,6 @@ int main(int argc, char *argv[]) {
 
     if (signal(SIGHUP, signal_sighup_handler) == SIG_ERR)
 
-    if (signal(SIGHUP, signal_sighup_handler) == SIG_ERR)
-
     printf("%c \n", getGopherCode("C:/Users/valerio/file.png"));
     while(true) {
         linux_socket(configs);
@@ -78,11 +76,17 @@ int main(int argc, char *argv[]) {
 
 #endif
 #ifdef _WIN32
-    windows_socket_runner(configs);
+    while(true) {
+        windows_socket_runner(configs);
+        c.reset_config = NULL ;
+        configs = &c;
+        conf_parseConfigFile("../gopher_server_configuration.txt", configs);
+
+    }
 
 #endif
     //printf("%s", configs.root_dir);
-    if (configs->useOPTARG == false) {
+    if (configs->used_OPTARG == false) {
         free(configs->root_dir);
     }
     //sleep(2);
