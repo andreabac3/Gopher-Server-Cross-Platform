@@ -4,10 +4,13 @@
 #include <stdbool.h>
 
 #ifdef _WIN32
+
 #include <winsock.h>
 #include <windows_protocol.h>
 #include <io.h>
 #include <fcntl.h>
+#include <tchar.h>
+#include <stdint.h>
 
 #endif
 
@@ -82,6 +85,7 @@ int fsize(FILE *fp) {
  * and close the socket file descriptor always
  */
 #ifdef _WIN32
+
 void clean_request(char *path, char *buf, struct ThreadArgs *args) {
 
     if (path != NULL) {
@@ -106,6 +110,7 @@ void clean_request(char *path, char *buf, struct ThreadArgs *args) {
         ExitThread(ret);
     }
 }
+
 #endif
 #if defined(__unix__) || defined(__APPLE__)
 
@@ -230,29 +235,16 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
          * TODO Usa la CreateFile per aprire il file mettendo dwShareMode a 0,
          * questo crea accesso esclusivo sia per Thread che per Processi
         */
-        /*
-        int fHandle = open(path, O_CREAT|O_TEXT);
-        HANDLE osfHandle = (HANDLE) _get_osfhandle(fHandle);
-        LARGE_INTEGER fHandle_size;
 
-        GetFileSizeEx(osfHandle, &fHandle_size);
 
-        HANDLE hMapping2 = CreateFileMapping(osfHandle, 0 , PAGE_READONLY,0 , 1024, 0);
-        int nHandle = _open_osfhandle((long)osfHandle, _O_RDONLY);
-         FILE* fp_FileToSend = _fdopen(nHandle,"rb" );
-         */
 
-        FILE *fp_FileToSend = fopen(path, "rb");
-        if (fp_FileToSend == NULL) {
-            fprintf(stderr, "Error opening file --> %s", strerror(errno));
-            clean_request(path, buf, args);
-        }
 
 #ifdef _WIN32
-
-        printf("%d", SendFile(args->fd, fp_FileToSend));
+        windows_memory_mapping(args->fd, path);
+        //printf("%d", SendFile(args->fd, fp_FileToSend));
 #endif
 #if defined(__unix__) || defined(__APPLE__)
+
         int dim_file_to_send = linux_memory_mapping(args->fd, path, args->configs.mode_concurrency);
 
         printf("%s", "SONO QUII@@@@@@@@@@@@@@@");
@@ -267,8 +259,88 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
             exit(0);
         }
 #endif
-        fclose(fp_FileToSend);
+        //fclose(fp_FileToSend);
         clean_request(path, buf, args);
         //return 0;
     }
+}
+
+
+int windows_memory_mapping(int fd_client, char *path) {
+    HANDLE hFile = CreateFile(path,                // name of the write
+                              GENERIC_READ,          // open for writing
+                              0,                      // do not share
+                              NULL,                   // default security
+                              OPEN_EXISTING,
+                              FILE_ATTRIBUTE_NORMAL, NULL);                  // no attr. template
+    if (hFile == INVALID_HANDLE_VALUE) {
+        _tprintf(TEXT("hFile is NULL\n"));
+        return -1;
+    }
+
+
+    HANDLE hMapFile = CreateFileMapping(hFile, 0, PAGE_READONLY, 0, 1024, 0);
+    if (hMapFile == NULL) {
+        _tprintf(TEXT("hMapFile is NULL: last error: %d\n"), GetLastError());
+    }
+
+    LPVOID lpMapAddress = MapViewOfFile(hMapFile,            // handle to
+            // mapping object
+                                        FILE_MAP_READ, // read/write
+                                        0,                   // high-order 32
+            // bits of file
+            // offset
+                                        0,      // low-order 32
+            // bits of file
+            // offset
+                                        1024);      // number of bytes
+    // to map
+    char *pBuf = (char *) lpMapAddress;
+    printf("SONO PBUFFFF: %s\n", pBuf);
+    //free(pBuf);
+    w_sendFile(fd_client, pBuf);
+
+
+    if (lpMapAddress == NULL) {
+        _tprintf(TEXT("lpMapAddress is NULL: last error: %d\n"), GetLastError());
+        return -1;
+    }
+    printf("Read message %s", lpMapAddress);
+
+
+    BOOL bFlag = UnmapViewOfFile(lpMapAddress);
+    bFlag = CloseHandle(hMapFile); // close the file mapping object
+
+    if (!bFlag) {
+        _tprintf(TEXT("\nError %ld occurred closing the mapping object!"),
+                 GetLastError());
+        return -1;
+    }
+
+    bFlag = CloseHandle(hFile);   // close the file itself
+
+    if (!bFlag) {
+        _tprintf(TEXT("\nError %ld occurred closing the file!"),
+                 GetLastError());
+        return -1;
+    }
+    return 0;
+}
+
+
+int w_sendFile(int fd_client, char* message_to_send) {
+    int bufferSize = 512;
+    char buffer[bufferSize];
+    int sendPosition = 0;
+    int message_len = strlen(message_to_send);
+    while(message_len>0){
+        int chunkSize = message_len > bufferSize ? bufferSize : message_len;
+        memcpy(buffer, message_to_send + sendPosition, chunkSize);
+        chunkSize = send(fd_client, buffer, chunkSize, 0);
+        // TODO controllare send
+        if (chunkSize == -1) { break; }
+        message_len -= chunkSize;
+        sendPosition += chunkSize;
+    }
+    return 0;
 }
