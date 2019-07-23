@@ -17,7 +17,7 @@
 #define GOPHER_LINUX_MEMORY_MAPPING_H
 
 #include "definitions.h"
-int linux_memory_mapping(int fd_client, char* filename);
+int linux_memory_mapping(int fd_client, char* filename, char mode_concurrency);
 int files_memory_map(char* filename, int mode);
 int linux_mmap(char *filename, int fd, void** addr);
 #endif //GOPHER_LINUX_MEMORY_MAPPING_H

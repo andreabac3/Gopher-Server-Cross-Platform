@@ -2,26 +2,26 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <stdbool.h>
+
 #ifdef _WIN32
 #include <winsock.h>
 #include <windows_protocol.h>
 #endif
 
 #if defined(__unix__) || defined(__APPLE__)
+
 #include <sys/socket.h>
 #include <zconf.h>
 #include <pthread.h>
 #include "linux_memory_mapping.h"
 #include "linux_files_interaction.h"
+
 #endif
 
 #include "protocol.h"
 #include "socket.h"
 #include "utils.h"
 #include "files_interaction.h"
-
-
-
 
 
 int SendFile(int write_fd, FILE *read_fd, int filesize) {
@@ -104,6 +104,7 @@ void clean_request(char *path, char *buf, struct ThreadArgs *args) {
 }
 #endif
 #if defined(__unix__) || defined(__APPLE__)
+
 void clean_request(char *path, char *buf, struct ThreadArgs *args) {
 
     if (path != NULL) {
@@ -128,6 +129,7 @@ void clean_request(char *path, char *buf, struct ThreadArgs *args) {
         pthread_exit(&ret);
     }
 }
+
 #endif
 
 /*
@@ -177,14 +179,14 @@ int socket_send_message(int fd, char *message_string) {
 
     printf("socket_send_message: %d, %s", fd, message_string);
     int ret = send(fd, message_string, sizeof(char) * strlen(message_string), 0);
-    if (0 > ret ){
+    if (0 > ret) {
         perror("socket.c/socket_send_message: send failed");
         return ret;
     }
     return 0;
 }
 
-void socket_manage_files(char *path, char *buf, struct ThreadArgs *args){
+void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
     int type_file = file_type(path);
     if (FILES_NOT_EXIST == type_file) {
         printf("SEND: Il file non esiste");
@@ -230,10 +232,12 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args){
         printf("%d", SendFile(args->fd, fp_FileToSend, remain_data));
 #endif
 #if defined(__unix__) || defined(__APPLE__)
-        linux_memory_mapping( args->fd, path);
+        linux_memory_mapping(args->fd, path, args->configs.mode_concurrency);
 #endif
         fclose(fp_FileToSend);
         clean_request(path, buf, args);
         //return 0;
     }
 }
+
+

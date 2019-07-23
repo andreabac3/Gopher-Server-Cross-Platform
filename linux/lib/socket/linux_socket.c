@@ -30,8 +30,12 @@
 #include "files_interaction.h"
 
 
-
 int end_server(int fd) {
+    // TODO da controllare pthread_rwlock_destroy se va bene qui, i thread attivi potrebbero avere problemi
+//    if (configs.mode_concurrency == M_THREAD){
+//        pthread_rwlock_destroy(&rwlock);
+//    }
+
     shutdown(fd, 2);
     return close(fd);
 }
@@ -118,6 +122,9 @@ int linux_socket(struct Configs configs) {
     FD_ZERO(&rset);
     int maxfdp1 = fd + 1;
 
+    if (configs.mode_concurrency == M_THREAD){
+        pthread_rwlock_init(&rwlock,NULL);
+    }
 
     while (MAX_CONNECTIONS_ALLOWED) {
         FD_SET(fd, &rset);
