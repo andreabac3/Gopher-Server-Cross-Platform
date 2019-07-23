@@ -10,7 +10,6 @@
 #include"definitions.h"
 
 
-#define SEND_BUFFER_SIZE 512
 
 int SendFile(int write_fd, FILE *read_fd);
 
