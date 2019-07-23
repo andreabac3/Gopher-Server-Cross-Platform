@@ -28,10 +28,6 @@ int socket_send_message(int fd, char *message_string);
 
 void socket_manage_files(char *path, char *buf, struct ThreadArgs *args);
 
-int windows_memory_mapping(int fd_client, char *path);
-
-int w_sendFile(int fd_client, char *message_to_send);
-
 #if defined(__unix__) || defined(__APPLE__)
 //TODO Controllare se si puó lasciare qui
 pthread_rwlock_t rwlock;

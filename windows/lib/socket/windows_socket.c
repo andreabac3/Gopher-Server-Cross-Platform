@@ -120,3 +120,23 @@ DWORD WINAPI handle_request(void *params) {
     clean_request(path, buf, args);
     return 0;
 }
+
+
+
+int w_sendFile(int fd_client, char* message_to_send) {
+    int bufferSize = 512;
+    char buffer[bufferSize];
+    int sendPosition = 0;
+    int message_len = strlen(message_to_send);
+    while(message_len>0){
+        int chunkSize = message_len > bufferSize ? bufferSize : message_len;
+        memcpy(buffer, message_to_send + sendPosition, chunkSize);
+        chunkSize = send(fd_client, buffer, chunkSize, 0);
+        // TODO controllare send
+        if (chunkSize == -1) { break; }
+        message_len -= chunkSize;
+        sendPosition += chunkSize;
+    }
+    return 0;
+}
+

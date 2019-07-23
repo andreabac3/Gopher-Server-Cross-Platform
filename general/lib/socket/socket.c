@@ -8,9 +8,7 @@
 #include <winsock.h>
 #include <windows_protocol.h>
 #include <io.h>
-#include <fcntl.h>
-#include <tchar.h>
-#include <stdint.h>
+#include <windows_memory_mapping.h>
 
 #endif
 
@@ -265,81 +263,3 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
 }
 
 
-int windows_memory_mapping(int fd_client, char *path) {
-    HANDLE hFile = CreateFile(path,                // name of the write
-                              GENERIC_READ,          // open for writing
-                              0,                      // do not share
-                              NULL,                   // default security
-                              OPEN_EXISTING,
-                              FILE_ATTRIBUTE_NORMAL, NULL);                  // no attr. template
-    if (hFile == INVALID_HANDLE_VALUE) {
-        _tprintf(TEXT("hFile is NULL\n"));
-        return -1;
-    }
-
-
-    HANDLE hMapFile = CreateFileMapping(hFile, 0, PAGE_READONLY, 0, 1024, 0);
-    if (hMapFile == NULL) {
-        _tprintf(TEXT("hMapFile is NULL: last error: %d\n"), GetLastError());
-    }
-
-    LPVOID lpMapAddress = MapViewOfFile(hMapFile,            // handle to
-            // mapping object
-                                        FILE_MAP_READ, // read/write
-                                        0,                   // high-order 32
-            // bits of file
-            // offset
-                                        0,      // low-order 32
-            // bits of file
-            // offset
-                                        1024);      // number of bytes
-    // to map
-    char *pBuf = (char *) lpMapAddress;
-    printf("SONO PBUFFFF: %s\n", pBuf);
-    //free(pBuf);
-    w_sendFile(fd_client, pBuf);
-
-
-    if (lpMapAddress == NULL) {
-        _tprintf(TEXT("lpMapAddress is NULL: last error: %d\n"), GetLastError());
-        return -1;
-    }
-    printf("Read message %s", lpMapAddress);
-
-
-    BOOL bFlag = UnmapViewOfFile(lpMapAddress);
-    bFlag = CloseHandle(hMapFile); // close the file mapping object
-
-    if (!bFlag) {
-        _tprintf(TEXT("\nError %ld occurred closing the mapping object!"),
-                 GetLastError());
-        return -1;
-    }
-
-    bFlag = CloseHandle(hFile);   // close the file itself
-
-    if (!bFlag) {
-        _tprintf(TEXT("\nError %ld occurred closing the file!"),
-                 GetLastError());
-        return -1;
-    }
-    return 0;
-}
-
-
-int w_sendFile(int fd_client, char* message_to_send) {
-    int bufferSize = 512;
-    char buffer[bufferSize];
-    int sendPosition = 0;
-    int message_len = strlen(message_to_send);
-    while(message_len>0){
-        int chunkSize = message_len > bufferSize ? bufferSize : message_len;
-        memcpy(buffer, message_to_send + sendPosition, chunkSize);
-        chunkSize = send(fd_client, buffer, chunkSize, 0);
-        // TODO controllare send
-        if (chunkSize == -1) { break; }
-        message_len -= chunkSize;
-        sendPosition += chunkSize;
-    }
-    return 0;
-}
