@@ -29,6 +29,11 @@
 
 
 int end_server(int fd) {
+
+    //TODO da verificare se va bene qui
+    if (configs->mode_concurrency == M_THREAD){
+        pthread_rwlock_destroy(&rwlock);
+    }
     shutdown(fd, 2);
     return close(fd);
 }
