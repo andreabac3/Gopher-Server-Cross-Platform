@@ -225,6 +225,11 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
     } else if (FILES_IS_REG_FILE == type_file) { // FILES_IS_FILE
         // it's some kind of files
         printf("%s\n", "filesssss");
+
+        /*
+         * TODO Usa la CreateFile per aprire il file mettendo dwShareMode a 0,
+         * questo crea accesso esclusivo sia per Thread che per Processi
+        */
         /*
         int fHandle = open(path, O_CREAT|O_TEXT);
         HANDLE osfHandle = (HANDLE) _get_osfhandle(fHandle);
