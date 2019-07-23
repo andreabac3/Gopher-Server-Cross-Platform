@@ -247,7 +247,6 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
 
         int dim_file_to_send = linux_memory_mapping(args->fd, path, args->configs.mode_concurrency);
 
-        printf("%s", "SONO QUII@@@@@@@@@@@@@@@");
         if (fork() == 0) {
             time_t clk = time(NULL);
 
