@@ -17,7 +17,7 @@
 #include <sys/socket.h>
 #include <zconf.h>
 #include <pthread.h>
-#include <wait.h>
+
 #include <fcntl.h>
 #include "linux_memory_mapping.h"
 #include "linux_files_interaction.h"
@@ -138,7 +138,7 @@ void clean_request(char *path, char *buf, struct ThreadArgs *args) {
         pthread_exit(&ret);
     } else { // mode_concurrency == M_PROCESS
         free(args);
-        pthread_exit(&ret);
+        exit(ret);
     }
 }
 
@@ -255,37 +255,61 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         if (pipe(fd_pipe) < 0) {
             perror("pipe");
         }
-        struct PipeArgs *pipeArgs1;
-        int st;
-        pipeArgs1->path = path;
-        pipeArgs1->ip_client = args->ip_client;
-        pipeArgs1->dim_file = dim_file_to_send;
+
         child = fork();
 
-        if (child > 0) {
+        if (child < 0){
+            perror("error in fork");
+        } else if (child > 0) {
+            close(fd_pipe[0]);
+            struct PipeArgs pipeArgs1;
+            pipeArgs1.path = path;
+            pipeArgs1.ip_client = args->ip_client;
+            pipeArgs1.dim_file = dim_file_to_send;
             write(fd_pipe[1], &pipeArgs1, sizeof(pipeArgs1));
-            wait(&st);
+            close(fd_pipe[1]);
         } else if (child == 0) {
             close(fd_pipe[1]);
             printf("---- child process wrote\n");
             //FILE* fp_fileLog = fopen(LOG_PATH, "w");
             int fd_log = open(LOG_PATH, O_WRONLY | O_APPEND);
+            //FILE* fp_filelog= fdopen(fd_log, "a");
+            printf("---- child process open\n");
             if (fd_log == -1){
-            //if (fp_fileLog == NULL){
+                //if (fp_fileLog == NULL){
                 printf("sono bloccato");
                 exit(-1);
             }
             int n;
-            struct PipeArgs *data;
-            n = (read(fd_pipe[0], &data, sizeof(data)));
-            printf("\n sono figlio :-> %s\n", data->ip_client);
-            dprintf(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);
+            struct PipeArgs data ;
+
+            //ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
+            ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
+            printf("%zu", nread);
+
+
+            printf("%zu", nread);
+
+            printf("---- child process read\n");
+
+
+            //printf("\n sono figlio :-> %s\n", data->ip_client);
+            printf("FileName: %s\n", data.path);
+            printf("%d Byte \n", data.dim_file);
+            printf("IP Client: %s\n", data.ip_client);
+
+            int err = dprintf(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data.path, data.dim_file, data.ip_client);
+            //int err = fprintf(fp_filelog, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);
+            perror("dprintf");
             //write(fd_log, "cia", sizeof("cia"));
 
-            printf("SONO N %d \n", n);
+            //printf("SONO N %d \n", n);
             close(fd_pipe[0]);
+
+            printf("---- child process close\n");
             exit(0);
         }
+
         fprintf(stdout, "parent process wrote it after fork!\n");
 
 
