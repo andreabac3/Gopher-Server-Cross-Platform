@@ -17,9 +17,45 @@
 #include "files_interaction.h"
 #include "socket.h"
 
+int run_concurrency(struct ThreadArgs *args) {
+
+    if (args->configs.mode_concurrency == M_THREAD) {
+        // TODO detached
+        HANDLE thread;
+        if (0 != (thread = CreateThread(NULL, 0, handle_request, (PVOID) &args, 0, NULL))) {
+            printf("funziona\n");
+        }
+        // pthread_attr_destroy(&attr);
+        return 0;
+    } else if (args->configs.mode_concurrency == M_PROCESS) {
+        STARTUPINFO si;
+        PROCESS_INFORMATION pi;
+
+        ZeroMemory( &si, sizeof(si) );
+        si.cb = sizeof(si);
+        ZeroMemory( &pi, sizeof(pi) );
+
+        printf("Creando nuovo processo");
+        CreateProcess( "C:\\Users\\Valerio\\CLionProjects\\gopher-project\\cmake-build-debug\\gopherWin.exe child", NULL, NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL /*forse utile*/, NULL, &si, &pi);
+        perror("CreateProcess");
+
+        // Wait until child process exits.
+        WaitForSingleObject( pi.hProcess, INFINITE );
+//
+//        // Close process and thread handles.
+//        CloseHandle( pi.hProcess );
+//        CloseHandle( pi.hThread );
+        return 0;
+    } else {
+        fprintf(stderr, "linux_socket.c/run_concurrency");
+        return -1;
+    }
+}
+
+
 
 int windows_socket_runner(struct Configs *configs) {
-    HANDLE thread;
+
     WSADATA WSAData;
     SOCKET server, client;
     SOCKADDR_IN serverAddr, clientAddr;
@@ -98,9 +134,8 @@ int windows_socket_runner(struct Configs *configs) {
             printf("IP address is: %s\n", inet_ntoa(clientAddr.sin_addr));
             args.fd = client;
 
-            if (0 != (thread = CreateThread(NULL, 0, handle_request, (PVOID) &args, 0, NULL))) {
-                printf("funziona\n");
-            }
+            // TODO run?concurrency
+            run_concurrency(&args);
 
         }
 
