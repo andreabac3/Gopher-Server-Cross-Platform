@@ -55,7 +55,15 @@ int linux_memory_mapping(int fd_client, char *filename, int mode_concurrency) {
         return -1;
     }
 
-    void *addr = mmap(0, sb.st_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
+    /*
+     * MAP_PRIVATE = Create a private copy-on-write mapping.  Updates to the mapping are not visible to other processes
+     *               mapping the same file.
+     * PROT_READ = Pages may be read.
+
+     */
+
+
+    void *addr = mmap(0, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
 
     if (addr == MAP_FAILED) {
         perror("mmap");
@@ -68,7 +76,7 @@ int linux_memory_mapping(int fd_client, char *filename, int mode_concurrency) {
     FILE *fp_FileToSend = sendFileToClient(fd);
     int remain_data = fsize(fp_FileToSend);
 
-    SendFile(fd_client, fp_FileToSend, remain_data);
+    SendFile(fd_client, fp_FileToSend);
 
     if (munmap(addr, sb.st_size) < 0) {
         // int err = errno;

@@ -14,6 +14,9 @@
 #define CONNECTION_QUEUE 500
 #define MAX_CONNECTIONS_ALLOWED 1
 #define BUFFER_SIZE 1024
+
+#define SEND_BUFFER_SIZE 512
+
 #if defined(__unix__) || defined(__APPLE__)
 #define OS_SEPARATOR '/'
 #endif
@@ -22,6 +25,11 @@
 #endif
 
 
+struct PipeArgs {
+    char* ip_client;
+    int dim_file;
+    char* path;
+};
 
 struct Configs {
     unsigned int port_number;

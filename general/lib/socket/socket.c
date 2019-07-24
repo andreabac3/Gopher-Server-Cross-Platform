@@ -4,10 +4,11 @@
 #include <stdbool.h>
 
 #ifdef _WIN32
+
 #include <winsock.h>
 #include <windows_protocol.h>
 #include <io.h>
-#include <fcntl.h>
+#include <windows_memory_mapping.h>
 
 #endif
 
@@ -16,6 +17,8 @@
 #include <sys/socket.h>
 #include <zconf.h>
 #include <pthread.h>
+
+#include <fcntl.h>
 #include "linux_memory_mapping.h"
 #include "linux_files_interaction.h"
 
@@ -25,6 +28,9 @@
 #include "socket.h"
 #include "utils.h"
 #include "files_interaction.h"
+
+
+int write_to_log(struct PipeArgs *data);
 
 
 int SendFile(int write_fd, FILE *read_fd) {
@@ -82,6 +88,7 @@ int fsize(FILE *fp) {
  * and close the socket file descriptor always
  */
 #ifdef _WIN32
+
 void clean_request(char *path, char *buf, struct ThreadArgs *args) {
 
     if (path != NULL) {
@@ -106,6 +113,7 @@ void clean_request(char *path, char *buf, struct ThreadArgs *args) {
         ExitThread(ret);
     }
 }
+
 #endif
 #if defined(__unix__) || defined(__APPLE__)
 
@@ -130,7 +138,7 @@ void clean_request(char *path, char *buf, struct ThreadArgs *args) {
         pthread_exit(&ret);
     } else { // mode_concurrency == M_PROCESS
         free(args);
-        pthread_exit(&ret);
+        exit(ret);
     }
 }
 
@@ -230,45 +238,96 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
          * TODO Usa la CreateFile per aprire il file mettendo dwShareMode a 0,
          * questo crea accesso esclusivo sia per Thread che per Processi
         */
-        /*
-        int fHandle = open(path, O_CREAT|O_TEXT);
-        HANDLE osfHandle = (HANDLE) _get_osfhandle(fHandle);
-        LARGE_INTEGER fHandle_size;
 
-        GetFileSizeEx(osfHandle, &fHandle_size);
 
-        HANDLE hMapping2 = CreateFileMapping(osfHandle, 0 , PAGE_READONLY,0 , 1024, 0);
-        int nHandle = _open_osfhandle((long)osfHandle, _O_RDONLY);
-         FILE* fp_FileToSend = _fdopen(nHandle,"rb" );
-         */
 
-        FILE *fp_FileToSend = fopen(path, "rb");
-        if (fp_FileToSend == NULL) {
-            fprintf(stderr, "Error opening file --> %s", strerror(errno));
-            clean_request(path, buf, args);
-        }
 
 #ifdef _WIN32
-
-        printf("%d", SendFile(args->fd, fp_FileToSend));
+        windows_memory_mapping(args->fd, path);
+        //printf("%d", SendFile(args->fd, fp_FileToSend));
 #endif
 #if defined(__unix__) || defined(__APPLE__)
         int dim_file_to_send = linux_memory_mapping(args->fd, path, args->configs.mode_concurrency);
+        printf("%s\n", "fino qua ci sono à##################");
+        pid_t child;
+        int fd_pipe[2];
+        //FILE *fp_log = fopen(LOG_PATH, "a");
+        if (pipe(fd_pipe) < 0) {
+            perror("pipe");
+        }
 
-        printf("%s", "SONO QUII@@@@@@@@@@@@@@@");
-        if (fork() == 0) {
-            time_t clk = time(NULL);
+        child = fork();
 
-            FILE *fp_log = fopen(LOG_PATH, "a");
+        if (child < 0){
+            perror("error in fork");
+        } else if (child > 0) {
+            close(fd_pipe[0]);
+            struct PipeArgs pipeArgs1;
+            pipeArgs1.path = path;
+            pipeArgs1.ip_client = args->ip_client;
+            pipeArgs1.dim_file = dim_file_to_send;
+            write(fd_pipe[1], &pipeArgs1, sizeof(pipeArgs1));
+            close(fd_pipe[1]);
+        } else if (child == 0) {
+            close(fd_pipe[1]);
+            printf("---- child process wrote\n");
+            //FILE* fp_fileLog = fopen(LOG_PATH, "w");
+            int fd_log = open(LOG_PATH, O_WRONLY | O_APPEND);
+            //FILE* fp_filelog= fdopen(fd_log, "a");
+            printf("---- child process open\n");
+            if (fd_log == -1){
+                //if (fp_fileLog == NULL){
+                printf("sono bloccato");
+                exit(-1);
+            }
+            int n;
+            struct PipeArgs data ;
 
-            fprintf(fp_log, "%sFileName: %s\t%d Byte \t IP Client: %s\n", ctime(&clk), path, dim_file_to_send, args->ip_client);
+            //ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
+            ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
+            printf("%zu", nread);
 
-            fclose(fp_log);
+
+            printf("%zu", nread);
+
+            printf("---- child process read\n");
+
+
+            //printf("\n sono figlio :-> %s\n", data->ip_client);
+            printf("FileName: %s\n", data.path);
+            printf("%d Byte \n", data.dim_file);
+            printf("IP Client: %s\n", data.ip_client);
+
+            int err = dprintf(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data.path, data.dim_file, data.ip_client);
+            //int err = fprintf(fp_filelog, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);
+            perror("dprintf");
+            //write(fd_log, "cia", sizeof("cia"));
+
+            //printf("SONO N %d \n", n);
+            close(fd_pipe[0]);
+
+            printf("---- child process close\n");
             exit(0);
         }
+
+        fprintf(stdout, "parent process wrote it after fork!\n");
+
+
 #endif
-        fclose(fp_FileToSend);
+        //fclose(fp_FileToSend);
         clean_request(path, buf, args);
         //return 0;
     }
+}
+
+int write_to_log(struct PipeArgs *data) {
+    FILE *fp_log = fopen("../gopher_log_file.txt", "a");
+    if (fp_log == NULL){
+        printf("%s","PERCHÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉ");
+        return -1;
+    }
+    fprintf(fp_log, "%s", "ciaoo");
+    printf("sono dentro la funzionee");
+    fclose(fp_log);
+
 }
