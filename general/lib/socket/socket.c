@@ -259,22 +259,30 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         int st;
         pipeArgs1->path = path;
         pipeArgs1->ip_client = args->ip_client;
+        pipeArgs1->dim_file = dim_file_to_send;
         child = fork();
 
         if (child > 0) {
-            write(fd_pipe[1], &pipeArgs1, sizeof(struct PipeArgs));
+            write(fd_pipe[1], &pipeArgs1, sizeof(pipeArgs1));
             wait(&st);
         } else if (child == 0) {
-            printf("---- child process wrote\n");
-
-            struct PipeArgs *data;
             close(fd_pipe[1]);
-            while (read(fd_pipe[0], &data, sizeof(data)) > 0) {
-                printf("\n sono figlio :-> %s\n", data->ip_client);
-
+            printf("---- child process wrote\n");
+            //FILE* fp_fileLog = fopen(LOG_PATH, "w");
+            int fd_log = open(LOG_PATH, O_WRONLY | O_APPEND);
+            if (fd_log == -1){
+            //if (fp_fileLog == NULL){
+                printf("sono bloccato");
+                exit(-1);
             }
+            int n;
+            struct PipeArgs *data;
+            n = (read(fd_pipe[0], &data, sizeof(data)));
+            printf("\n sono figlio :-> %s\n", data->ip_client);
+            dprintf(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);
+            //write(fd_log, "cia", sizeof("cia"));
 
-            //printf("SONO N %d \n", n);
+            printf("SONO N %d \n", n);
             close(fd_pipe[0]);
             exit(0);
         }
