@@ -26,6 +26,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #include "windows_socket.h"
+#include "windows_events.h"
 #endif
 // reformat Sh + ò
 // comment Sh + ù
@@ -76,6 +77,13 @@ int main(int argc, char *argv[]) {
 
 #endif
 #ifdef _WIN32
+
+    BOOL running = TRUE;
+    if (!SetConsoleCtrlHandler(consoleHandler, TRUE)) {
+        printf("\nERROR: Could not set control handler");
+        return 1;
+    }
+
     while(true) {
         windows_socket_runner(configs);
         c.reset_config = NULL ;
