@@ -330,4 +330,6 @@ int write_to_log(struct PipeArgs *data) {
     printf("sono dentro la funzionee");
     fclose(fp_log);
 
+    return 0;
+
 }

@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
 #endif
 #ifdef _WIN32
 
-    BOOL running = TRUE;
+    // BOOL running = TRUE;
     if (!SetConsoleCtrlHandler(consoleHandler, TRUE)) {
         printf("\nERROR: Could not set control handler");
         return 1;
