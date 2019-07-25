@@ -248,10 +248,12 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         ZeroMemory(&si, sizeof(si));
         si.cb = sizeof(si);
         ZeroMemory(&pi, sizeof(pi));
-        CreateProcess( "C:\\Projects\\gopher3\\gopher-project\\cmake-build-debug\\gopherWin.exe", "readPipe", NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL /*forse utile*/, NULL, &si, &pi);
-        WaitForSingleObject( pi.hProcess, INFINITE );
-        CloseHandle( pi.hThread );
-        CloseHandle( pi.hProcess );
+        if (CreateProcess("C:\\Users\\andrea\\CLionProjects\\gopher5\\gopher-project\\cmake-build-debug\\gopherWin.exe",
+                          "readPipe", NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL /*forse utile*/, NULL, &si, &pi)) {
+            WaitForSingleObject(pi.hProcess, INFINITE);
+        }
+        CloseHandle(pi.hThread);
+        CloseHandle(pi.hProcess);
         printf("End createProcess");
         //printf("%d", SendFile(args->fd, fp_FileToSend));
 #endif
@@ -326,9 +328,8 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         //fclose(fp_FileToSend);
         //return 0;
         //TODO clean
-        printf("End createProcess cleanRequest");
+        printf("socket_manage_files");
         return;
-        clean_request(path, buf, args);
 
     }
 }

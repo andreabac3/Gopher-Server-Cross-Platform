@@ -54,8 +54,8 @@ int windows_socket_runner(struct Configs *configs) {
     // new struct for thread/process
     // TODO testare e semplificare
     struct Configs c2;
-    struct Configs* n;
-    c2.reset_config = NULL ;
+    struct Configs *n;
+    c2.reset_config = NULL;
     n = &c2;
     ut_clone_configs(configs, n);
 
@@ -98,11 +98,12 @@ int windows_socket_runner(struct Configs *configs) {
             printf("IP address is: %s\n", inet_ntoa(clientAddr.sin_addr));
             args.fd = client;
 
-            handle_request((PVOID) &args);
+            // handle_request((PVOID) &args);
 
-            /*if (0 != (thread = CreateThread(NULL, 0, handle_request, (PVOID) &args, 0, NULL))) {
+            if (0 != (thread = CreateThread(NULL, 0, handle_request, (PVOID) &args, 0, NULL))) {
                 printf("funziona\n");
-            }*/
+            }
+            CloseHandle(thread);
 
         }
 
@@ -136,13 +137,12 @@ DWORD WINAPI handle_request(void *params) {
 }
 
 
-
-int w_sendFile(int fd_client, char* message_to_send) {
+int w_sendFile(int fd_client, char *message_to_send) {
     int bufferSize = 512;
     char buffer[bufferSize];
     int sendPosition = 0;
     int message_len = strlen(message_to_send);
-    while(message_len>0){
+    while (message_len > 0) {
         int chunkSize = message_len > bufferSize ? bufferSize : message_len;
         memcpy(buffer, message_to_send + sendPosition, chunkSize);
         chunkSize = send(fd_client, buffer, chunkSize, 0);
