@@ -1,3 +1,3 @@
-port 8080
-root_dir "C:\Users\Valerio\CLionProjects\gopher-project"
+port 7070
+root_dir "C:\Projects\gopher3\gopher-project"
 mode_concurrency Thread

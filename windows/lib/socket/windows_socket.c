@@ -98,9 +98,11 @@ int windows_socket_runner(struct Configs *configs) {
             printf("IP address is: %s\n", inet_ntoa(clientAddr.sin_addr));
             args.fd = client;
 
-            if (0 != (thread = CreateThread(NULL, 0, handle_request, (PVOID) &args, 0, NULL))) {
+            handle_request((PVOID) &args);
+
+            /*if (0 != (thread = CreateThread(NULL, 0, handle_request, (PVOID) &args, 0, NULL))) {
                 printf("funziona\n");
-            }
+            }*/
 
         }
 
@@ -121,6 +123,8 @@ DWORD WINAPI handle_request(void *params) {
     printf("args: %d\n", args->fd);
 
     socket_read_request(args, &buf); // fill the buffer with the request
+
+    printf("%s\n", buf);
 
     socket_resolve_selector(args, buf, &path); // parse the request
 

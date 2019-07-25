@@ -34,7 +34,25 @@
 // Ctrl + Enter
 
 int main(int argc, char *argv[]) {
+    printf("%s\n","Gopher start ...");
 
+    //perror("main#");
+
+#ifdef _WIN32
+
+    printf("SONO ARGC%d\n",argc);
+    if (argc == 1){
+
+        if (strcmp(argv[0],"readPipe")== 0){
+
+            printf("Argomento 1 %s\n", argv[0]);
+            printf("Nuovo Processo\n");
+            exit(0);
+        }
+    }
+
+
+#endif
     struct Configs c;
     c.reset_config = NULL ;
     configs = &c;
