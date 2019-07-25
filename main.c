@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <getopt.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <memory.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -61,7 +62,7 @@ int main(int argc, char *argv[]) {
     // configs.root_dir = malloc(50 * sizeof(char));
     // chiamata alla lettura del file di configurazione
     //
-    printf("PID: %ld  PPID: %ld\n", (long)getpid());
+    printf("PID: %ld  PPID: %ld\n", (long) getpid());
 
     //
     conf_parseConfigFile(CONFIGURATION_PATH, configs);
@@ -81,12 +82,15 @@ int main(int argc, char *argv[]) {
     if (signal(SIGHUP, signal_sighup_handler) == SIG_ERR)
 
     printf("%c \n", getGopherCode("C:/Users/valerio/file.png"));
+
+    linux_socket(configs, true);
     while(true) {
-        linux_socket(configs);
+
         c.reset_config = NULL ;
         configs = &c;
         conf_parseConfigFile("../gopher_server_configuration.txt", configs);
 
+        linux_socket(configs, false);
     }
     //pthread_t t_id;
 

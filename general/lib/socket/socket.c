@@ -292,7 +292,7 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
                 printf("sono bloccato");
                 exit(-1);
             }
-            int n;
+            //int n;
             struct PipeArgs data ;
 
             //ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
@@ -310,7 +310,7 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
             printf("%d Byte \n", data.dim_file);
             printf("IP Client: %s\n", data.ip_client);
 
-            int err = dprintf(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data.path, data.dim_file, data.ip_client);
+            /*int err = */ dprintf(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data.path, data.dim_file, data.ip_client);
             //int err = fprintf(fp_filelog, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);
             perror("dprintf");
             //write(fd_log, "cia", sizeof("cia"));

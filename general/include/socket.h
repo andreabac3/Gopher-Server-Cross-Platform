@@ -2,6 +2,7 @@
 // Created by Andrea Bacciu on 2019-07-10.
 //
 
+#pragma once
 
 #ifndef GOPHERLINUX_SOCKET_H
 #define GOPHERLINUX_SOCKET_H
@@ -29,7 +30,8 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args);
 
 #if defined(__unix__) || defined(__APPLE__)
 //TODO Controllare se si puó lasciare qui
-pthread_rwlock_t rwlock;
+
+pthread_mutex_t p_mutex;
 #endif
 
 

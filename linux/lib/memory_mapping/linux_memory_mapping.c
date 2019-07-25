@@ -41,7 +41,7 @@ int linux_memory_mapping(int fd_client, char *filename, int mode_concurrency) {
     if (mode_concurrency == M_PROCESS){
         lockf(fd, F_LOCK, 0);
     }else{
-        pthread_rwlock_rdlock(&rwlock);
+        pthread_mutex_lock(&p_mutex);
     }
 
     if (fd < 0) {
@@ -87,7 +87,7 @@ int linux_memory_mapping(int fd_client, char *filename, int mode_concurrency) {
     if (mode_concurrency == M_PROCESS){
         lockf(fd, F_ULOCK, 0);
     }else{
-        pthread_rwlock_rdlock(&rwlock);
+        pthread_mutex_unlock(&p_mutex);
     }
 
 

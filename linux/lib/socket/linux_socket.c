@@ -31,8 +31,8 @@
 int end_server(int fd) {
 
     //TODO da verificare se va bene qui
-    if (configs->mode_concurrency == M_THREAD){
-        pthread_rwlock_destroy(&rwlock);
+    if (configs->mode_concurrency == M_THREAD) {
+        pthread_mutex_destroy(&p_mutex);
     }
     shutdown(fd, 2);
     return close(fd);
@@ -99,7 +99,7 @@ int run_concurrency(struct ThreadArgs *args) {
 }
 
 
-int linux_socket(struct Configs *configs) {
+int linux_socket(struct Configs *configs, bool first_time) {
     fd_set rset;
     int n_ready;
     printf("%s\n", "Starting gophd...");
@@ -117,8 +117,10 @@ int linux_socket(struct Configs *configs) {
     struct sockaddr_in client_addr;
     socklen_t slen = sizeof(client_addr);
 
-    if (configs->mode_concurrency == M_THREAD) {
-        pthread_rwlock_init(&rwlock, NULL);
+    if (configs->mode_concurrency == M_THREAD && first_time) {
+            printf("Lock setted \n");
+            pthread_mutex_init(&p_mutex, NULL);
+            perror("pthread_mutex_init");
     }
 
     FD_ZERO(&rset);
