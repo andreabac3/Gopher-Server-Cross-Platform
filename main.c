@@ -16,12 +16,14 @@
 #include "files_interaction.h"
 
 #if defined(__unix__) || defined(__APPLE__)
+
 #include <signal.h>
 #include "linux_files_interaction.h"
 #include "files_interaction.h"
 #include "linux_thread.h"
 #include "linux_socket.h"
 #include "linux_signals.h"
+
 #endif
 
 #ifdef _WIN32
@@ -35,7 +37,7 @@
 // Ctrl + Enter
 
 int main(int argc, char *argv[]) {
-    printf("%s\n","Gopher start ...");
+    printf("%s\n", "Gopher start ...");
 
     //perror("main#");
 
@@ -55,7 +57,7 @@ int main(int argc, char *argv[]) {
 
 #endif
     struct Configs c;
-    c.reset_config = NULL ;
+    c.reset_config = NULL;
     configs = &c;
 
 
@@ -79,19 +81,26 @@ int main(int argc, char *argv[]) {
 
 #if defined(__unix__) || defined(__APPLE__)
 
-    if (signal(SIGHUP, signal_sighup_handler) == SIG_ERR)
+    if (signal(SIGHUP, signal_sighup_handler) == SIG_ERR){
+        perror("Signal");
+    }
 
     printf("%c \n", getGopherCode("C:/Users/valerio/file.png"));
 
-    linux_socket(configs, true);
-    while(true) {
+    start_mutex();
 
-        c.reset_config = NULL ;
+    linux_socket(configs);
+    while (true) {
+
+        c.reset_config = NULL;
         configs = &c;
         conf_parseConfigFile("../gopher_server_configuration.txt", configs);
 
-        linux_socket(configs, false);
+        linux_socket(configs);
     }
+
+    close_mutex();
+
     //pthread_t t_id;
 
     //thr_pthread_create(&t_id, &thr_test_func, (void *) "lol");

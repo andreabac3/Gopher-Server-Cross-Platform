@@ -27,13 +27,25 @@
 #include "linux_files_interaction.h"
 #include "files_interaction.h"
 
-
-int end_server(int fd) {
-
+void close_mutex() {
     //TODO da verificare se va bene qui
     if (configs->mode_concurrency == M_THREAD) {
         pthread_mutex_destroy(&p_mutex);
     }
+}
+
+void start_mutex() {
+
+    if (configs->mode_concurrency == M_THREAD) {
+        printf("Lock setted \n");
+        pthread_mutex_init(&p_mutex, NULL);
+        perror("pthread_mutex_init");
+    }
+}
+
+
+int end_server(int fd) {
+
     shutdown(fd, 2);
     return close(fd);
 }
@@ -99,7 +111,7 @@ int run_concurrency(struct ThreadArgs *args) {
 }
 
 
-int linux_socket(struct Configs *configs, bool first_time) {
+int linux_socket(struct Configs *configs) {
     fd_set rset;
     int n_ready;
     printf("%s\n", "Starting gophd...");
@@ -117,11 +129,6 @@ int linux_socket(struct Configs *configs, bool first_time) {
     struct sockaddr_in client_addr;
     socklen_t slen = sizeof(client_addr);
 
-    if (configs->mode_concurrency == M_THREAD && first_time) {
-            printf("Lock setted \n");
-            pthread_mutex_init(&p_mutex, NULL);
-            perror("pthread_mutex_init");
-    }
 
     FD_ZERO(&rset);
     int maxfdp1 = fd_server + 1;
