@@ -231,11 +231,12 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         send(args->fd, m, sizeof(char) * strlen(m), 0);
         print_directory(path, &socket_send_message, args->fd, args->configs.port_number);
     } else if (FILES_IS_REG_FILE == type_file) { // FILES_IS_FILE
+        // TODO creare un nuovo thread che gestisca l'invio del file.
         // it's some kind of files
         printf("%s\n", "filesssss");
 
         /*
-         * TODO Usa la CreateFile per aprire il file mettendo dwShareMode a 0,
+         * todoFatto Usa la CreateFile per aprire il file mettendo dwShareMode a 0,
          * questo crea accesso esclusivo sia per Thread che per Processi
         */
 
@@ -325,9 +326,6 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
 
 
 #endif
-        //fclose(fp_FileToSend);
-        //return 0;
-        //TODO clean
         printf("socket_manage_files");
         return;
 

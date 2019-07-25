@@ -131,6 +131,7 @@ DWORD WINAPI handle_request(void *params) {
 
     // todo fix resolve_selector come su linux
     printf("full path %s \n", path);
+
     socket_manage_files(path, buf, args); // send response
     clean_request(path, buf, args);
     return 0;
