@@ -9,6 +9,8 @@
 #include <windows_protocol.h>
 #include <io.h>
 #include <windows_memory_mapping.h>
+#include <process.h>
+#include <windows_pipe.h>
 
 #endif
 
@@ -107,10 +109,11 @@ void clean_request(char *path, char *buf, struct ThreadArgs *args) {
     int ret = 0;
     if (args->configs.mode_concurrency == M_THREAD) {
         free(args);
-        ExitThread(ret);
+        //ExitThread(ret);
+        _endthread();
     } else { // mode_concurrency == M_PROCESS
         free(args);
-        ExitThread(ret);
+        perror("i processi ancora non sono stati implementati");
     }
 }
 
@@ -241,20 +244,34 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         */
 
 #ifdef _WIN32
-        windows_memory_mapping(args->fd, path);
+        int dim_file_to_send = windows_memory_mapping(args->fd, path);
         //clean_request(path, buf, args);
+        printf("HO INVIATO IL FILE\n");
+        struct PipeArgs pipeargs1;
+        pipeargs1.path = path;
+        pipeargs1.ip_client = args->ip_client;
+        pipeargs1.dim_file = dim_file_to_send;
 
+        pipe_write_to_pipe(PIPE_LOG_NAME, &pipeargs1);
+/*
         STARTUPINFO si;
         PROCESS_INFORMATION pi;
         ZeroMemory(&si, sizeof(si));
         si.cb = sizeof(si);
         ZeroMemory(&pi, sizeof(pi));
-        if (CreateProcess("C:\\Users\\andrea\\CLionProjects\\gopher5\\gopher-project\\cmake-build-debug\\gopherWin.exe",
-                          "readPipe", NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL /*forse utile*/, NULL, &si, &pi)) {
-            WaitForSingleObject(pi.hProcess, INFINITE);
+        if (CreateProcess("C:\\Users\\andrea\\CLionProjects\\gopher5\\gopher-project\\cmake-build-debug\\gopherWinSubProcess.exe",
+                          "readPipe", NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL, NULL, &si, &pi)) {
+            // WaitForSingleObject(pi.hProcess, INFINITE);
+        }else{
+            perror("createprocess = false");
         }
-        CloseHandle(pi.hThread);
-        CloseHandle(pi.hProcess);
+
+
+        // CloseHandle(pi.hThread);
+        // CloseHandle(pi.hProcess);
+*/
+
+
         printf("End createProcess");
         //printf("%d", SendFile(args->fd, fp_FileToSend));
 #endif

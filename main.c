@@ -27,9 +27,12 @@
 #endif
 
 #ifdef _WIN32
+
+
 #include <windows.h>
 #include "windows_socket.h"
 #include "windows_events.h"
+
 #endif
 // reformat Sh + ò
 // comment Sh + ù
@@ -37,22 +40,27 @@
 // Ctrl + Enter
 
 int main(int argc, char *argv[]) {
+
     printf("%s\n", "Gopher start ...");
 
     //perror("main#");
 
 #ifdef _WIN32
 
-    printf("SONO ARGC%d\n",argc);
-    if (argc == 1){
-
-        if (strcmp(argv[0],"readPipe")== 0){
-
-            printf("Argomento 1 %s\n", argv[0]);
-            printf("Nuovo Processo\n");
-            exit(0);
-        }
+    printf("SONO ARGC%d\n", argc);
+    STARTUPINFO si;
+    PROCESS_INFORMATION pi;
+    ZeroMemory(&si, sizeof(si));
+    si.cb = sizeof(si);
+    ZeroMemory(&pi, sizeof(pi));
+    if (CreateProcess("C:\\Users\\andrea\\CLionProjects\\gopher5\\gopher-project\\cmake-build-debug\\gopherWinSubProcess.exe",
+                      "readPipe", NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL, NULL, &si, &pi)) {
+        //WaitForSingleObject(pi.hProcess, INFINITE);
+    }else {
+        perror("create process is failed");
     }
+
+
 
 
 #endif
@@ -109,19 +117,23 @@ int main(int argc, char *argv[]) {
 #endif
 #ifdef _WIN32
 
+
     // BOOL running = TRUE;
     if (!SetConsoleCtrlHandler(consoleHandler, TRUE)) {
         printf("\nERROR: Could not set control handler");
         return 1;
     }
 
-    while(true) {
+    while (true) {
         windows_socket_runner(configs);
-        c.reset_config = NULL ;
+        c.reset_config = NULL;
         configs = &c;
         conf_parseConfigFile("../gopher_server_configuration.txt", configs);
 
     }
+    WaitForSingleObject(pi.hProcess, INFINITE);
+    CloseHandle(pi.hThread);
+    CloseHandle(pi.hProcess);
 
 #endif
     //printf("%s", configs.root_dir);

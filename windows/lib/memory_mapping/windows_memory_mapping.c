@@ -40,7 +40,7 @@ int windows_memory_mapping(int fd_client, char *path) {
                                         1024);      // number of bytes
     // to map
     char *pBuf = (char *) lpMapAddress;
-    printf("SONO PBUFFFF: %s\n", pBuf);
+    // printf("SONO PBUFFFF: %s\n", pBuf);
     //free(pBuf);
     w_sendFile(fd_client, pBuf);
 
@@ -49,7 +49,7 @@ int windows_memory_mapping(int fd_client, char *path) {
         _tprintf(TEXT("lpMapAddress is NULL: last error: %d\n"), GetLastError());
         return -1;
     }
-    printf("Read message %s", lpMapAddress);
+    // printf("Read message %s", lpMapAddress);
 
 
     BOOL bFlag = UnmapViewOfFile(lpMapAddress);
@@ -68,6 +68,6 @@ int windows_memory_mapping(int fd_client, char *path) {
                  GetLastError());
         return -1;
     }
-    return 0;
+    return sizeof(pBuf);
 }
 

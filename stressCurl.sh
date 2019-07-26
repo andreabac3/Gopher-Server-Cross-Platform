@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 END=5000
-for i in $(seq 1 $END); do curl gopher://localhost:7070/1/main.c &
+for i in $(seq 1 $END); do curl gopher://localhost:9090/1/main.c &
 pids[${i}]=$! ; done
 
 # wait for all pids

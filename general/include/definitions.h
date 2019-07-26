@@ -22,13 +22,16 @@
 #endif
 #ifdef _WIN32
 #define OS_SEPARATOR '\\'
+
+#define PIPE_LOG_NAME "\\\\.\\pipe\\Pipe"
+
 #endif
 
 
 struct PipeArgs {
-    char* ip_client;
+    char *ip_client;
     int dim_file;
-    char* path;
+    char *path;
 };
 
 struct Configs {
@@ -36,9 +39,9 @@ struct Configs {
     char mode_concurrency;
     char *root_dir;
     int used_OPTARG;
-    int* reset_config;
+    int *reset_config;
 };
-struct Configs* configs;
+struct Configs *configs;
 #if defined(__unix__) || defined(__APPLE__)
 struct ThreadArgs {
     int fd;
@@ -47,10 +50,13 @@ struct ThreadArgs {
 };
 #endif
 #ifdef _WIN32
+
 #include <afxres.h>
+
 struct ThreadArgs {
     SOCKET fd;
     struct Configs configs;
+    char *ip_client;
 };
 #endif
 

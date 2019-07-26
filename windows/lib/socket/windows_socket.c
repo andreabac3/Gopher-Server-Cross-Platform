@@ -1,7 +1,6 @@
-//
-// Created by andrea on 14-Jun-19.
-//
 #include <windows.h>
+
+
 #include <winsock2.h>
 #include <stdio.h>
 #include <io.h>
@@ -10,7 +9,8 @@
 #include <windows_protocol.h>
 #include <errno.h>
 #include <ws2tcpip.h>
-#include <utils.h>
+#include <excpt.h>
+#include "utils.h"
 #include "windows_socket.h"
 #include "winThread.h"
 #include "definitions.h"
@@ -94,20 +94,18 @@ int windows_socket_runner(struct Configs *configs) {
                     exit(1);
                 }
             }
+            args.ip_client = inet_ntoa(clientAddr.sin_addr);
             printf("Client connected!\n");
-            printf("IP address is: %s\n", inet_ntoa(clientAddr.sin_addr));
+            printf("IP address is: %s\n", args.ip_client);
             args.fd = client;
 
             // handle_request((PVOID) &args);
-
+            // TODO cambiare con _beginthread
             if (0 != (thread = CreateThread(NULL, 0, handle_request, (PVOID) &args, 0, NULL))) {
                 printf("funziona\n");
             }
             CloseHandle(thread);
-
         }
-
-
     }
 
 }
@@ -133,7 +131,10 @@ DWORD WINAPI handle_request(void *params) {
     printf("full path %s \n", path);
 
     socket_manage_files(path, buf, args); // send response
+    printf("PRIMA DI CLEAN");
+
     clean_request(path, buf, args);
+    printf("DOPO CLEAN");
     return 0;
 }
 
