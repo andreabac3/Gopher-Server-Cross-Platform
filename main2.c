@@ -1,7 +1,3 @@
-//
-// Created by andrea on 26-Jul-19.
-//
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -10,7 +6,50 @@
 #include <stdbool.h>
 
 int main(int argc, char *argv[]) {
-    printf("SONO PARTITO");
+    printf("\nSONO PARTITO\n");
+
+    //printf("%s" , argv[0]);
+    HANDLE eventReadyToReadPipe = CreateEventA(NULL, FALSE, TRUE, "eventReadyToReadPipe");
+    while (TRUE) {
+        WaitForSingleObject(eventReadyToReadPipe, INFINITE);
+        HANDLE child_std_out = GetStdHandle(STD_OUTPUT_HANDLE);
+        char buf[BUFFER_SIZE * 2] = {0};
+        DWORD numRead;
+
+        ReadFile(child_std_out, buf, BUFFER_SIZE * 2, &numRead, NULL);
+        fprintf(stderr, "NumRead PIPE%d \n%s\n", numRead ,buf);
+        FILE *fp_log = fopen(LOG_PATH, "a+");
+        fprintf(fp_log, "> %s\n", buf);
+        fclose(fp_log);
+
+
+    }
+    CloseHandle(eventReadyToReadPipe);
+
+
+    /*_sleep(100);
+    fprintf(stderr, "\n%s\n", argv[0]);
+    _sleep(100);
+    fprintf(stderr, " SONO argv[0] |%d|\n", atoi(argv[0]));
+    */
+
+
+
+    exit(0);
+    /*
+    HANDLE hWrite = 0;
+    wchar_t* sz;
+    if (sz = wcschr(GetCommandLineW(), '<'))
+    {
+        fprintf(stderr, " SONO SZ %s\n", sz);
+        //hWrite = (HANDLE)(ULONG_PTR)_wcstoi64(sz + 1, &sz, 16);
+        if (*sz != '>')
+        {
+            hWrite = 0;
+        }
+    }
+
+    exit(0);
     FILE *fp_prova = fopen(LOG_PATH, "a+");
     //if (argc == 1) {
 
@@ -21,7 +60,7 @@ int main(int argc, char *argv[]) {
     struct PipeArgs data;
     DWORD dwRead;
     printf("%s\n", "Nuovo Processo");
-
+    */
     /*
      * HANDLE hPipe = CreateNamedPipe("\\\\.\\pipe\\Pipe",
                                    PIPE_ACCESS_DUPLEX,
@@ -33,6 +72,7 @@ int main(int argc, char *argv[]) {
                                    NMPWAIT_USE_DEFAULT_WAIT,
                                    NULL);
     */
+    /*
     DWORD numRead;
     while (true) {
         HANDLE hPipe = CreateNamedPipe(PIPE_LOG_NAME, PIPE_ACCESS_INBOUND | PIPE_ACCESS_OUTBOUND, PIPE_WAIT, 1, 1024,
@@ -52,6 +92,7 @@ int main(int argc, char *argv[]) {
     }
     fclose(fp_prova); //hPipe = INVALID_HANDLE_VALUE;
     return 0;
+     */
 }
 
 /*

@@ -1,24 +1,6 @@
-> W -> FileName: C:\Users\andrea\CLionProjects\gopher5\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
+> W -> FileName: C:\Users\andrea\CLionProjects\gopher5\gopher-project\/main.c	400 KByte 	 IP Client: 127.0.0.1
 
-> W -> FileName: C:\Users\andrea\CLionProjects\gopher5\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
+> W -> FileName: C:\Users\andrea\CLionProjects\gopher5\gopher-project\/main.c	400 KByte 	 IP Client: 127.0.0.1
 
-> W -> FileName: C:\Users\andrea\CLionProjects\gopher5\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
-
-> W -> FileName: C:\Users\andrea\CLionProjects\gopher5\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
-
-> W -> FileName: C:\Users\andrea\CLionProjects\gopher5\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
-
-> W -> FileName: C:\Users\andrea\CLionProjects\gopher5\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
-
-> W -> FileName: C:\Users\andrea\CLionProjects\gopher5\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
-
-> W -> FileName: C:\Users\andrea\CLionProjects\gopher5\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
-
-> W -> FileName: C:\Users\andrea\CLionProjects\gopher5\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
-
-> W -> FileName: C:\Users\andrea\CLionProjects\gopher5\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
-
-> W -> FileName: C:\Users\andrea\CLionProjects\gopher5\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
-
-> W -> FileName: C:\Users\andrea\CLionProjects\gopher5\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
+> W -> FileName: C:\Users\andrea\CLionProjects\gopher5\gopher-project\/README.md	-1 KByte 	 IP Client: 127.0.0.1
 

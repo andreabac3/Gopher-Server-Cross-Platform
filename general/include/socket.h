@@ -35,4 +35,12 @@ pthread_mutex_t p_mutex;
 #endif
 
 
+#ifdef _WIN32
+//TODO Controllare se si puó lasciare qui
+
+HANDLE pipe_read;
+HANDLE pipe_write;
+#endif
+
+
 #endif //GOPHERLINUX_SOCKET_H

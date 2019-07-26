@@ -106,7 +106,7 @@ void clean_request(char *path, char *buf, struct ThreadArgs *args) {
     if (err != 0) {
         perror("Close in clean request");
     }
-    int ret = 0;
+    //int ret = 0;
     if (args->configs.mode_concurrency == M_THREAD) {
         free(args);
         //ExitThread(ret);
@@ -252,7 +252,7 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         pipeargs1.ip_client = args->ip_client;
         pipeargs1.dim_file = dim_file_to_send;
 
-        pipe_write_to_pipe(PIPE_LOG_NAME, &pipeargs1);
+        pipe_simple_write_to_pipe(&pipeargs1);
 /*
         STARTUPINFO si;
         PROCESS_INFORMATION pi;

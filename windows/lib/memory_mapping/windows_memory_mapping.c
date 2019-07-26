@@ -22,27 +22,23 @@ int windows_memory_mapping(int fd_client, char *path) {
         return -1;
     }
 
-
+    // TODO modificare 1024 con dim reale
     HANDLE hMapFile = CreateFileMapping(hFile, 0, PAGE_READONLY, 0, 1024, 0);
     if (hMapFile == NULL) {
         _tprintf(TEXT("hMapFile is NULL: last error: %d\n"), GetLastError());
+        return -1;
     }
 
-    LPVOID lpMapAddress = MapViewOfFile(hMapFile,            // handle to
-            // mapping object
-                                        FILE_MAP_READ, // read/write
-                                        0,                   // high-order 32
-            // bits of file
-            // offset
-                                        0,      // low-order 32
-            // bits of file
-            // offset
-                                        1024);      // number of bytes
+    LPVOID lpMapAddress = MapViewOfFile(hMapFile, FILE_MAP_READ,  0, 0, 1024);
     // to map
     char *pBuf = (char *) lpMapAddress;
     // printf("SONO PBUFFFF: %s\n", pBuf);
     //free(pBuf);
-    w_sendFile(fd_client, pBuf);
+    printf("%d\n", &hFile);
+    printf("%d\n", pBuf);
+    printf("%s\n", "è colpa di windows");
+    // todo fix send filke
+    // w_sendFile(fd_client, pBuf);
 
 
     if (lpMapAddress == NULL) {
@@ -54,14 +50,19 @@ int windows_memory_mapping(int fd_client, char *path) {
 
     BOOL bFlag = UnmapViewOfFile(lpMapAddress);
     bFlag = CloseHandle(hMapFile); // close the file mapping object
+    printf("%s\n", "è colpa di windows");
 
     if (!bFlag) {
         _tprintf(TEXT("\nError %ld occurred closing the mapping object!"),
                  GetLastError());
         return -1;
     }
+    printf("%s\n", "è colpa di windows");
+
 
     bFlag = CloseHandle(hFile);   // close the file itself
+    printf("%s\n", "è colpa di windows");
+
 
     if (!bFlag) {
         _tprintf(TEXT("\nError %ld occurred closing the file!"),
