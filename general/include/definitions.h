@@ -47,6 +47,7 @@ struct ThreadArgs {
     int fd;
     struct Configs configs;
     char* ip_client;
+    int type_Request;
 };
 
 struct MemoryMappingArgs {

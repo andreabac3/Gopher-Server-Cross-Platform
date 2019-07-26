@@ -130,10 +130,11 @@ void clean_request(char *path, char *buf, struct ThreadArgs *args) {
     }
 
     // shutdown(*fd, SHUT_WR);
-
-    int err = 0; //close(args->fd);
-    if (err != 0) {
-        perror("Close in clean request");
+    if (args->type_Request) {
+        int err = close(args->fd);
+        if (err != 0) {
+            perror("Close in clean request");
+        }
     }
     int ret = 0;
     if (args->configs.mode_concurrency == M_THREAD) {
@@ -204,6 +205,7 @@ int socket_send_message(int fd, char *message_string) {
 void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
     int type_file = file_type(path);
     if (FILES_NOT_EXIST == type_file) {
+        args->type_Request = 1;
         printf("SEND: Il file non esiste");
 
         // tell to client that file do not exists
@@ -229,6 +231,7 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
 
     if (FILES_IS_DIRECTORY == type_file) {
         // it's a directory
+        args->type_Request = 1;
         printf("%s\n", "iDirectory");
         char *m = "iDirectory\n";
         send(args->fd, m, sizeof(char) * strlen(m), 0);
@@ -237,6 +240,7 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         // TODO creare un nuovo thread che gestisca l'invio del file.
         // it's some kind of files
         printf("%s\n", "filesssss");
+        args->type_Request = 0;
 
         /*
          * todoFatto Usa la CreateFile per aprire il file mettendo dwShareMode a 0,
@@ -386,7 +390,7 @@ int write_to_log(struct PipeArgs *data) {
 }
 
 int SendFileMapped(int write_fd, char *fileToSend, int fileSize) {
-    if (send(write_fd, fileToSend,  fileSize, 0) == -1) {
+    if (send(write_fd, fileToSend, fileSize, 0) == -1) {
         return -2;
     }
     return 0;
