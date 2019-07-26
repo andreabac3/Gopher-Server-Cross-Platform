@@ -206,7 +206,6 @@ int linux_socket(struct Configs *configs) {
     return EXIT_SUCCESS;
 }
 
-#define BUFFER_SIZE 1024
 
 int get_line(char *buf, size_t size) {
     char *pos = memchr(buf, '\n', size);

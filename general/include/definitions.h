@@ -48,6 +48,12 @@ struct ThreadArgs {
     struct Configs configs;
     char* ip_client;
 };
+
+struct MemoryMappingArgs {
+    int fd;
+    char mode_concurrency;
+    char* path;
+};
 #endif
 #ifdef _WIN32
 

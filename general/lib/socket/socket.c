@@ -131,7 +131,7 @@ void clean_request(char *path, char *buf, struct ThreadArgs *args) {
 
     // shutdown(*fd, SHUT_WR);
 
-    int err = close(args->fd);
+    int err = 0; //close(args->fd);
     if (err != 0) {
         perror("Close in clean request");
     }
@@ -276,7 +276,28 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         //printf("%d", SendFile(args->fd, fp_FileToSend));
 #endif
 #if defined(__unix__) || defined(__APPLE__)
-        int dim_file_to_send = linux_memory_mapping(args->fd, path, args->configs.mode_concurrency);
+
+        pthread_t thread;
+        pthread_attr_t attr;
+        pthread_attr_init(&attr);
+        pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+        struct MemoryMappingArgs *memory_mapping_args = calloc(1, sizeof(struct MemoryMappingArgs));
+        printf("SONO CCCCCCCCC %s\n", path);
+        //memory_mapping_args->path = path;
+
+        memory_mapping_args->path = path;
+        memory_mapping_args->mode_concurrency = args->configs.mode_concurrency;
+        memory_mapping_args->fd = args->fd;
+        if ((pthread_create(&thread, &attr, linux_memory_mapping, (void *) memory_mapping_args)) != 0) {
+            // printf("%s\n", "Could not create thread, continue non-threaded...");
+            perror("Could not create thread, continue non-threaded...");
+            // handle_request(req_fd);
+        }
+        //sleep(10000000);
+        //pthread_attr_destroy(&attr);
+
+        //int dim_file_to_send = linux_memory_mapping(args->fd, path, args->configs.mode_concurrency);
+        int dim_file_to_send = 22;
         printf("%s\n", "fino qua ci sono à##################");
         pid_t child;
         int fd_pipe[2];
@@ -287,7 +308,7 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
 
         child = fork();
 
-        if (child < 0){
+        if (child < 0) {
             perror("error in fork");
         } else if (child > 0) {
             close(fd_pipe[0]);
@@ -304,13 +325,13 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
             int fd_log = open(LOG_PATH, O_WRONLY | O_APPEND);
             //FILE* fp_filelog= fdopen(fd_log, "a");
             printf("---- child process open\n");
-            if (fd_log == -1){
+            if (fd_log == -1) {
                 //if (fp_fileLog == NULL){
                 printf("sono bloccato");
                 exit(-1);
             }
             //int n;
-            struct PipeArgs data ;
+            struct PipeArgs data;
 
             //ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
             ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
@@ -327,7 +348,8 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
             printf("%d Byte \n", data.dim_file);
             printf("IP Client: %s\n", data.ip_client);
 
-            /*int err = */ dprintf(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data.path, data.dim_file, data.ip_client);
+            /*int err = */ dprintf(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data.path, data.dim_file,
+                                   data.ip_client);
             //int err = fprintf(fp_filelog, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);
             perror("dprintf");
             //write(fd_log, "cia", sizeof("cia"));
@@ -362,3 +384,11 @@ int write_to_log(struct PipeArgs *data) {
     return 0;
 
 }
+
+int SendFileMapped(int write_fd, char *fileToSend, int fileSize) {
+    if (send(write_fd, fileToSend,  fileSize, 0) == -1) {
+        return -2;
+    }
+    return 0;
+}
+

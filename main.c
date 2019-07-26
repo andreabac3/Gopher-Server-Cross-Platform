@@ -150,7 +150,7 @@ configs.root_dir="/sda";
 
 #if defined(__unix__) || defined(__APPLE__)
 
-    if (signal(SIGHUP, signal_sighup_handler) == SIG_ERR){
+    if (signal(SIGHUP, signal_sighup_handler) == SIG_ERR) {
         perror("Signal");
     }
 
@@ -179,26 +179,26 @@ configs.root_dir="/sda";
 #ifdef _WIN32
 
 
-// BOOL running = TRUE;
-    if (!SetConsoleCtrlHandler(consoleHandler, TRUE)) {
-        printf("\nERROR: Could not set control handler");
-        return 1;
-    }
+    // BOOL running = TRUE;
+        if (!SetConsoleCtrlHandler(consoleHandler, TRUE)) {
+            printf("\nERROR: Could not set control handler");
+            return 1;
+        }
 
-    while (true) {
-        windows_socket_runner(configs);
-        c.reset_config = NULL;
-        configs = &c;
-        conf_parseConfigFile("../gopher_server_configuration.txt", configs);
+        while (true) {
+            windows_socket_runner(configs);
+            c.reset_config = NULL;
+            configs = &c;
+            conf_parseConfigFile("../gopher_server_configuration.txt", configs);
 
-    }
-    // todo ??
-    WaitForSingleObject(pi.hProcess, INFINITE);
+        }
+        // todo ??
+        WaitForSingleObject(pi.hProcess, INFINITE);
 
-    CloseHandle(pipe_read);
+        CloseHandle(pipe_read);
 
-    CloseHandle(pi.hThread);
-    CloseHandle(pi.hProcess);
+        CloseHandle(pi.hThread);
+        CloseHandle(pi.hProcess);
 
 #endif
 //printf("%s", configs.root_dir);
