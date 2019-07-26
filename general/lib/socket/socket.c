@@ -322,7 +322,7 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
             pipeArgs1.dim_file = dim_file_to_send;
             write(fd_pipe[1], &pipeArgs1, sizeof(pipeArgs1));
             close(fd_pipe[1]);
-        } else if (child == 0) {
+        } /*else if (child == 0) {
             close(fd_pipe[1]);
             printf("---- child process wrote\n");
             //FILE* fp_fileLog = fopen(LOG_PATH, "w");
@@ -334,6 +334,8 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
                 printf("sono bloccato");
                 exit(-1);
             }
+
+
             //int n;
             struct PipeArgs data;
 
@@ -352,7 +354,7 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
             printf("%d Byte \n", data.dim_file);
             printf("IP Client: %s\n", data.ip_client);
 
-            /*int err = */ dprintf(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data.path, data.dim_file,
+             dprintf(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data.path, data.dim_file,
                                    data.ip_client);
             //int err = fprintf(fp_filelog, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);
             perror("dprintf");
@@ -364,6 +366,7 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
             printf("---- child process close\n");
             exit(0);
         }
+    */
 
         fprintf(stdout, "parent process wrote it after fork!\n");
 

@@ -19,6 +19,11 @@
 
 #if defined(__unix__) || defined(__APPLE__)
 #define OS_SEPARATOR '/'
+#include <fcntl.h>
+
+pid_t child;
+int fd_pipe[2];
+
 #endif
 #ifdef _WIN32
 #define OS_SEPARATOR '\\'

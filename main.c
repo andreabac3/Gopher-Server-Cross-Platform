@@ -18,6 +18,7 @@
 #if defined(__unix__) || defined(__APPLE__)
 
 #include <signal.h>
+#include <fcntl.h>
 #include "linux_files_interaction.h"
 #include "files_interaction.h"
 #include "linux_thread.h"
@@ -47,6 +48,8 @@ int main(int argc, char *argv[]) {
     printf("%s\n", "Gopher start ...");
 
     //perror("main#");
+
+
 
 #ifdef _WIN32
 
@@ -149,6 +152,61 @@ configs.root_dir="/sda";
 
 
 #if defined(__unix__) || defined(__APPLE__)
+
+    if (pipe(fd_pipe) < 0) {
+        perror("pipe");
+        exit(-1);
+
+    }
+    child = fork();
+    if (child < 0) {
+        perror("failed child");
+        exit(-1);
+    } else if (child == 0) {
+
+        // TODO INSERT CONDITION VARIABLE and while true
+        close(fd_pipe[1]);
+        printf("---- child process wrote\n");
+        //FILE* fp_fileLog = fopen(LOG_PATH, "w");
+        int fd_log = open(LOG_PATH, O_WRONLY | O_APPEND);
+        //FILE* fp_filelog= fdopen(fd_log, "a");
+        printf("---- child process open\n");
+        if (fd_log == -1) {
+            //if (fp_fileLog == NULL){
+            printf("sono bloccato");
+            exit(-1);
+        }
+        //int n;
+        struct PipeArgs data;
+
+        //ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
+        ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
+        printf("%zu", nread);
+
+
+        printf("%zu", nread);
+
+        printf("---- child process read\n");
+
+
+        //printf("\n sono figlio :-> %s\n", data->ip_client);
+        printf("FileName: %s\n", data.path);
+        printf("%d Byte \n", data.dim_file);
+        printf("IP Client: %s\n", data.ip_client);
+
+        /*int err = */ dprintf(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data.path, data.dim_file,
+                               data.ip_client);
+        //int err = fprintf(fp_filelog, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);
+        perror("dprintf");
+        //write(fd_log, "cia", sizeof("cia"));
+
+        //printf("SONO N %d \n", n);
+        close(fd_pipe[0]);
+
+        printf("---- child process close\n");
+        exit(0);
+    }
+
 
     if (signal(SIGHUP, signal_sighup_handler) == SIG_ERR) {
         perror("Signal");
