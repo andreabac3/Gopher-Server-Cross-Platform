@@ -2,6 +2,8 @@
 #ifndef GOPHER_DEFINITIONS_H
 #define GOPHER_DEFINITIONS_H
 
+#define DAEMON
+
 // START FILES definition of file types
 #define FILES_NOT_EXIST 0
 #define FILES_IS_DIRECTORY 1

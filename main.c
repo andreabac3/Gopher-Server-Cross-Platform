@@ -52,6 +52,35 @@
 // run Sh + Enter
 // Ctrl + Enter
 
+void run_in_daemon() {
+
+    __pid_t d_child1 = fork();
+    __pid_t d_child2 = fork();
+    perror("deamon forked");
+
+    if (d_child1 < 0) {
+        perror("failed child");
+        exit(-1);
+    } else if (d_child1 > 1) {
+        // father
+        perror("creates d_child1");
+        exit(0);
+    }
+
+    // second child
+    if (d_child2 < 0) {
+        perror("failed child");
+
+        exit(-1);
+    } else if (d_child2 > 1) {
+        // father
+        perror("creates d_child2");
+
+        exit(0);
+    }
+
+}
+
 
 int main(int argc, char *argv[]) {
 
@@ -163,7 +192,9 @@ configs.root_dir="/sda";
 
 #if defined(__unix__) || defined(__APPLE__)
 
+    run_in_daemon();
 
+    // main code
     if (pipe(fd_pipe) < 0) {
         perror("pipe");
         exit(-1);
@@ -383,6 +414,7 @@ configs.root_dir="/sda";
         sleep(1);
         pthread_exit(NULL);
     }
+
 #endif
 
     exit(0);
