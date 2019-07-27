@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
     ZeroMemory(&pi, sizeof(pi));
     // HANDLE dup_pipe_read;
     if (true == CreateProcess(
-            "C:\\Users\\andrea\\CLionProjects\\gopher5\\gopher-project\\cmake-build-debug\\gopherWinSubProcess.exe",
+            "gopherWinPipeProcess.exe",
             (char *) child_cmd, NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL, NULL, &si, &pi)) {
 
         //WaitForSingleObject(pi.hProcess, INFINITE);

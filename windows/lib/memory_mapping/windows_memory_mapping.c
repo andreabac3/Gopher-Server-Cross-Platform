@@ -73,6 +73,7 @@ int windows_memory_mapping(int fd_client, char *path) {
         printf("funziona\n");
     }
     WaitForSingleObject(thread, 0);
+    CloseHandle(thread);
     // w_sendFile(fd_client, pBuf);
 
 
