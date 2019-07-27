@@ -115,13 +115,19 @@ int windows_socket_runner(struct Configs *configs) {
             printf("Client connected!\n");
             printf("IP address is: %s\n", args.ip_client);
             args.fd = client;
+            if(args.configs.mode_concurrency == M_THREAD) {
+                // handle_request((PVOID) &args);
+                // TODO cambiare con _beginthread
+                if (0 != (thread = CreateThread(NULL, 0, handle_request, (PVOID) &args, 0, NULL))) {
+                    printf("funziona\n");
+                }
+                CloseHandle(thread);
+            }else if (args.configs.mode_concurrency == M_PROCESS){
 
-            // handle_request((PVOID) &args);
-            // TODO cambiare con _beginthread
-            if (0 != (thread = CreateThread(NULL, 0, handle_request, (PVOID) &args, 0, NULL))) {
-                printf("funziona\n");
+            }else{
+                printf("errore in mod concurrency");
+                exit(-1);
             }
-            CloseHandle(thread);
         }
     }
 

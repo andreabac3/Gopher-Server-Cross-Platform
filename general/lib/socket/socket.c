@@ -232,9 +232,6 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
     if (FILES_IS_DIRECTORY == type_file) {
         // it's a directory
         args->type_Request = 1;
-        printf("%s\n", "iDirectory");
-        char *m = "iDirectory\n";
-        send(args->fd, m, sizeof(char) * strlen(m), 0);
         print_directory(path, &socket_send_message, args->fd, args->configs.port_number);
     } else if (FILES_IS_REG_FILE == type_file) { // FILES_IS_FILE
         // TODO creare un nuovo thread che gestisca l'invio del file.
