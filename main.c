@@ -55,7 +55,6 @@
 void run_in_daemon() {
 
     __pid_t d_child1 = fork();
-    __pid_t d_child2 = fork();
     perror("deamon forked");
 
     if (d_child1 < 0) {
@@ -67,6 +66,9 @@ void run_in_daemon() {
         exit(0);
     }
 
+    __pid_t d_child2 = fork();
+    setsid();
+    signal(SIGHUP, SIG_IGN);
     // second child
     if (d_child2 < 0) {
         perror("failed child");
