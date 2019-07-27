@@ -304,14 +304,7 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         //int dim_file_to_send = linux_memory_mapping(args->fd, path, args->configs.mode_concurrency);
         int dim_file_to_send = 22;
         printf("%s\n", "fino qua ci sono à##################");
-        pid_t child;
-        int fd_pipe[2];
-        //FILE *fp_log = fopen(LOG_PATH, "a");
-        if (pipe(fd_pipe) < 0) {
-            perror("pipe");
-        }
 
-        child = fork();
 
         if (child < 0) {
             perror("error in fork");
@@ -366,7 +359,15 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
             pipeArgs1.path = path;
             pipeArgs1.ip_client = args->ip_client;
             pipeArgs1.dim_file = dim_file_to_send;
-            write(fd_pipe[1], &pipeArgs1, sizeof(pipeArgs1));
+            printf("DIM FILE È : %s\n", pipeArgs1.path);
+            char message[BUFFER_SIZE*2] = {0};
+            sprintf(message, "L -> FileName: %s\t%d KByte \t IP Client: %s\n", path, dim_file_to_send, args->ip_client);
+
+            int nwrite = write(fd_pipe[1], message, BUFFER_SIZE*2);
+            if (nwrite < 0){
+                perror("errore write to process log");
+            }
+            printf("HO scritto nwrite: %d", nwrite);
             close(fd_pipe[1]);
             pthread_mutex_unlock(mutex);
 

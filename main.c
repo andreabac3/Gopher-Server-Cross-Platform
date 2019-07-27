@@ -276,7 +276,11 @@ configs.root_dir="/sda";
             printf("CHILD waits on condition\n");
 
             pthread_mutex_lock(mutex_child);
+            printf("CHILD waits on condition2\n");
+
             pthread_cond_wait(condition_child, mutex_child);
+            printf("CHILD waits on condition3\n");
+
             pthread_mutex_unlock(mutex_child);
 
             printf("Signaled by PARENT process, wake up!!!!!!!!\n");
@@ -305,16 +309,19 @@ configs.root_dir="/sda";
             struct PipeArgs data;
             fprintf(stderr, "%s\n", "sono debug3");
             printf("BOOOOOOL : %d", fd_is_valid(fd_pipe[0]));
-            //ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
+
+            char message[BUFFER_SIZE*2] = {0};
+            ssize_t nread = read(fd_pipe[0], message, BUFFER_SIZE*2);
             // ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
             // printf("%zu", nread);
-            fprintf(stderr, "%s\n", "read riuscito -> sono debug");
+            fprintf(stderr, "%s %zu\n", "read riuscito -> sono debug", nread);
 
 
             printf("---- child process read\n");
 
+
+            ;
             /*
-            //printf("\n sono figlio :-> %s\n", data->ip_client);
             printf("FileName: %s\n", data.path);
             printf("%d Byte \n", data.dim_file);
             printf("IP Client: %s\n", data.ip_client);
@@ -324,8 +331,8 @@ configs.root_dir="/sda";
              dprintf(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data.path, data.dim_file, data.ip_client);
             */
 
-
-            dprintf(fd_log, "<%s>\n", "bho");
+            dprintf(fd_log, "Byte %s", message);
+            //dprintf(fd_log, "<%s>\n", "bho");
 
             //int err = fprintf(fp_filelog, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);
             perror("dprintf");
