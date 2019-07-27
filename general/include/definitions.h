@@ -19,6 +19,8 @@
 
 #if defined(__unix__) || defined(__APPLE__)
 #define OS_SEPARATOR '/'
+#include <fcntl.h>
+#include <pthread.h>
 #endif
 #ifdef _WIN32
 #define OS_SEPARATOR '\\'
@@ -49,6 +51,16 @@ struct ThreadArgs {
     char* ip_client;
     int type_Request;
 };
+pid_t child;
+int fd_pipe[2];
+
+#define MUTEX "/mutex_lock"
+#define OKTOWRITE "/condwrite"
+#define MESSAGE "/msg"
+
+pthread_cond_t *condition_child;
+pthread_mutex_t *mutex_child;
+int des_cond_child, des_mutex_child;
 
 struct MemoryMappingArgs {
     int fd;
