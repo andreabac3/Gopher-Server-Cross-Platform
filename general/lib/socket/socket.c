@@ -312,44 +312,8 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
 
 
 
-            pthread_cond_t *condition;
-            pthread_mutex_t *mutex;
-            int des_cond, des_msg, des_mutex;
-            int mode = S_IRWXU | S_IRWXG;
-            des_mutex = shm_open(MUTEX, O_CREAT | O_RDWR, S_IRWXU | S_IRWXG);
-            if (des_mutex < 0) {
-                perror("failure on shm_open on des_mutex");
-                exit(1);
-            }
-            mutex = (pthread_mutex_t *) mmap(NULL, sizeof(pthread_mutex_t),
-                                             PROT_READ | PROT_WRITE, MAP_SHARED, des_mutex, 0);
-
-
-            if (mutex == MAP_FAILED) {
-                perror("Error on mmap on mutex\n");
-                munmap(mutex, sizeof(pthread_mutex_t));
-                exit(1);
-            }
-
-            des_cond = shm_open(OKTOWRITE, O_CREAT | O_RDWR, mode);
-
-            if (des_cond < 0) {
-                perror("failure on shm_open on des_cond");
-                exit(1);
-            }
-
-            condition = (pthread_cond_t*) mmap(NULL, sizeof(pthread_cond_t),
-                                               PROT_READ | PROT_WRITE, MAP_SHARED, des_cond, 0);
-
-            if (condition == MAP_FAILED ) {
-                perror("Error on mmap on condition\n");
-                munmap(mutex, sizeof(pthread_mutex_t));
-                munmap(condition, sizeof(pthread_cond_t));
-                exit(1);
-            }
-
-            pthread_mutex_lock(mutex);
-            pthread_cond_signal(condition);
+            pthread_mutex_lock(mutex_child);
+            pthread_cond_signal(condition_child);
             printf("son signaled\n");
 
 
@@ -369,7 +333,7 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
             }
             printf("HO scritto nwrite: %d", nwrite);
             close(fd_pipe[1]);
-            pthread_mutex_unlock(mutex);
+            pthread_mutex_unlock(mutex_child);
 
         } /*else if (child == 0) {
             close(fd_pipe[1]);

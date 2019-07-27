@@ -70,6 +70,10 @@ struct MemoryMappingArgs {
     char mode_concurrency;
     char* path;
 };
+
+pthread_cond_t *condition_child;
+pthread_mutex_t *mutex_child;
+int des_cond_child, des_mutex_child;
 #endif
 #ifdef _WIN32
 

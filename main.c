@@ -192,7 +192,66 @@ configs.root_dir="/sda";
 
 #if defined(__unix__) || defined(__APPLE__)
 
-    run_in_daemon();
+    // run_in_daemon();
+
+
+
+
+
+    des_mutex_child = shm_open(MUTEX, O_CREAT | O_RDWR | O_TRUNC, S_IRWXU | S_IRWXG);
+
+    if (des_mutex_child < 0) {
+        perror("failure on shm_open on des_mutex");
+        exit(1);
+
+    }
+
+    if (ftruncate(des_mutex_child, sizeof(pthread_mutex_t)) == -1) {
+        perror("Error on ftruncate to sizeof pthread_cond_t\n");
+        exit(-1);
+    }
+
+    mutex_child = (pthread_mutex_t *) mmap(NULL, sizeof(pthread_mutex_t),
+                                           PROT_READ | PROT_WRITE, MAP_SHARED, des_mutex_child, 0);
+
+    if (mutex_child == MAP_FAILED) {
+        perror("Error on mmap on mutex\n");
+        munmap(mutex_child, sizeof(pthread_mutex_t));
+        exit(1);
+    }
+
+    des_cond_child = shm_open(OKTOWRITE, O_CREAT | O_RDWR | O_TRUNC, S_IRWXU | S_IRWXG);
+
+    if (des_cond_child < 0) {
+        perror("failure on shm_open on des_cond");
+        exit(1);
+    }
+
+    if (ftruncate(des_cond_child, sizeof(pthread_cond_t)) == -1) {
+        perror("Error on ftruncate to sizeof pthread_cond_t\n");
+        exit(-1);
+    }
+
+    condition_child = (pthread_cond_t *) mmap(NULL, sizeof(pthread_cond_t), PROT_READ | PROT_WRITE, MAP_SHARED, des_cond_child, 0);
+
+    if (condition_child == MAP_FAILED) {
+        perror("Error on mmap on condition\n");
+        munmap(mutex_child, sizeof(pthread_mutex_t));
+        munmap(condition_child, sizeof(pthread_cond_t));
+
+        exit(1);
+    }
+    pthread_mutexattr_t mutexAttr;
+    pthread_mutexattr_init(&mutexAttr);
+    pthread_mutexattr_setpshared(&mutexAttr, PTHREAD_PROCESS_SHARED);
+    pthread_mutex_init(mutex_child, &mutexAttr);
+
+    /* set condition shared between processes */
+    pthread_condattr_t condAttr;
+    pthread_condattr_init(&condAttr);
+    pthread_condattr_setpshared(&condAttr, PTHREAD_PROCESS_SHARED);
+    pthread_cond_init(condition_child, &condAttr);
+
 
     // main code
     if (pipe(fd_pipe) < 0) {
@@ -209,79 +268,14 @@ configs.root_dir="/sda";
         close(fd_pipe[1]);
 
         while (true) {
-            fprintf(stderr, "%s\n", "sono debug3");
             printf("RISETTO TUTTE LE CONDIZIONI DA CAPO\n");
 
-
-            pthread_cond_t *condition_child;
-            pthread_mutex_t *mutex_child;
-            int des_cond_child, des_msg, des_mutex_child;
-
-
-            des_mutex_child = shm_open(MUTEX, O_CREAT | O_RDWR | O_TRUNC, S_IRWXU | S_IRWXG);
-
-            if (des_mutex_child < 0) {
-                perror("failure on shm_open on des_mutex");
-                exit(1);
-
-            }
-
-            if (ftruncate(des_mutex_child, sizeof(pthread_mutex_t)) == -1) {
-                perror("Error on ftruncate to sizeof pthread_cond_t\n");
-                exit(-1);
-            }
-
-            mutex_child = (pthread_mutex_t *) mmap(NULL, sizeof(pthread_mutex_t),
-                                                   PROT_READ | PROT_WRITE, MAP_SHARED, des_mutex_child, 0);
-
-            if (mutex_child == MAP_FAILED) {
-                perror("Error on mmap on mutex\n");
-                munmap(mutex_child, sizeof(pthread_mutex_t));
-                exit(1);
-            }
-
-            des_cond_child = shm_open(OKTOWRITE, O_CREAT | O_RDWR | O_TRUNC, S_IRWXU | S_IRWXG);
-
-            if (des_cond_child < 0) {
-                perror("failure on shm_open on des_cond");
-                exit(1);
-            }
-
-            if (ftruncate(des_cond_child, sizeof(pthread_cond_t)) == -1) {
-                perror("Error on ftruncate to sizeof pthread_cond_t\n");
-                exit(-1);
-            }
-
-            condition_child = (pthread_cond_t *) mmap(NULL, sizeof(pthread_cond_t),
-                                                      PROT_READ | PROT_WRITE, MAP_SHARED, des_cond_child, 0);
-
-            if (condition_child == MAP_FAILED) {
-                perror("Error on mmap on condition\n");
-                munmap(mutex_child, sizeof(pthread_mutex_t));
-                munmap(condition_child, sizeof(pthread_cond_t));
-
-                exit(1);
-            }
-            pthread_mutexattr_t mutexAttr;
-            pthread_mutexattr_init(&mutexAttr);
-            pthread_mutexattr_setpshared(&mutexAttr, PTHREAD_PROCESS_SHARED);
-            pthread_mutex_init(mutex_child, &mutexAttr);
-
-            /* set condition shared between processes */
-            pthread_condattr_t condAttr;
-            pthread_condattr_init(&condAttr);
-            pthread_condattr_setpshared(&condAttr, PTHREAD_PROCESS_SHARED);
-            pthread_cond_init(condition_child, &condAttr);
-
-            printf("CHILD waits on condition\n");
-
             pthread_mutex_lock(mutex_child);
-            printf("CHILD waits on condition2\n");
+            printf("pthread_mutex_lock\n");
 
             pthread_cond_wait(condition_child, mutex_child);
-            printf("CHILD waits on condition3\n");
+            printf("pthread_cond_wait \n");
 
-            pthread_mutex_unlock(mutex_child);
 
             printf("Signaled by PARENT process, wake up!!!!!!!!\n");
 
@@ -295,18 +289,10 @@ configs.root_dir="/sda";
             if (fd_log == -1) {
                 //if (fp_fileLog == NULL){
                 printf("sono bloccato");
-                pthread_condattr_destroy(&condAttr);
-                pthread_mutexattr_destroy(&mutexAttr);
-                pthread_mutex_destroy(mutex_child);
-                pthread_cond_destroy(condition_child);
 
-                shm_unlink(OKTOWRITE);
-                shm_unlink(MESSAGE);
-                shm_unlink(MUTEX);
                 exit(-1);
             }
             //int n;
-            struct PipeArgs data;
             fprintf(stderr, "%s\n", "sono debug3");
             printf("BOOOOOOL : %d", fd_is_valid(fd_pipe[0]));
 
@@ -339,19 +325,22 @@ configs.root_dir="/sda";
             //write(fd_log, "cia", sizeof("cia"));
 
             //printf("SONO N %d \n", n);
+            pthread_mutex_unlock(mutex_child);
 
-            pthread_condattr_destroy(&condAttr);
-            pthread_mutexattr_destroy(&mutexAttr);
-            pthread_mutex_destroy(mutex_child);
-            pthread_cond_destroy(condition_child);
 
-            shm_unlink(OKTOWRITE);
-            shm_unlink(MESSAGE);
-            shm_unlink(MUTEX);
+
+
             printf("---- child process close\n");
 
 
         }
+        pthread_condattr_destroy(&condAttr);
+        pthread_mutexattr_destroy(&mutexAttr);
+        pthread_mutex_destroy(mutex_child);
+        pthread_cond_destroy(condition_child);
+        shm_unlink(OKTOWRITE);
+        shm_unlink(MESSAGE);
+        shm_unlink(MUTEX);
         close(fd_pipe[0]);
         exit(0);
     }
