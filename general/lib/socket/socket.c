@@ -248,6 +248,11 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         */
 
 #ifdef _WIN32
+
+        /*if (0 != (thread = CreateThread(NULL, 0, handle_request, (PVOID) &args, 0, NULL))) {
+            printf("funziona\n");
+        }*/
+
         int dim_file_to_send = windows_memory_mapping(args->fd, path);
         //clean_request(path, buf, args);
         printf("HO INVIATO IL FILE\n");

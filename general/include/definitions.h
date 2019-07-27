@@ -21,13 +21,17 @@
 #define OS_SEPARATOR '/'
 #endif
 #ifdef _WIN32
+
 #define OS_SEPARATOR '\\'
 
 #define PIPE_LOG_NAME "\\\\.\\pipe\\Pipe"
 
 #endif
 
-
+struct sendArgs {
+    int fd;
+    char* buff;
+};
 struct PipeArgs {
     char *ip_client;
     int dim_file;
@@ -64,6 +68,7 @@ struct ThreadArgs {
     SOCKET fd;
     struct Configs configs;
     char *ip_client;
+    int type_Request;
 };
 #endif
 

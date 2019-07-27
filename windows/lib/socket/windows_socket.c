@@ -139,7 +139,12 @@ DWORD WINAPI handle_request(void *params) {
 }
 
 
-int w_sendFile(int fd_client, char *message_to_send) {
+DWORD WINAPI w_sendFile(PVOID args) {
+
+    struct sendArgs *send_args = (struct sendArgs *) args;
+    int fd_client = send_args->fd;
+    char *message_to_send = send_args->buff;
+
     int bufferSize = 512;
     char buffer[bufferSize];
     int sendPosition = 0;
@@ -148,7 +153,6 @@ int w_sendFile(int fd_client, char *message_to_send) {
         int chunkSize = message_len > bufferSize ? bufferSize : message_len;
         memcpy(buffer, message_to_send + sendPosition, chunkSize);
         chunkSize = send(fd_client, buffer, chunkSize, 0);
-        // TODO controllare send
         if (chunkSize == -1) { break; }
         message_len -= chunkSize;
         sendPosition += chunkSize;
