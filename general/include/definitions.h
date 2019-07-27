@@ -20,9 +20,17 @@
 #if defined(__unix__) || defined(__APPLE__)
 #define OS_SEPARATOR '/'
 #include <fcntl.h>
+#include <pthread.h>
 
 pid_t child;
 int fd_pipe[2];
+
+#define MUTEX "/mutex_lock"
+#define OKTOWRITE "/condwrite"
+#define MESSAGE "/msg"
+
+
+
 
 #endif
 #ifdef _WIN32

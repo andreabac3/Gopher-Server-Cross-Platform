@@ -156,7 +156,7 @@ int linux_socket(struct Configs *configs) {
                 end_server(fd_server);
                 return -1;
             }
-            printf("Reset socket continue %ls \n", configs->reset_config);
+            //printf("Reset socket continue %ls \n", configs->reset_config);
             timeout.tv_sec = 2;
             timeout.tv_usec = 5;
 

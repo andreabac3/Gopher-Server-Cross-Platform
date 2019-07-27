@@ -21,6 +21,7 @@
 #include <pthread.h>
 
 #include <fcntl.h>
+#include <sys/mman.h>
 #include "linux_memory_mapping.h"
 #include "linux_files_interaction.h"
 
@@ -315,6 +316,51 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         if (child < 0) {
             perror("error in fork");
         } else if (child > 0) {
+
+
+
+            pthread_cond_t *condition;
+            pthread_mutex_t *mutex;
+            int des_cond, des_msg, des_mutex;
+            int mode = S_IRWXU | S_IRWXG;
+            des_mutex = shm_open(MUTEX, O_CREAT | O_RDWR, S_IRWXU | S_IRWXG);
+            if (des_mutex < 0) {
+                perror("failure on shm_open on des_mutex");
+                exit(1);
+            }
+            mutex = (pthread_mutex_t *) mmap(NULL, sizeof(pthread_mutex_t),
+                                             PROT_READ | PROT_WRITE, MAP_SHARED, des_mutex, 0);
+
+
+            if (mutex == MAP_FAILED) {
+                perror("Error on mmap on mutex\n");
+                munmap(mutex, sizeof(pthread_mutex_t));
+                exit(1);
+            }
+
+            des_cond = shm_open(OKTOWRITE, O_CREAT | O_RDWR, mode);
+
+            if (des_cond < 0) {
+                perror("failure on shm_open on des_cond");
+                exit(1);
+            }
+
+            condition = (pthread_cond_t*) mmap(NULL, sizeof(pthread_cond_t),
+                                               PROT_READ | PROT_WRITE, MAP_SHARED, des_cond, 0);
+
+            if (condition == MAP_FAILED ) {
+                perror("Error on mmap on condition\n");
+                munmap(mutex, sizeof(pthread_mutex_t));
+                munmap(condition, sizeof(pthread_cond_t));
+                exit(1);
+            }
+
+            pthread_mutex_lock(mutex);
+            pthread_cond_signal(condition);
+            printf("son signaled\n");
+
+
+
             close(fd_pipe[0]);
             struct PipeArgs pipeArgs1;
             pipeArgs1.path = path;
@@ -322,6 +368,8 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
             pipeArgs1.dim_file = dim_file_to_send;
             write(fd_pipe[1], &pipeArgs1, sizeof(pipeArgs1));
             close(fd_pipe[1]);
+            pthread_mutex_unlock(mutex);
+
         } /*else if (child == 0) {
             close(fd_pipe[1]);
             printf("---- child process wrote\n");
