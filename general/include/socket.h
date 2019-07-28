@@ -29,15 +29,12 @@ int socket_send_message(int fd, char *message_string);
 void socket_manage_files(char *path, char *buf, struct ThreadArgs *args);
 
 #if defined(__unix__) || defined(__APPLE__)
-//TODO Controllare se si puó lasciare qui
 int writeToPipe(char* path, char* ip_client);
 pthread_mutex_t p_mutex;
 #endif
 
 
 #ifdef _WIN32
-//TODO Controllare se si puó lasciare qui
-
 HANDLE pipe_read;
 HANDLE pipe_write;
 #endif

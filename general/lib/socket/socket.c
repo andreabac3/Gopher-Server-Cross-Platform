@@ -235,7 +235,6 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         // TODO che for exit code of print_directory
         print_directory(path, &socket_send_message, args->fd, args->configs.port_number);
     } else if (FILES_IS_REG_FILE == type_file) { // FILES_IS_FILE
-        // TODO creare un nuovo thread che gestisca l'invio del file.
         // it's some kind of files
         printf("%s\n", "Sending File");
         args->type_Request = 0;
@@ -274,14 +273,15 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
 #endif
 #if defined(__unix__) || defined(__APPLE__)
 
-        struct MemoryMappingArgs *memory_mapping_args = calloc(1, sizeof(struct MemoryMappingArgs));
+//        struct MemoryMappingArgs *memory_mapping_args = calloc(1, sizeof(struct MemoryMappingArgs));
+        struct MemoryMappingArgs memory_mapping_args;
 
-        memory_mapping_args->path = path;
-        memory_mapping_args->mode_concurrency = args->configs.mode_concurrency;
-        memory_mapping_args->fd = args->fd;
+        memory_mapping_args.path = path;
+        memory_mapping_args.mode_concurrency = args->configs.mode_concurrency;
+        memory_mapping_args.fd = args->fd;
 
         printf("going to linux_memory_mapping\n");
-        int map_size = linux_memory_mapping((void *) memory_mapping_args);
+        int map_size = linux_memory_mapping((void *) &memory_mapping_args);
 
         if (map_size < 0){
             perror("socket_manage_files/linux_memory_mapping");

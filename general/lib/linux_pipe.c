@@ -244,8 +244,8 @@ int socket_pipe_log_server(char *path, struct ThreadArgs *args, int dim_file_to_
 //    pipeArgs1.path = path;
 //    pipeArgs1.ip_client = args->ip_client;
 //    pipeArgs1.dim_file = dim_file_to_send;
-    char message[BUFFER_SIZE * 2] = {0};
-    sprintf(message, "FileName: %s\t%d Byte \t IP Client: %s\n", path, dim_file_to_send,
+    char message[BUFFER_SIZE * 2 + 1] = {0};
+    snprintf(message, BUFFER_SIZE * 2, "FileName: %s\t%d Byte \t IP Client: %s\n", path, dim_file_to_send,
            args->ip_client);
 
     int n_write = write(fd_pipe_log[1], message, BUFFER_SIZE*2);

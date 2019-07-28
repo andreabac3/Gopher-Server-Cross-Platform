@@ -70,6 +70,7 @@ int conf_read_opt(int argc, char *argv[], struct Configs *configs) {
                 break;
             case 'd':
                 configs->used_OPTARG = true;
+                free(configs->root_dir);
                 configs->root_dir = conf_opts_root_dir(optarg);
                 break;
             default:

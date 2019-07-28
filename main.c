@@ -176,7 +176,7 @@ int main(int argc, char *argv[]) {
 
     start_mutex();
 
-    if (true) {
+    while (true) {
 
         linux_socket(configs);
 
@@ -185,7 +185,7 @@ int main(int argc, char *argv[]) {
         conf_parseConfigFile("../gopher_server_configuration.txt", configs);
 
     }
-
+    printf("close server");
     close_mutex();
 
     if (M_THREAD == configs->mode_concurrency) {
