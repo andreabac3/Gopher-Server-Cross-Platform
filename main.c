@@ -73,9 +73,11 @@ void run_in_daemon() {
     }
 
 }
+
 int main(int argc, char *argv[]) {
 
     printf("%s\n", "Gopher start ...");
+    printf("PID: %ld  PPID: %ld\n", (long) getpid());
 
     //perror("main#");
 
@@ -147,36 +149,19 @@ int main(int argc, char *argv[]) {
 
 
 #endif
+
     struct Configs c;
     c.reset_config = NULL;
     configs = &c;
 
 
-// configs.root_dir = malloc(50 * sizeof(char));
-// chiamata alla lettura del file di configurazione
-//
-    printf("PID: %ld  PPID: %ld\n", (long)
-
-            getpid()
-
-    );
-
-//
     conf_parseConfigFile(CONFIGURATION_PATH, configs);
     printf("\n sono conf.rootdir %s\n", configs->root_dir);
-    if (
-            conf_read_opt(argc, argv, configs
-            ) != 0)
+    if (conf_read_opt(argc, argv, configs) != 0){
         return 1;
-/*
-configs.port_number = 7070;
-configs.mode_concurrency=1;
-configs.root_dir="/sda";
-*/
-    printf("port:%d mode:%d %lu dir:%s\n", configs->port_number, configs->mode_concurrency,
-           strlen(configs
-                          ->root_dir),
-           configs->root_dir);
+    }
+
+    printf("port:%d mode:%d %lu dir:%s\n", configs->port_number, configs->mode_concurrency, strlen(configs->root_dir), configs->root_dir);
 
 
 #if defined(__unix__) || defined(__APPLE__)
@@ -215,7 +200,8 @@ configs.root_dir="/sda";
         exit(-1);
     }
 
-    condition_child = (pthread_cond_t *) mmap(NULL, sizeof(pthread_cond_t), PROT_READ | PROT_WRITE, MAP_SHARED, des_cond_child, 0);
+    condition_child = (pthread_cond_t *) mmap(NULL, sizeof(pthread_cond_t), PROT_READ | PROT_WRITE, MAP_SHARED,
+                                              des_cond_child, 0);
 
     if (condition_child == MAP_FAILED) {
         perror("Error on mmap on condition\n");
@@ -279,26 +265,14 @@ configs.root_dir="/sda";
             fprintf(stderr, "%s\n", "sono debug3");
             printf("BOOOOOOL : %d", fd_is_valid(fd_pipe[0]));
 
-            char message[BUFFER_SIZE*2] = {0};
-            ssize_t nread = read(fd_pipe[0], message, BUFFER_SIZE*2);
+            char message[BUFFER_SIZE * 2] = {0};
+            ssize_t nread = read(fd_pipe[0], message, BUFFER_SIZE * 2);
             // ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
             // printf("%zu", nread);
             fprintf(stderr, "%s %zu\n", "read riuscito -> sono debug", nread);
 
 
             printf("---- child process read\n");
-
-
-            ;
-            /*
-            printf("FileName: %s\n", data.path);
-            printf("%d Byte \n", data.dim_file);
-            printf("IP Client: %s\n", data.ip_client);
-
-
-
-             dprintf(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data.path, data.dim_file, data.ip_client);
-            */
 
             dprintf(fd_log, "Byte %s", message);
             //dprintf(fd_log, "<%s>\n", "bho");
@@ -310,11 +284,7 @@ configs.root_dir="/sda";
             //printf("SONO N %d \n", n);
             pthread_mutex_unlock(mutex_child);
 
-
-
-
             printf("---- child process close\n");
-
 
         }
         pthread_condattr_destroy(&condAttr);
@@ -330,15 +300,6 @@ configs.root_dir="/sda";
     close(fd_pipe[0]);
 
 
-
-
-
-
-
-
-
-
-
     if (signal(SIGHUP, signal_sighup_handler) == SIG_ERR) {
         perror("Signal");
     }
@@ -348,7 +309,7 @@ configs.root_dir="/sda";
     start_mutex();
 
     linux_socket(configs);
-    while (true) {
+    if (true) {
 
         c.reset_config = NULL;
         configs = &c;
@@ -359,10 +320,12 @@ configs.root_dir="/sda";
 
     close_mutex();
 
-    //pthread_t t_id;
+    if (M_THREAD == configs->mode_concurrency) {
+        sleep(1);
+        pthread_exit(NULL);
+    }
 
-    //thr_pthread_create(&t_id, &thr_test_func, (void *) "lol");
-    //sleep(2);
+
 
 #endif
 #ifdef _WIN32
@@ -390,21 +353,10 @@ configs.root_dir="/sda";
         CloseHandle(pi.hProcess);
 
 #endif
-//printf("%s", configs.root_dir);
-    if (configs->used_OPTARG == false) {
-        free(configs
-                     ->root_dir);
-    }
-//sleep(2);
-//return 0;
-#if defined(__unix__) || defined(__APPLE__)
 
-    if (M_THREAD == configs->mode_concurrency) {
-        sleep(1);
-        pthread_exit(NULL);
+    if (configs->used_OPTARG == false) {
+        free(configs->root_dir);
     }
-#endif
 
     exit(0);
-//pthread_exit(&ret);
 }

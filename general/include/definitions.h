@@ -9,6 +9,9 @@
 #define FILES_IS_UNMANAGED_FILE 3
 // END FILES definition of file types
 
+#define SOCK_START_TIMEOUT 1
+#define SOCK_LOOP_TIMEOUT 10
+
 #define LOG_PATH "../gopher_log_file.txt"
 #define CONFIGURATION_PATH "../gopher_server_configuration.txt"
 #define CONNECTION_QUEUE 500

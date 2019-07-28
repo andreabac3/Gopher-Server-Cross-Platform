@@ -133,8 +133,8 @@ int linux_socket(struct Configs *configs) {
     FD_ZERO(&rset);
     int maxfdp1 = fd_server + 1;
     struct timeval timeout;
-    timeout.tv_sec = 20;
-    timeout.tv_usec = 5;
+    timeout.tv_sec = SOCK_START_TIMEOUT;
+    timeout.tv_usec = SOCK_START_TIMEOUT;
 
     while (MAX_CONNECTIONS_ALLOWED) {
         FD_SET(fd_server, &rset);
@@ -157,8 +157,8 @@ int linux_socket(struct Configs *configs) {
                 return -1;
             }
             printf("Reset socket continue %ls \n", configs->reset_config);
-            timeout.tv_sec = 2;
-            timeout.tv_usec = 5;
+            timeout.tv_sec = SOCK_LOOP_TIMEOUT;
+            timeout.tv_usec = SOCK_LOOP_TIMEOUT;
 
             continue;
         }

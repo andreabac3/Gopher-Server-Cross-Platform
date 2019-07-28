@@ -86,17 +86,17 @@ int conf_read_opt(int argc, char *argv[], struct Configs *configs) {
 #include <direct.h>
 #define GetCurrentDir _getcwd
 #else
+
 #include <unistd.h>
+
 #define GetCurrentDir getcwd
 #endif
+
 int conf_parseConfigFile(char *path, struct Configs *config) {
-    char buff[FILENAME_MAX];
-    GetCurrentDir( buff, FILENAME_MAX );
-    printf("%s" , buff);
+
     char *port = "port";
     char *mod = "mode_concurrency";
     char *rootdir = "root_dir";
-
 
     unsigned int wrong = 0;
 
@@ -109,24 +109,16 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
     size_t lmax = 1024;         /* current array pointer allocation */
     FILE *fp = NULL;            /* file pointer                     */
 
+    char buff[FILENAME_MAX];
+    GetCurrentDir(buff, FILENAME_MAX);
+    //printf("%s", buff);
+
 
     Assert((fp = fopen(path, "r")) != NULL, "error: configuration file open failed");
 
-    /* allocate LMAX pointers and set to NULL. Each of the 255 pointers will
-       point to (hold the address of) the beginning of each string read from
-       the file below. This will allow access to each string with array[x].
-    */
-    //printf("size %zu %zu \n", sizeof *StringsArray, sizeof(char **)),
     Assert((StringsArray = calloc(lmax, sizeof *StringsArray)) != NULL, "error: memory allocation failed.");
 
 
-    /* prototype - ssize_t getline (char **ln, size_t *n, FILE *fp)
-       above we declared: char *ln and size_t n. Why don't they match? Simple,
-       we will be passing the address of each to getline, so we simply precede
-       the variable with the urinary '&' which forces an addition level of
-       dereference making char* char** and size_t size_t *. Now the arguments
-       match the prototype.
-    */
     while ((nchr = getline(&ln, &n, fp)) != -1)    /* read line    */
     {
         while (nchr > 0 && (ln[nchr - 1] == '\n' || ln[nchr - 1] == '\r'))
@@ -161,13 +153,13 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
     char *saveptr1;
 
     // for all lines
-    for(int j = 0; j < idx; j++){
-        printf("%s" ,StringsArray[j]);
+    for (int j = 0; j < idx; j++) {
+        printf("%s", StringsArray[j]);
     }
     for (it = 0; it < idx; it++) {
         // name of the option
         single_word = ut_strtok(StringsArray[it], " ", &saveptr1);
-        printf("\n singleword->  %s \n" , single_word);
+        printf("\n singleword->  %s \n", single_word);
         // option value evaluation
         if (single_word != NULL) {
 
@@ -185,12 +177,12 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
 
                 config->mode_concurrency = conf_opts_mode_concurrency(single_word);
 
-            } else if (strcmp(rootdir, single_word) == 0 ) {
+            } else if (strcmp(rootdir, single_word) == 0) {
                 // if the option is root_dir
                 single_word = ut_strtok(NULL, "\"", &saveptr1);
                 wrong |= (unsigned) Assert_nb(single_word != NULL, "Missing root dir value");
-                config->root_dir = calloc(sizeof(char), strlen(single_word)+1);
-                strcpy(config->root_dir , single_word);
+                config->root_dir = calloc(sizeof(char), strlen(single_word) + 1);
+                strcpy(config->root_dir, single_word);
                 printf("%s %s \n", single_word, config->root_dir);
             } else {
 
@@ -209,12 +201,12 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
 
     free(StringsArray);
 //    printf("\n%d\n", wrong);
-    if (Assert_nb(wrong == 0, "Something gone wrong in configuration file") == ASS_CRASH){
+    if (Assert_nb(wrong == 0, "Something gone wrong in configuration file") == ASS_CRASH) {
         free(config->root_dir);
         exit(1);
     }
     config->used_OPTARG = 0;
-    printf("\n prima di fare return  -->  %s\n " , config->root_dir);
+    printf("\n prima di fare return  -->  %s\n ", config->root_dir);
     return 0;
 
 }
