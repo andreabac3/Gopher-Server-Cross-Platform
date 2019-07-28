@@ -6,3 +6,9 @@ Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux
 Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	22 Byte 	 IP Client: 
 Byte FileName: /opt/local_projects/gopher-project/main.c	22 Byte 	 IP Client: 
 Byte FileName: /opt/local_projects/gopher-project/main.c	22 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/README.md	22 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/README.md	22 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/f i.t	22 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/f i.t	4 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/README.md	124 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3571 Byte 	 IP Client: 

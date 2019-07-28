@@ -29,7 +29,6 @@
 #include "files_interaction.h"
 
 void close_mutex() {
-    //TODO da verificare se va bene qui
     if (configs->mode_concurrency == M_THREAD) {
         pthread_mutex_destroy(&p_mutex);
     }

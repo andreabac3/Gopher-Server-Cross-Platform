@@ -281,15 +281,15 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         memory_mapping_args->fd = args->fd;
 
         printf("going to linux_memory_mapping\n");
-        int mmap_err = linux_memory_mapping((void *) memory_mapping_args);
+        int map_size = linux_memory_mapping((void *) memory_mapping_args);
 
-        if (mmap_err != 0){
+        if (map_size < 0){
             perror("socket_manage_files/linux_memory_mapping");
             // todo return ?
             return;
         }
 
-        socket_pipe_log_server(path, args, 22, fd_pipe);
+        socket_pipe_log_server(path, args, map_size, fd_pipe);
 
 #endif
 

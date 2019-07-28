@@ -44,7 +44,6 @@ int linux_memory_mapping(void *params) {
     int fd = open(args->path, O_RDONLY);
     if (fd == -1) {
         perror("linux_memory_mapping/open");
-        // todo check if exit is correct
         return -1;
     }
 
@@ -69,8 +68,8 @@ int linux_memory_mapping(void *params) {
 
      */
 
-
-    void *addr = mmap(0, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+    // todo check if file is empty, sb.st_size = 0
+    void *addr = mmap(NULL, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
 
     if (addr == MAP_FAILED) {
         perror("linux_memory_mapping/mmap");
@@ -109,7 +108,7 @@ int linux_memory_mapping(void *params) {
 
     close(fd);
     close(args->fd);
-    return 0;
+    return sb.st_size;
 }
 
 int fileSize(int fd) {
@@ -137,7 +136,6 @@ void * l_sendFile(void *args) {
         int chunkSize = message_len > bufferSize ? bufferSize : message_len;
         memcpy(buffer, message_to_send + sendPosition, chunkSize);
         chunkSize = send(fd_client, buffer, chunkSize, 0);
-        // TODO controllare send
         if (chunkSize == -1) { break; }
         message_len -= chunkSize;
         sendPosition += chunkSize;
