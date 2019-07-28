@@ -23,7 +23,7 @@
 #include <fcntl.h>
 #include "linux_memory_mapping.h"
 #include "linux_files_interaction.h"
-
+#include "linux_pipe.h"
 #endif
 
 #include "protocol.h"
@@ -275,16 +275,10 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
 #if defined(__unix__) || defined(__APPLE__)
 
         struct MemoryMappingArgs *memory_mapping_args = calloc(1, sizeof(struct MemoryMappingArgs));
-        //memory_mapping_args->path = path;
 
         memory_mapping_args->path = path;
         memory_mapping_args->mode_concurrency = args->configs.mode_concurrency;
         memory_mapping_args->fd = args->fd;
-        /*if ((pthread_create(&thread, NULL, linux_memory_mapping, (void *) memory_mapping_args)) != 0) {
-            // printf("%s\n", "Could not create thread, continue non-threaded...");
-            perror("Could not create thread, continue non-threaded...");
-            // handle_request(req_fd);
-        }*/
 
         printf("going to linux_memory_mapping\n");
         int mmap_err = linux_memory_mapping((void *) memory_mapping_args);
@@ -292,74 +286,14 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         if (mmap_err != 0){
             perror("socket_manage_files/linux_memory_mapping");
             // todo return ?
+            return;
         }
 
-        pid_t child;
-        int fd_pipe[2];
-        //FILE *fp_log = fopen(LOG_PATH, "a");
-        if (pipe(fd_pipe) < 0) {
-            perror("pipe");
-        }
+        socket_pipe_log(path, args);
 
-        child = fork();
-        int dim_file_to_send = 22;
-
-        if (child < 0) {
-            perror("error in fork");
-        } else if (child > 0) {
-            close(fd_pipe[0]);
-            struct PipeArgs pipeArgs1;
-            pipeArgs1.path = path;
-            pipeArgs1.ip_client = args->ip_client;
-            pipeArgs1.dim_file = dim_file_to_send;
-            write(fd_pipe[1], &pipeArgs1, sizeof(pipeArgs1));
-            close(fd_pipe[1]);
-        } else if (child == 0) {
-            close(fd_pipe[1]);
-            printf("---- child process wrote\n");
-            //FILE* fp_fileLog = fopen(LOG_PATH, "w");
-            int fd_log = open(LOG_PATH, O_WRONLY | O_APPEND);
-            //FILE* fp_filelog= fdopen(fd_log, "a");
-            printf("---- child process open\n");
-            if (fd_log == -1) {
-                //if (fp_fileLog == NULL){
-                printf("sono bloccato");
-                exit(-1);
-            }
-            //int n;
-            struct PipeArgs data;
-
-            //ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
-            ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
-            printf("%zu", nread);
-
-
-            printf("%zu", nread);
-
-            printf("---- child process read\n");
-
-
-            //printf("\n sono figlio :-> %s\n", data->ip_client);
-            printf("FileName: %s\n", data.path);
-            printf("%d Byte \n", data.dim_file);
-            printf("IP Client: %s\n", data.ip_client);
-
-            /*int err = */ dprintf(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data.path, data.dim_file,
-                                   data.ip_client);
-            //int err = fprintf(fp_filelog, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);
-            perror("dprintf");
-            //write(fd_log, "cia", sizeof("cia"));
-
-            //printf("SONO N %d \n", n);
-            close(fd_pipe[0]);
-
-            printf("---- child process close\n");
-            exit(0);
-        }
 #endif
 
     }
-    return;
 }
 
 int write_to_log(struct PipeArgs *data) {

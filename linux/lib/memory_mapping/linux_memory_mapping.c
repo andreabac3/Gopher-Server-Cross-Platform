@@ -39,7 +39,6 @@ int linux_memory_mapping(void *params) {
     struct MemoryMappingArgs *args = (struct MemoryMappingArgs *) params;
 
 //    printf("FD %d \n PATH %s \n %d\n", args->fd, args->path, args->mode_concurrency);
-    int ret = -1;
     struct stat sb;
 
     int fd = open(args->path, O_RDONLY);
@@ -54,8 +53,6 @@ int linux_memory_mapping(void *params) {
     } else {
         pthread_mutex_lock(&p_mutex);
     }
-
-
 
     if (fstat(fd, &sb) < 0) {
         perror("linux_memory_mapping/fstat");
