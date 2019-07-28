@@ -78,7 +78,7 @@ void run_in_daemon() {
 int main(int argc, char *argv[]) {
 
     printf("%s\n", "Gopher start ...");
-    printf("PID: %ld  PPID: %ld\n", (long) getpid());
+    printf("PID: %d", getpid());
 
     //perror("main#");
 
@@ -170,11 +170,9 @@ int main(int argc, char *argv[]) {
     socket_pipe_process();
 
 
-    if (signal(SIGHUP, signal_sighup_handler) == SIG_ERR) {
+    if (signal(SIGHUP, signal_sighup_handler) == SIG_ERR || signal(SIGCHLD, SIG_IGN)) {
         perror("Signal");
     }
-
-    printf("%c \n", getGopherCode("C:/Users/valerio/file.png"));
 
     start_mutex();
 

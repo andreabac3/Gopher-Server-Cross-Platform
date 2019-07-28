@@ -18,6 +18,7 @@
 #include <sys/stat.h>
 // #include <tclDecls.h>
 #include <errno.h>
+#include <wait.h>
 
 
 #include "definitions.h"
@@ -96,8 +97,24 @@ int run_concurrency(struct ThreadArgs *args) {
         pthread_attr_destroy(&attr);
         return 0;
     } else if (args->configs.mode_concurrency == M_PROCESS) {
-        if (fork() == 0) {
+
+        pid_t pid_child = fork();
+        if (pid_child < 0) {
+            perror("run_concurrency fork child failed");
+        } else if (pid_child == 0) {
             // child
+
+
+            /*pid_t pid_grandchild = fork();
+            if (pid_grandchild < 0) {
+                perror("run_concurrency fork grandchild failed");
+            } else if (pid_child == 0) {
+                int wstatus;
+                if(waitpid(getppid(), &wstatus, ) == -1){
+                    perror("run_concurrency wait on father faild");
+                }
+            }*/
+
             handle_request(args);
             exit(0);
         } else {
@@ -188,7 +205,7 @@ int linux_socket(struct Configs *configs) {
             args->fd = accept_fd;
 
             // QUI VA MULTICORE
-            if(run_concurrency(args)){
+            if (run_concurrency(args)) {
                 perror("invalid option");
             }
 
