@@ -289,7 +289,7 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
             return;
         }
 
-        socket_pipe_log(path, args);
+        socket_pipe_log_server(path, args, 22, fd_pipe);
 
 #endif
 
