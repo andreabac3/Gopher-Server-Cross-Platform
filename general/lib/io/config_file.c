@@ -153,13 +153,13 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
     char *saveptr1;
 
     // for all lines
-    for (int j = 0; j < idx; j++) {
-        printf("%s", StringsArray[j]);
-    }
+//    for (int j = 0; j < idx; j++) {
+//        printf("%s", StringsArray[j]);
+//    }
     for (it = 0; it < idx; it++) {
         // name of the option
         single_word = ut_strtok(StringsArray[it], " ", &saveptr1);
-        printf("\n singleword->  %s \n", single_word);
+//        printf("\n singleword->  %s \n", single_word);
         // option value evaluation
         if (single_word != NULL) {
 
@@ -183,7 +183,7 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
                 wrong |= (unsigned) Assert_nb(single_word != NULL, "Missing root dir value");
                 config->root_dir = calloc(sizeof(char), strlen(single_word) + 1);
                 strcpy(config->root_dir, single_word);
-                printf("%s %s \n", single_word, config->root_dir);
+//                printf("%s %s \n", single_word, config->root_dir);
             } else {
 
                 // if the option is unknown (Error)
@@ -206,7 +206,7 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
         exit(1);
     }
     config->used_OPTARG = 0;
-    printf("\n prima di fare return  -->  %s\n ", config->root_dir);
+//    printf("\n prima di fare return  -->  %s\n ", config->root_dir);
     return 0;
 
 }

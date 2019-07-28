@@ -14,8 +14,8 @@
 #include <socket.h>
 #include <errno.h>
 #include <pthread.h>
-#include "linux_memory_mapping.h"
 #include <string.h>
+#include "linux_memory_mapping.h"
 
 #if __linux__
 
@@ -34,31 +34,34 @@
 #define MMAP_FLAGS MAP_PRIVATE
 #endif
 
-void* linux_memory_mapping(void *params) {
-    struct MemoryMappingArgs* args = (struct MemoryMappingArgs *) params;
-    printf("SONO FDDDDDDDDDDDDDDDDDDD %s\n", args->path);
-    printf("FD %d \n PATH %s \n %d\n", args->fd, args->path, args->mode_concurrency) ;
+int linux_memory_mapping(void *params) {
+
+    struct MemoryMappingArgs *args = (struct MemoryMappingArgs *) params;
+
+//    printf("FD %d \n PATH %s \n %d\n", args->fd, args->path, args->mode_concurrency);
     int ret = -1;
     struct stat sb;
 
     int fd = open(args->path, O_RDONLY);
+    if (fd == -1) {
+        perror("linux_memory_mapping/open");
+        // todo check if exit is correct
+        return -1;
+    }
 
-    if (args->mode_concurrency == M_PROCESS){
+    if (args->mode_concurrency == M_PROCESS) {
         lockf(fd, F_LOCK, 0);
-    }else{
+    } else {
         pthread_mutex_lock(&p_mutex);
     }
 
-    if (fd < 0) {
-
-        //pthread_exit(&ret);
-    }
 
 
     if (fstat(fd, &sb) < 0) {
-        perror("fstat");
+        perror("linux_memory_mapping/fstat");
         lockf(fd, F_ULOCK, 0);
         close(fd);
+        return -1;
         //pthread_exit(&ret);
     }
 
@@ -71,35 +74,45 @@ void* linux_memory_mapping(void *params) {
 
 
     void *addr = mmap(0, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
-    printf("%s", (char*)addr);
 
     if (addr == MAP_FAILED) {
-        perror("mmap");
+        perror("linux_memory_mapping/mmap");
         lockf(fd, F_ULOCK, 0);
-        printf("SONO PRIMA DI SENDDDDDDDDDDDDD FILEEEEEEEEEEEEEEEEEEEEEEEEEEE233333333333333@@@@@@@@@@2");
 
         close(fd);
+        return -1;
     }
 
 
     //SendFileMapped(args->fd, (char*) addr, fileSize(fd));
-    l_sendFile(args->fd, (char*)addr, fileSize(fd));
+
+    struct SendFileArgs send_args;
+    send_args.fd_client = args->fd;
+    send_args.message_to_send = (char *) addr;
+    send_args.message_len = fileSize(fd);
+
+    pthread_t thread;
+    if ((pthread_create(&thread, NULL, l_sendFile, (void *) &send_args)) != 0) {
+            perror("Could not create thread, continue non-threaded...");
+            l_sendFile((void *) &send_args);
+        }
+    pthread_join(thread, NULL);
+    // l_sendFile(&send_args);
+
     if (munmap(addr, sb.st_size) < 0) {
-        // int err = errno;
         perror("linux_socket.c/munmap failed: ");
     }
 
-    if (args->mode_concurrency == M_PROCESS){
+    if (args->mode_concurrency == M_PROCESS) {
         lockf(fd, F_ULOCK, 0);
-    }else{
+    } else {
         pthread_mutex_unlock(&p_mutex);
     }
 
 
     close(fd);
-    ret = 0;
     close(args->fd);
-    pthread_exit(&ret);
+    return 0;
 }
 
 int fileSize(int fd) {
@@ -107,12 +120,19 @@ int fileSize(int fd) {
     if (fstat(fd, &s) == -1) {
         int saveErrno = errno;
         fprintf(stderr, "fstat(%d) returned errno=%d.", fd, saveErrno);
-        return(-1);
+        return (-1);
     }
-    return(s.st_size);
+    return (s.st_size);
 }
 
-int l_sendFile(int fd_client, char *message_to_send, int message_len) {
+void * l_sendFile(void *args) {
+
+    struct SendFileArgs *send_args = (struct SendFileArgs* ) args;
+
+    int fd_client = send_args->fd_client;
+    char *message_to_send = send_args->message_to_send;
+    int message_len = send_args->message_len;
+
     int bufferSize = 512;
     char buffer[BUFFER_SIZE];
     int sendPosition = 0;
@@ -125,6 +145,6 @@ int l_sendFile(int fd_client, char *message_to_send, int message_len) {
         message_len -= chunkSize;
         sendPosition += chunkSize;
     }
-    return 0;
+    return NULL;
 }
 

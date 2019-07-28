@@ -308,14 +308,14 @@ int main(int argc, char *argv[]) {
 
     start_mutex();
 
-    linux_socket(configs);
     if (true) {
+
+        linux_socket(configs);
 
         c.reset_config = NULL;
         configs = &c;
         conf_parseConfigFile("../gopher_server_configuration.txt", configs);
 
-        linux_socket(configs);
     }
 
     close_mutex();

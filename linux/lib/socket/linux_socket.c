@@ -59,23 +59,23 @@ int start_server(unsigned int port, unsigned int queue_size) {
     fd = socket(PF_INET, SOCK_STREAM, 0);
     if (fd == -1) return fd;
 
-    printf("File descriptor for socket is %d\n", fd);
+//    printf("File descriptor for socket is %d\n", fd);
     int opts = 1;
     setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opts, sizeof(opts));
 
     // Bind the socket
-    // TODO This will prevent us to start up multiple servers
     static struct sockaddr_in serv_addr;
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(port);
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    // todo perche la dimensione e diversa?
     if (bind(fd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
         return -1;
     printf("Socket bound to port %d\n", port);
 
     // Make it a listening socket
     if (listen(fd, queue_size) == -1) {
-        perror("Listen crrashed");
+        perror("Listen crashed");
         return -1;
     }
     return fd;
@@ -105,7 +105,6 @@ int run_concurrency(struct ThreadArgs *args) {
         }
         return 0;
     } else {
-        fprintf(stderr, "linux_socket.c/run_concurrency");
         return -1;
     }
 }
@@ -114,18 +113,18 @@ int run_concurrency(struct ThreadArgs *args) {
 int linux_socket(struct Configs *configs) {
     fd_set rset;
     int n_ready;
-    printf("%s\n", "Starting gophd...");
+    printf("%s\n", "Starting gopher server");
     int fd_server;
     if ((fd_server = start_server(configs->port_number, CONNECTION_QUEUE)) < 0) {
         perror(NULL);
-        abort();
+        exit(-1);
     }
 
 
     // Accept connections, blocking
     int accept_fd;
 
-    printf("%s\n", "Going to acceptance");
+//    printf("%s\n", "Going to acceptance");
     struct sockaddr_in client_addr;
     socklen_t slen = sizeof(client_addr);
 
@@ -140,7 +139,7 @@ int linux_socket(struct Configs *configs) {
         FD_SET(fd_server, &rset);
 
 
-        // TODO if ((accept_fd = accept(fd_server, (struct sockaddr *) &client_addr, &slen)) == -1) { break; }
+        // if ((accept_fd = accept(fd_server, (struct sockaddr *) &client_addr, &slen)) == -1) { break; }
 
         if ((n_ready = select(maxfdp1, &rset, NULL, NULL, &timeout)) < 0) {
             if (errno == EINTR) continue;
@@ -150,13 +149,15 @@ int linux_socket(struct Configs *configs) {
             }
         }
         if (0 == n_ready) {
+
+            // Reset configs
             if (configs->reset_config != NULL) {
                 //end_server(fd_server);
-                printf("Reset socket break\n");
+                printf("Reset configs\n");
                 end_server(fd_server);
                 return -1;
             }
-            printf("Reset socket continue %ls \n", configs->reset_config);
+            //printf("Reset socket continue %ls \n", configs->reset_config);
             timeout.tv_sec = SOCK_LOOP_TIMEOUT;
             timeout.tv_usec = SOCK_LOOP_TIMEOUT;
 
@@ -174,12 +175,12 @@ int linux_socket(struct Configs *configs) {
 
             //int *req_fd = malloc(sizeof(int));
             //*req_fd = accept_fd;
-            printf("%u\n", client_addr.sin_addr.s_addr);
+            //printf("%u\n", client_addr.sin_addr.s_addr);
             char clientname[500];
-            printf("Client Adress = %s\n", inet_ntop(AF_INET, &client_addr.sin_addr, clientname, sizeof(clientname)));
-            printf("Client Adress = %s\n", clientname);
+//            printf("Client Adress = %s\n", inet_ntop(AF_INET, &client_addr.sin_addr, clientname, sizeof(clientname)));
+//            printf("Client Adress = %s\n", clientname);
 
-
+            // TODO why calloc?
             struct ThreadArgs *args = calloc(1, sizeof(struct ThreadArgs));
             args->configs = *configs;
             args->ip_client = clientname;
@@ -187,7 +188,9 @@ int linux_socket(struct Configs *configs) {
             args->fd = accept_fd;
 
             // QUI VA MULTICORE
-            run_concurrency(args);
+            if(run_concurrency(args)){
+                perror("invalid option");
+            }
 
             printf("%s\n", "Accepted request");
 
@@ -228,8 +231,7 @@ void linux_sock_send_message(int *fd, char *error) {
 
 void *handle_request_thread(void *params) {
     pthread_detach(pthread_self());
-    handle_request(params);
-    return 0;
+    return handle_request(params);
 }
 
 void *handle_request(void *params) {
@@ -238,16 +240,17 @@ void *handle_request(void *params) {
     struct ThreadArgs *args;
     args = (struct ThreadArgs *) params;
 
-    printf("%s\n", "Running in thread - handle request");
-    printf("args: %d\n", args->fd);
+    printf("%s\n", "------- new handle request ---------------");
+//    printf("args: %d\n", args->fd);
 
     socket_read_request(args, &buf); // fill the buffer with the request
 
     socket_resolve_selector(args, buf, &path); // parse the request
 
     // todo fix resolve_selector come su linux
-    printf("full path %s \n", path);
+    printf("going to socket_manage_files - full required path: %s \n", path);
     socket_manage_files(path, buf, args); // send response
+    printf("going to clean_request exiting handle_request\n");
     clean_request(path, buf, args);
     return 0;
     //return 0;

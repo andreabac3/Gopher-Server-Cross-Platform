@@ -70,6 +70,13 @@ struct MemoryMappingArgs {
     char mode_concurrency;
     char* path;
 };
+
+struct SendFileArgs {
+    int fd_client;
+    char *message_to_send;
+    int message_len;
+};
+
 #endif
 #ifdef _WIN32
 
