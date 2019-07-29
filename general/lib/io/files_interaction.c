@@ -36,15 +36,6 @@ int write_log_accessFile(char *string, FILE *fp) {
 }
 
 
-#if __linux__
-#include "linux_files_interaction.h"
-int files_memory_map(char* filename, int mode){
-    // TODO Errore di compilazione
-    return 0;
-    //return linux_mmap(filename, mode);
-}
-#endif
-
 
 
 

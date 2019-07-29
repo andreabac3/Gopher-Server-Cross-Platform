@@ -9,6 +9,9 @@
 #define FILES_IS_UNMANAGED_FILE 3
 // END FILES definition of file types
 
+#define SOCK_START_TIMEOUT 1
+#define SOCK_LOOP_TIMEOUT 10
+
 #define LOG_PATH "../gopher_log_file.txt"
 #define CONFIGURATION_PATH "../gopher_server_configuration.txt"
 #define CONNECTION_QUEUE 500
@@ -19,16 +22,25 @@
 
 #if defined(__unix__) || defined(__APPLE__)
 #define OS_SEPARATOR '/'
+#include <fcntl.h>
+#include <pthread.h>
 #endif
 #ifdef _WIN32
+
 #define OS_SEPARATOR '\\'
+
+#define PIPE_LOG_NAME "\\\\.\\pipe\\Pipe"
+
 #endif
 
-
+struct sendArgs {
+    int fd;
+    char* buff;
+};
 struct PipeArgs {
-    char* ip_client;
+    char *ip_client;
     int dim_file;
-    char* path;
+    char *path;
 };
 
 struct Configs {
@@ -36,21 +48,49 @@ struct Configs {
     char mode_concurrency;
     char *root_dir;
     int used_OPTARG;
-    int* reset_config;
+    int *reset_config;
 };
-struct Configs* configs;
+struct Configs *configs;
 #if defined(__unix__) || defined(__APPLE__)
 struct ThreadArgs {
     int fd;
     struct Configs configs;
     char* ip_client;
+    int type_Request;
 };
+pid_t child;
+int fd_pipe[2];
+
+#define MUTEX "/mutex_lock"
+#define OKTOWRITE "/condwrite"
+#define MESSAGE "/msg"
+
+pthread_cond_t *condition_child;
+pthread_mutex_t *mutex_child;
+int des_cond_child, des_mutex_child;
+
+struct MemoryMappingArgs {
+    int fd;
+    char mode_concurrency;
+    char* path;
+};
+
+struct SendFileArgs {
+    int fd_client;
+    char *message_to_send;
+    int message_len;
+};
+
 #endif
 #ifdef _WIN32
+
 #include <afxres.h>
+
 struct ThreadArgs {
     SOCKET fd;
     struct Configs configs;
+    char *ip_client;
+    int type_Request;
 };
 #endif
 
