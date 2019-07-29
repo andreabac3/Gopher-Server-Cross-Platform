@@ -17,7 +17,11 @@
 #include "files_interaction.h"
 #include "socket.h"
 
-
+int end_server(SOCKET fd){
+    shutdown(fd, 2);
+    closesocket(fd);
+    return 0;
+}
 int windows_socket_runner(struct Configs *configs) {
     HANDLE thread;
     WSADATA WSAData;
@@ -67,12 +71,15 @@ int windows_socket_runner(struct Configs *configs) {
     FD_SET(server, &read_fds);
     int n_ready;
     //Windows
+    struct timeval timeout;
+    timeout.tv_sec = 1;
+    timeout.tv_usec = 5;
     while (MAX_CONNECTIONS_ALLOWED) {
         memcpy(&working_set, &read_fds, sizeof(read_fds));
         printf("\n%s %d\n", "server ->", server);
         // rc =
         // # richieste di connessione
-        if ((n_ready = select(server + 1, &working_set, NULL, NULL, NULL)) < 0) {
+        if ((n_ready = select(server + 1, &working_set, NULL, NULL, &timeout)) < 0) {
             if (errno == EINTR) continue;
             else {
                 perror("select");
@@ -81,9 +88,19 @@ int windows_socket_runner(struct Configs *configs) {
         }
 
         if (n_ready == 0) {
-            printf("  select() timed out.  End program.\n");
+            // printf("  select() timed out.  End program.\n");
             perror("select");
-            exit(1);
+            if (configs->reset_config != NULL) {
+                //end_server(fd_server);
+                // printf("Reset socket break\n");
+                // printf("SONO SHUTDOWN %d\n", end_server(server));
+                return -1;
+            }
+
+            printf("Reset socket continue %ls \n", configs->reset_config);
+            timeout.tv_sec = 2;
+            timeout.tv_usec = 5;
+            continue;
         }
 
         if (FD_ISSET(server, &working_set)) { /* richiesta proveniente da client TCP */
@@ -98,13 +115,19 @@ int windows_socket_runner(struct Configs *configs) {
             printf("Client connected!\n");
             printf("IP address is: %s\n", args.ip_client);
             args.fd = client;
+            if(args.configs.mode_concurrency == M_THREAD) {
+                // handle_request((PVOID) &args);
+                // TODO cambiare con _beginthread
+                if (0 != (thread = CreateThread(NULL, 0, handle_request, (PVOID) &args, 0, NULL))) {
+                    printf("funziona\n");
+                }
+                CloseHandle(thread);
+            }else if (args.configs.mode_concurrency == M_PROCESS){
 
-            // handle_request((PVOID) &args);
-            // TODO cambiare con _beginthread
-            if (0 != (thread = CreateThread(NULL, 0, handle_request, (PVOID) &args, 0, NULL))) {
-                printf("funziona\n");
+            }else{
+                printf("errore in mod concurrency");
+                exit(-1);
             }
-            CloseHandle(thread);
         }
     }
 
@@ -139,7 +162,12 @@ DWORD WINAPI handle_request(void *params) {
 }
 
 
-int w_sendFile(int fd_client, char *message_to_send) {
+DWORD WINAPI w_sendFile(PVOID args) {
+
+    struct sendArgs *send_args = (struct sendArgs *) args;
+    int fd_client = send_args->fd;
+    char *message_to_send = send_args->buff;
+
     int bufferSize = 512;
     char buffer[bufferSize];
     int sendPosition = 0;
@@ -148,7 +176,6 @@ int w_sendFile(int fd_client, char *message_to_send) {
         int chunkSize = message_len > bufferSize ? bufferSize : message_len;
         memcpy(buffer, message_to_send + sendPosition, chunkSize);
         chunkSize = send(fd_client, buffer, chunkSize, 0);
-        // TODO controllare send
         if (chunkSize == -1) { break; }
         message_len -= chunkSize;
         sendPosition += chunkSize;
