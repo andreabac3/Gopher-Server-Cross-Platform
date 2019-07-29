@@ -317,6 +317,7 @@ int SendFileMapped(int write_fd, char *fileToSend, int fileSize) {
     return 0;
 }
 
+/*
 int vecchiafork(char *path, char *ip_client, int dim_file_to_send) {
     pid_t child;
     int fd_pipe[2];
@@ -367,7 +368,7 @@ int vecchiafork(char *path, char *ip_client, int dim_file_to_send) {
         printf("%d Byte \n", data.dim_file);
         printf("IP Client: %s\n", data.ip_client);
 
-        /*int err = */ dprintf(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data.path, data.dim_file,
+         dprintf(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data.path, data.dim_file,
                                data.ip_client);
         //int err = fprintf(fp_filelog, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);
         perror("dprintf");
@@ -381,3 +382,4 @@ int vecchiafork(char *path, char *ip_client, int dim_file_to_send) {
     }
     return 0;
 }
+*/

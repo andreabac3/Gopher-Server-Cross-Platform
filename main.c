@@ -15,6 +15,19 @@
 #include "config_file.h"
 #include "files_interaction.h"
 
+
+
+#ifdef _WIN32
+
+
+#include <windows.h>
+#include <windows_utils.h>
+#include "windows_socket.h"
+#include "windows_events.h"
+
+#include "socket.h"
+#endif
+
 #if defined(__unix__) || defined(__APPLE__)
 
 #include <signal.h>
@@ -27,18 +40,8 @@
 #include "linux_socket.h"
 #include "linux_signals.h"
 
-#endif
-
-#ifdef _WIN32
 
 
-#include <windows.h>
-#include <windows_utils.h>
-#include "windows_socket.h"
-#include "windows_events.h"
-
-#include "socket.h"
-#endif
 // reformat Sh + ò
 // comment Sh + ù
 // run Sh + Enter
@@ -74,6 +77,7 @@ void run_in_daemon() {
     }
 
 }
+#endif
 
 int main(int argc, char *argv[]) {
 
