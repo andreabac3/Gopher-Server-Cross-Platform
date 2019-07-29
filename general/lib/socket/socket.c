@@ -23,7 +23,7 @@
 #include <fcntl.h>
 #include "linux_memory_mapping.h"
 #include "linux_files_interaction.h"
-
+#include "linux_pipe.h"
 #endif
 
 #include "protocol.h"
@@ -167,13 +167,13 @@ void socket_resolve_selector(struct ThreadArgs *args, char *buf, char **path) {
  * */
 void socket_read_request(struct ThreadArgs *args, char **buf) {
 
+    int ptr = 0;
+    ssize_t got_bytes = 0;
+
     *buf = calloc(BUFFER_SIZE, sizeof(char));
     if (*buf == NULL) {
         clean_request(NULL, NULL, args);
     }
-
-    int ptr = 0;
-    ssize_t got_bytes = 0;
 
     while (true) {
         got_bytes = recv(args->fd, *buf + ptr, BUFFER_SIZE - ptr, 0);
@@ -193,7 +193,7 @@ void socket_read_request(struct ThreadArgs *args, char **buf) {
 
 int socket_send_message(int fd, char *message_string) {
 
-    printf("socket_send_message: %d, %s", fd, message_string);
+//    printf("socket_send_message: %d, %s", fd, message_string);
     int ret = send(fd, message_string, sizeof(char) * strlen(message_string), 0);
     if (0 > ret) {
         perror("socket.c/socket_send_message: send failed");
@@ -203,10 +203,11 @@ int socket_send_message(int fd, char *message_string) {
 }
 
 void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
+
     int type_file = file_type(path);
     if (FILES_NOT_EXIST == type_file) {
         args->type_Request = 1;
-        printf("SEND: Il file non esiste");
+        printf("socket_manage_files: Il file non esiste");
 
         // tell to client that file do not exists
         char *m;
@@ -222,34 +223,23 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         clean_request(path, buf, args);
     }
 
-    // Todo check if file or directory
     char code = getGopherCode(path);
     if (code < 0) {
         clean_request(path, buf, args);
     }
-    printf("Code: %d\n", code);
 
     if (FILES_IS_DIRECTORY == type_file) {
         // it's a directory
         args->type_Request = 1;
+        printf("%s\n", "Sending Directory");
+        // TODO che for exit code of print_directory
         print_directory(path, &socket_send_message, args->fd, args->configs.port_number);
     } else if (FILES_IS_REG_FILE == type_file) { // FILES_IS_FILE
-        // TODO creare un nuovo thread che gestisca l'invio del file.
         // it's some kind of files
-        printf("%s\n", "filesssss");
+        printf("%s\n", "Sending File");
         args->type_Request = 0;
 
-        /*
-         * todoFatto Usa la CreateFile per aprire il file mettendo dwShareMode a 0,
-         * questo crea accesso esclusivo sia per Thread che per Processi
-        */
-
 #ifdef _WIN32
-
-        /*if (0 != (thread = CreateThread(NULL, 0, handle_request, (PVOID) &args, 0, NULL))) {
-            printf("funziona\n");
-        }*/
-
         int dim_file_to_send = windows_memory_mapping(args->fd, path);
         //clean_request(path, buf, args);
         printf("HO INVIATO IL FILE\n");
@@ -283,96 +273,25 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
 #endif
 #if defined(__unix__) || defined(__APPLE__)
 
-        pthread_t thread;
-        pthread_attr_t attr;
-        pthread_attr_init(&attr);
-        pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-        struct MemoryMappingArgs *memory_mapping_args = calloc(1, sizeof(struct MemoryMappingArgs));
-        printf("SONO CCCCCCCCC %s\n", path);
-        //memory_mapping_args->path = path;
+//        struct MemoryMappingArgs *memory_mapping_args = calloc(1, sizeof(struct MemoryMappingArgs));
+        struct MemoryMappingArgs memory_mapping_args;
 
-        memory_mapping_args->path = path;
-        memory_mapping_args->mode_concurrency = args->configs.mode_concurrency;
-        memory_mapping_args->fd = args->fd;
-        if ((pthread_create(&thread, &attr, linux_memory_mapping, (void *) memory_mapping_args)) != 0) {
-            // printf("%s\n", "Could not create thread, continue non-threaded...");
-            perror("Could not create thread, continue non-threaded...");
-            // handle_request(req_fd);
-        }
-        //sleep(10000000);
-        //pthread_attr_destroy(&attr);
+        memory_mapping_args.path = path;
+        memory_mapping_args.mode_concurrency = args->configs.mode_concurrency;
+        memory_mapping_args.fd = args->fd;
 
-        //int dim_file_to_send = linux_memory_mapping(args->fd, path, args->configs.mode_concurrency);
-        int dim_file_to_send = 22;
-        printf("%s\n", "fino qua ci sono à##################");
-        pid_t child;
-        int fd_pipe[2];
-        //FILE *fp_log = fopen(LOG_PATH, "a");
-        if (pipe(fd_pipe) < 0) {
-            perror("pipe");
+        printf("going to linux_memory_mapping\n");
+        int map_size = linux_memory_mapping((void *) &memory_mapping_args);
+
+        if (map_size < 0){
+            perror("socket_manage_files/linux_memory_mapping");
+            // todo return ?
+            return;
         }
 
-        child = fork();
-
-        if (child < 0) {
-            perror("error in fork");
-        } else if (child > 0) {
-            close(fd_pipe[0]);
-            struct PipeArgs pipeArgs1;
-            pipeArgs1.path = path;
-            pipeArgs1.ip_client = args->ip_client;
-            pipeArgs1.dim_file = dim_file_to_send;
-            write(fd_pipe[1], &pipeArgs1, sizeof(pipeArgs1));
-            close(fd_pipe[1]);
-        } else if (child == 0) {
-            close(fd_pipe[1]);
-            printf("---- child process wrote\n");
-            //FILE* fp_fileLog = fopen(LOG_PATH, "w");
-            int fd_log = open(LOG_PATH, O_WRONLY | O_APPEND);
-            //FILE* fp_filelog= fdopen(fd_log, "a");
-            printf("---- child process open\n");
-            if (fd_log == -1) {
-                //if (fp_fileLog == NULL){
-                printf("sono bloccato");
-                exit(-1);
-            }
-            //int n;
-            struct PipeArgs data;
-
-            //ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
-            ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
-            printf("%zu", nread);
-
-
-            printf("%zu", nread);
-
-            printf("---- child process read\n");
-
-
-            //printf("\n sono figlio :-> %s\n", data->ip_client);
-            printf("FileName: %s\n", data.path);
-            printf("%d Byte \n", data.dim_file);
-            printf("IP Client: %s\n", data.ip_client);
-
-            /*int err = */ dprintf(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data.path, data.dim_file,
-                                   data.ip_client);
-            //int err = fprintf(fp_filelog, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);
-            perror("dprintf");
-            //write(fd_log, "cia", sizeof("cia"));
-
-            //printf("SONO N %d \n", n);
-            close(fd_pipe[0]);
-
-            printf("---- child process close\n");
-            exit(0);
-        }
-
-        fprintf(stdout, "parent process wrote it after fork!\n");
-
+        socket_pipe_log_server(path, args, map_size, fd_pipe);
 
 #endif
-        printf("socket_manage_files");
-        return;
 
     }
 }
@@ -398,3 +317,67 @@ int SendFileMapped(int write_fd, char *fileToSend, int fileSize) {
     return 0;
 }
 
+int vecchiafork(char *path, char *ip_client, int dim_file_to_send) {
+    pid_t child;
+    int fd_pipe[2];
+    //FILE *fp_log = fopen(LOG_PATH, "a");
+    if (pipe(fd_pipe) < 0) {
+        perror("pipe");
+    }
+
+    child = fork();
+
+    if (child < 0) {
+        perror("error in fork");
+    } else if (child > 0) {
+        close(fd_pipe[0]);
+        struct PipeArgs pipeArgs1;
+        pipeArgs1.path = path;
+        pipeArgs1.ip_client = ip_client;
+        pipeArgs1.dim_file = dim_file_to_send;
+        write(fd_pipe[1], &pipeArgs1, sizeof(pipeArgs1));
+        close(fd_pipe[1]);
+    } else if (child == 0) {
+        close(fd_pipe[1]);
+        printf("---- child process wrote\n");
+        //FILE* fp_fileLog = fopen(LOG_PATH, "w");
+        int fd_log = open(LOG_PATH, O_WRONLY | O_APPEND);
+        //FILE* fp_filelog= fdopen(fd_log, "a");
+        printf("---- child process open\n");
+        if (fd_log == -1) {
+            //if (fp_fileLog == NULL){
+            printf("sono bloccato");
+            exit(-1);
+        }
+        //int n;
+        struct PipeArgs data;
+
+        //ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
+        ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
+        printf("%zu", nread);
+
+
+        printf("%zu", nread);
+
+        printf("---- child process read\n");
+
+
+        //printf("\n sono figlio :-> %s\n", data->ip_client);
+        printf("FileName: %s\n", data.path);
+        printf("%d Byte \n", data.dim_file);
+        printf("IP Client: %s\n", data.ip_client);
+
+        /*int err = */ dprintf(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data.path, data.dim_file,
+                               data.ip_client);
+        //int err = fprintf(fp_filelog, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);
+        perror("dprintf");
+        //write(fd_log, "cia", sizeof("cia"));
+
+        //printf("SONO N %d \n", n);
+        close(fd_pipe[0]);
+
+        printf("---- child process close\n");
+        exit(0);
+    }
+    return 0;
+}

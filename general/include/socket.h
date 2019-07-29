@@ -21,7 +21,7 @@ int fsize(FILE *fp);
 void socket_read_request(struct ThreadArgs *args, char **buf);
 
 void socket_resolve_selector(struct ThreadArgs *args, char *buf, char **path);
-
+int vecchiafork(char* path, char* ip_client, int dim_file_to_send );
 void clean_request(char *path, char *buf, struct ThreadArgs *args);
 
 int socket_send_message(int fd, char *message_string);
@@ -29,15 +29,12 @@ int socket_send_message(int fd, char *message_string);
 void socket_manage_files(char *path, char *buf, struct ThreadArgs *args);
 
 #if defined(__unix__) || defined(__APPLE__)
-//TODO Controllare se si puó lasciare qui
-
+int writeToPipe(char* path, char* ip_client);
 pthread_mutex_t p_mutex;
 #endif
 
 
 #ifdef _WIN32
-//TODO Controllare se si puó lasciare qui
-
 HANDLE pipe_read;
 HANDLE pipe_write;
 #endif

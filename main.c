@@ -18,6 +18,9 @@
 #if defined(__unix__) || defined(__APPLE__)
 
 #include <signal.h>
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <linux_pipe.h>
 #include "linux_files_interaction.h"
 #include "files_interaction.h"
 #include "linux_thread.h"
@@ -41,10 +44,41 @@
 // run Sh + Enter
 // Ctrl + Enter
 
+void run_in_daemon() {
+
+    __pid_t d_child1 = fork();
+    perror("deamon forked");
+
+    if (d_child1 < 0) {
+        perror("failed child");
+        exit(-1);
+    } else if (d_child1 > 1) {
+        // father
+        perror("creates d_child1");
+        exit(0);
+    }
+
+    __pid_t d_child2 = fork();
+    setsid();
+    signal(SIGHUP, SIG_IGN);
+    // second child
+    if (d_child2 < 0) {
+        perror("failed child");
+
+        exit(-1);
+    } else if (d_child2 > 1) {
+        // father
+        perror("creates d_child2");
+
+        exit(0);
+    }
+
+}
 
 int main(int argc, char *argv[]) {
 
     printf("%s\n", "Gopher start ...");
+    printf("PID: %d", getpid());
 
     //perror("main#");
 
@@ -116,64 +150,51 @@ int main(int argc, char *argv[]) {
 
 
 #endif
+
     struct Configs c;
     c.reset_config = NULL;
     configs = &c;
 
 
-// configs.root_dir = malloc(50 * sizeof(char));
-// chiamata alla lettura del file di configurazione
-//
-    printf("PID: %ld  PPID: %ld\n", (long)
-
-            getpid()
-
-    );
-
-//
     conf_parseConfigFile(CONFIGURATION_PATH, configs);
     printf("\n sono conf.rootdir %s\n", configs->root_dir);
-    if (
-            conf_read_opt(argc, argv, configs
-            ) != 0)
+    if (conf_read_opt(argc, argv, configs) != 0){
         return 1;
-/*
-configs.port_number = 7070;
-configs.mode_concurrency=1;
-configs.root_dir="/sda";
-*/
-    printf("port:%d mode:%d %lu dir:%s\n", configs->port_number, configs->mode_concurrency,
-           strlen(configs
-                          ->root_dir),
-           configs->root_dir);
+    }
+
+    printf("port:%d mode:%d %lu dir:%s\n", configs->port_number, configs->mode_concurrency, strlen(configs->root_dir), configs->root_dir);
 
 
 #if defined(__unix__) || defined(__APPLE__)
 
-    if (signal(SIGHUP, signal_sighup_handler) == SIG_ERR) {
+    socket_pipe_process();
+
+
+    if (signal(SIGHUP, signal_sighup_handler) == SIG_ERR || signal(SIGCHLD, SIG_IGN)) {
         perror("Signal");
     }
 
-    printf("%c \n", getGopherCode("C:/Users/valerio/file.png"));
-
     start_mutex();
 
-    linux_socket(configs);
     while (true) {
+
+        printf("conf rott dir %s\n", configs->root_dir);
+        linux_socket(configs);
 
         c.reset_config = NULL;
         configs = &c;
         conf_parseConfigFile("../gopher_server_configuration.txt", configs);
 
-        linux_socket(configs);
     }
-
+    printf("close server");
     close_mutex();
 
-    //pthread_t t_id;
+    if (M_THREAD == configs->mode_concurrency) {
+        sleep(1);
+        pthread_exit(NULL);
+    }
 
-    //thr_pthread_create(&t_id, &thr_test_func, (void *) "lol");
-    //sleep(2);
+
 
 #endif
 #ifdef _WIN32
@@ -201,21 +222,10 @@ configs.root_dir="/sda";
         CloseHandle(pi.hProcess);
 
 #endif
-//printf("%s", configs.root_dir);
-    if (configs->used_OPTARG == false) {
-        free(configs
-                     ->root_dir);
-    }
-//sleep(2);
-//return 0;
-#if defined(__unix__) || defined(__APPLE__)
 
-    if (M_THREAD == configs->mode_concurrency) {
-        sleep(1);
-        pthread_exit(NULL);
+    if (configs->used_OPTARG == false) {
+        free(configs->root_dir);
     }
-#endif
 
     exit(0);
-//pthread_exit(&ret);
 }
