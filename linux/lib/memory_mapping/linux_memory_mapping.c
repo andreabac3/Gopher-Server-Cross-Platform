@@ -68,7 +68,10 @@ int linux_memory_mapping(void *params) {
 
      */
 
-    // todo check if file is empty, sb.st_size = 0
+    if(sb.st_size == 0){
+        return 0;
+    }
+
     void *addr = mmap(NULL, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
 
     if (addr == MAP_FAILED) {

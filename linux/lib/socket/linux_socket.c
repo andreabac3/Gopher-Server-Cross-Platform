@@ -102,18 +102,6 @@ int run_concurrency(struct ThreadArgs *args) {
             perror("run_concurrency fork child failed");
         } else if (pid_child == 0) {
             // child
-
-
-            /*pid_t pid_grandchild = fork();
-            if (pid_grandchild < 0) {
-                perror("run_concurrency fork grandchild failed");
-            } else if (pid_child == 0) {
-                int wstatus;
-                if(waitpid(getppid(), &wstatus, ) == -1){
-                    perror("run_concurrency wait on father faild");
-                }
-            }*/
-
             handle_request(args);
             exit(0);
         } else {
@@ -151,7 +139,7 @@ int linux_socket(struct Configs *configs) {
     timeout.tv_sec = SOCK_START_TIMEOUT;
     timeout.tv_usec = SOCK_START_TIMEOUT;
 
-    while (MAX_CONNECTIONS_ALLOWED) {
+    for (int connection_counter = 0; MAX_CONNECTIONS_ALLOWED >= connection_counter; connection_counter++) {
         FD_SET(fd_server, &rset);
 
 
@@ -189,12 +177,7 @@ int linux_socket(struct Configs *configs) {
             }
 
 
-            //int *req_fd = malloc(sizeof(int));
-            //*req_fd = accept_fd;
-            //printf("%u\n", client_addr.sin_addr.s_addr);
             char clientname[500];
-//            printf("Client Adress = %s\n", inet_ntop(AF_INET, &client_addr.sin_addr, clientname, sizeof(clientname)));
-//            printf("Client Adress = %s\n", clientname);
 
             // TODO why calloc?
             struct ThreadArgs *args = calloc(1, sizeof(struct ThreadArgs));
@@ -214,8 +197,6 @@ int linux_socket(struct Configs *configs) {
 
     }
 
-    perror("Accept Failes or while terminated");
-
     // End server
     if (end_server(fd_server) < 0) {
         perror(NULL);
@@ -234,7 +215,7 @@ int get_line(char *buf, size_t size) {
     }
     return 0;
 }
-
+/*
 void linux_sock_send_error(int *fd) {
     char error[] = "Unable to satisfy the request, retry later";
     send(*fd, error, sizeof(char) * strlen(error), 0);
@@ -242,7 +223,7 @@ void linux_sock_send_error(int *fd) {
 
 void linux_sock_send_message(int *fd, char *error) {
     send(*fd, error, sizeof(char) * strlen(error), 0);
-}
+}*/
 
 
 void *handle_request_thread(void *params) {
