@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <afxres.h>
+#include <stdbool.h>
 #include "windows_utils.h"
 #include "windows_pipe.h"
 #include "socket.h"
@@ -138,4 +139,68 @@ int pipe_simple_write_to_pipe(struct PipeArgs *args) {
 
     return 0;
 }
+
+int pipe_run_process(PROCESS_INFORMATION * pi) {
+
+    SECURITY_ATTRIBUTES securityAttributes = {sizeof(SECURITY_ATTRIBUTES), NULL, TRUE};
+
+    if (false == CreatePipe(&pipe_read, &pipe_write, &securityAttributes, BUFFER_SIZE * 2)) {
+        windows_perror();
+        exit(22);
+    }
+    char child_cmd[32];
+    sprintf(child_cmd, "%lld", (ULONG64) (ULONG_PTR) pipe_read);
+    printf(" SONO CHILD CMD %s\n", child_cmd);
+    // pipe std out link
+
+
+    HANDLE father_std_out = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (FALSE == SetStdHandle(STD_OUTPUT_HANDLE, pipe_read)) {
+        windows_perror();
+        printf("FALLITA CREATE SetStdHandle");
+        exit(23);
+
+    }
+
+
+    // process
+    STARTUPINFO si;
+    ZeroMemory(&si, sizeof(si));
+    si.cb = sizeof(si);
+
+    // HANDLE dup_pipe_read;
+    if (true == CreateProcess("gopherWinPipeProcess.exe", (char *) child_cmd, NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL, NULL, &si, pi)) {
+
+        //WaitForSingleObject(pi.hProcess, INFINITE);
+
+
+        HANDLE dup_pipe_read = NULL;
+
+        if (false ==
+            DuplicateHandle(GetCurrentProcess(), pipe_read, pi->hProcess, &dup_pipe_read, DUPLICATE_SAME_ACCESS, FALSE,
+                            DUPLICATE_SAME_ACCESS)) {
+            windows_perror();
+            printf("FALLITA CREATE PIPE");
+
+            exit(23);
+        }
+        perror("PIPE RIUSCITA CON SUCCESSO\n");
+        printf("%d\n", dup_pipe_read);
+        printf("%d\n", pipe_read);
+
+
+    } else {
+        perror("create process is failed");
+        windows_perror();
+        exit(24);
+    }
+
+    if (FALSE == SetStdHandle(STD_OUTPUT_HANDLE, father_std_out)) {
+        //windows_perror();
+        fprintf(stderr,"%s\n","FALLITA CREATE SetStdHandle close");
+        exit(23);
+    }
+    return 0;
+}
+
 
