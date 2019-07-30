@@ -115,22 +115,6 @@ int main(int argc, char *argv[]) {
     printf("Inizio del main\n");
 
 
-    /*if (argc == 2) {
-        printf("Argomento 1 %s\n", argv[1]);
-        printf("Nuovo Processo\n");
-
-        HANDLE hFile = CreateFile(
-                "C:\\Users\\Valerio\\CLionProjects\\gopher-project\\fileditext.txt",                // name of the write
-                GENERIC_READ | GENERIC_WRITE,          // open for writing
-                0,                      // do not share
-                NULL,                   // default security
-                OPEN_EXISTING,
-                FILE_ATTRIBUTE_NORMAL, NULL);                  // no attr. template
-
-        perror("CreateFileMaim");
-        exit(0);
-    }*/
-
     PROCESS_INFORMATION pi;
     ZeroMemory(&pi, sizeof(pi));
     pipe_run_process(&pi);
