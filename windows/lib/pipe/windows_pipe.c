@@ -169,6 +169,7 @@ int pipe_run_process(PROCESS_INFORMATION * pi) {
     si.cb = sizeof(si);
 
     // HANDLE dup_pipe_read;
+    printf("Creando la pipe log\n");
     if (true == CreateProcess("gopherWinPipeProcess.exe", (char *) child_cmd, NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL, NULL, &si, pi)) {
 
         //WaitForSingleObject(pi.hProcess, INFINITE);

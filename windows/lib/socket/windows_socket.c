@@ -17,6 +17,7 @@
 #include "definitions.h"
 #include "files_interaction.h"
 #include "socket.h"
+#include "windows_pipe.h"
 
 int end_server(SOCKET fd){
     shutdown(fd, 2);
@@ -52,22 +53,21 @@ void run_concurrency(struct ThreadArgs* args, SOCKADDR_IN clientAddr, SOCKET cli
 void run_process(struct ThreadArgs* args,  SOCKADDR_IN* clientAddr, SOCKET client){
 
     // Create named pipe
-    HANDLE hPipe;
+
     DWORD dwWritten;
 
 
-    hPipe = CreateNamedPipe(TEXT("\\\\.\\pipe\\PipeHandleRequest"),
-                            PIPE_ACCESS_DUPLEX,
-                            PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT,   // FILE_FLAG_FIRST_PIPE_INSTANCE is not needed but forces CreateNamedPipe(..) to fail if the pipe already exists...
-                            1,
-                            1024 * 16,
-                            1024 * 16,
-                            NMPWAIT_USE_DEFAULT_WAIT,
-                            NULL);
+    /*hNamedPipe = CreateFile(TEXT("\\\\.\\pipe\\PipeHandleRequest"),
+                       GENERIC_READ | GENERIC_WRITE,
+                       0,
+                       NULL,
+                       OPEN_EXISTING,
+                       0,
+                       NULL);
 
-    if (hPipe == INVALID_HANDLE_VALUE){
+    if (hNamedPipe == INVALID_HANDLE_VALUE){
        return;
-    }
+    }*/
 
     // Create Process
     PROCESS_INFORMATION pi;
@@ -100,16 +100,16 @@ void run_process(struct ThreadArgs* args,  SOCKADDR_IN* clientAddr, SOCKET clien
 
 
 
-    if (ConnectNamedPipe(hPipe, NULL) != FALSE)   // wait for someone to connect to the pipe
+    if (ConnectNamedPipe(hNamedPipe, NULL) != FALSE)   // wait for someone to connect to the pipe
     {
-        WriteFile(hPipe,
+        WriteFile(hNamedPipe,
                   &ProtocolInfo,
                   sizeof(ProtocolInfo),   // = length of string + terminating '\0' !!!
                   &dwWritten,
                   NULL);
 
-        DisconnectNamedPipe(hPipe);
-        //CloseHandle(hPipe);
+        DisconnectNamedPipe(hNamedPipe);
+        //CloseHandle(hNamedPipe);
     }
     CloseHandle(pi.hThread);
     CloseHandle(pi.hProcess);

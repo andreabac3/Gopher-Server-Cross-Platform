@@ -29,6 +29,7 @@
 
 #define OS_SEPARATOR '\\'
 
+
 #define PIPE_LOG_NAME "\\\\.\\pipe\\Pipe"
 
 #endif

@@ -89,6 +89,22 @@ int main(int argc, char *argv[]) {
 
 #ifdef _WIN32
 
+    // Create named pipe
+    DWORD dwWritten;
+
+
+    hNamedPipe = CreateNamedPipe(TEXT("\\\\.\\pipe\\PipeHandleRequest"),
+                            PIPE_ACCESS_DUPLEX,
+                            PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT,   // FILE_FLAG_FIRST_PIPE_INSTANCE is not needed but forces CreateNamedPipe(..) to fail if the pipe already exists...
+                            1,
+                            1024 * 16,
+                            1024 * 16,
+                            NMPWAIT_USE_DEFAULT_WAIT,
+                            NULL);
+
+    if (hNamedPipe == INVALID_HANDLE_VALUE){
+        exit (-125);
+    }
 
 #endif
 
@@ -99,7 +115,7 @@ int main(int argc, char *argv[]) {
     printf("Inizio del main\n");
 
 
-    if (argc == 2) {
+    /*if (argc == 2) {
         printf("Argomento 1 %s\n", argv[1]);
         printf("Nuovo Processo\n");
 
@@ -113,7 +129,7 @@ int main(int argc, char *argv[]) {
 
         perror("CreateFileMaim");
         exit(0);
-    }
+    }*/
 
     PROCESS_INFORMATION pi;
     ZeroMemory(&pi, sizeof(pi));
@@ -121,7 +137,6 @@ int main(int argc, char *argv[]) {
 
 
     conf_parseConfigFile(CONFIGURATION_PATH, configs);
-    printf("\n sono conf.rootdir %s\n", configs->root_dir);
     if (conf_read_opt(argc, argv, configs) != 0) {
         return 1;
     }
@@ -180,6 +195,8 @@ int main(int argc, char *argv[]) {
     WaitForSingleObject(pi.hProcess, INFINITE);
 
     CloseHandle(pipe_read);
+    CloseHandle(hNamedPipe);
+
 
     CloseHandle(pi.hThread);
     CloseHandle(pi.hProcess);
