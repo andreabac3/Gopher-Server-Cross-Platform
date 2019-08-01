@@ -67,9 +67,15 @@ int fd_pipe[2];
 #define OKTOWRITE "/condwrite"
 #define MESSAGE "/msg"
 
-pthread_cond_t *condition_child;
-pthread_mutex_t *mutex_child;
-int des_cond_child, des_mutex_child;
+//pthread_cond_t *condition_child;
+//pthread_mutex_t *mutex_child;
+//int des_cond_child, des_mutex_child;
+
+pthread_cond_t* condition;
+pthread_mutex_t* mutex;
+char* message;
+int des_cond, des_msg, des_mutex;
+//int mode = S_IRWXU | S_IRWXG;
 
 struct MemoryMappingArgs {
     int fd;

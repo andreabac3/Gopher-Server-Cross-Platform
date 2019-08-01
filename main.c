@@ -133,7 +133,8 @@ int main(int argc, char *argv[]) {
 
 #if defined(__unix__) || defined(__APPLE__)
 
-    socket_pipe_new_process();
+    socket_pipe_new_process3();
+    return 0;
 
     if (signal(SIGHUP, signal_sighup_handler) == SIG_ERR || signal(SIGCHLD, SIG_IGN)) {
         perror("Signal");
