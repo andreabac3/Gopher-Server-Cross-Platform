@@ -292,7 +292,7 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
 //<<<<<<< HEAD
 //        socket_pipe_log_server(path, args, map_size, fd_pipe);
 //=======
-        socket_pipe_log(path, args);
+        socket_pipe_log(path, args, map_size);
 //>>>>>>> parent of df10553... fixed send pipe log with condition variable
 
 #endif

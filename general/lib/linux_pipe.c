@@ -63,7 +63,7 @@ int socket_pipe_log_father(int fd_pipe_log[]){
 }
 
 
-void socket_pipe_log(char* path, struct ThreadArgs *args ){
+void socket_pipe_log(char* path, struct ThreadArgs *args, int dim_file_to_send){
     pid_t pid_log;
     int fd_pipe_log[2];
     //FILE *fp_log = fopen(LOG_PATH, "a");
@@ -72,7 +72,7 @@ void socket_pipe_log(char* path, struct ThreadArgs *args ){
     }
 
     pid_log = fork();
-    int dim_file_to_send = 22;
+//    int dim_file_to_send = 22;
 
     if (pid_log < 0) {
         perror("error in fork");

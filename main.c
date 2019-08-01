@@ -272,7 +272,7 @@ int main(int argc, char *argv[]) {
 
     start_mutex();
 
-    while (true) {
+    if (true) {
 
         printf("conf root dir %s\n", configs->root_dir);
         linux_socket(configs);
