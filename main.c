@@ -174,12 +174,13 @@ int main(int argc, char *argv[]) {
 
     while (true) {
         windows_socket_runner(configs);
-        c.reset_config = NULL;
-        configs = &c;
+        //c.reset_config = NULL;
+        //configs = &c;
+        configs->reset_config = NULL;
         conf_parseConfigFile("../gopher_server_configuration.txt", configs);
 
     }
-    // todo ??
+
     WaitForSingleObject(pi.hProcess, INFINITE);
 
     CloseHandle(pipe_read);

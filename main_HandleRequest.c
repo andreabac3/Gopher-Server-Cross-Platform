@@ -67,13 +67,21 @@ int main(int argc, char *argv[]) {
     }
 
 
-    ReadFile(hPipe, &ProtocolInfo, sizeof(WSAPROTOCOL_INFO) - 1, &dwRead, NULL);
+    if(!ReadFile(hPipe, &ProtocolInfo, sizeof(WSAPROTOCOL_INFO) - 1, &dwRead, NULL)){
+        windows_perror();
+        exit(-1);
+    }
     sockDuplicated = WSASocket(FROM_PROTOCOL_INFO,
                                FROM_PROTOCOL_INFO,
                                FROM_PROTOCOL_INFO,
                                &ProtocolInfo,
                                0,
                                0);
+
+    if(sockDuplicated == INVALID_SOCKET){
+        windows_perror();
+        exit(-1);
+    }
 
 
     CloseHandle(hPipe);
