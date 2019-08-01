@@ -1,3 +1,3 @@
-port 7074
+port 7070
 root_dir "/opt/local_projects/gopher-project"
 mode_concurrency Thread
