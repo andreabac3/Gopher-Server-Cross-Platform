@@ -212,10 +212,13 @@ int socket_send_error_to_client(char* path, char* buf, struct ThreadArgs *args){
     if (err != 0) {
         clean_request(path, buf, args);
     } else {
+
         printf("%s", m);
         //send(args->fd, m, sizeof(char) * strlen(m), 0);
         socket_send_message(args->fd, m);
-        free(m);
+        if (m != NULL){
+            free(m);
+        }
     }
     clean_request(path, buf, args);
 }
