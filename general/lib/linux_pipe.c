@@ -8,6 +8,8 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <stdbool.h>
+#include <string.h>
+#include <asm/errno.h>
 #include "definitions.h"
 #include "utils.h"
 #include "linux_pipe.h"
@@ -131,6 +133,7 @@ int socket_pipe_log_server(char *path, struct ThreadArgs *args, int dim_file_to_
 }
 
 void socket_pipe_new_process() {
+    int err;
     des_mutex = shm_open(MUTEX, O_CREAT | O_RDWR | O_TRUNC, S_IRWXU | S_IRWXG);
 
     if (des_mutex < 0) {
@@ -204,14 +207,14 @@ void socket_pipe_new_process() {
         while (true) {
             printf("RISETTO TUTTE LE CONDIZIONI DA CAPO\n");
 
-            if(pthread_mutex_lock(mutex) != 0){
-                perror("pthread_mutex_lock failed");
+            if((err = pthread_mutex_lock(mutex)) != 0){
+                fprintf(stderr, "pthread_mutex_lock failed %d %s \n", err, strerror(err));
             }
-            if(printf("pthread_mutex_lock\n")!= 0){
-                perror("pthread_mutex_lock failed");
-            }
+            printf("pthread_mutex_lock\n");
 
-            pthread_cond_wait(condition, mutex);
+            if(pthread_cond_wait(condition, mutex)!= 0){
+                perror("pthread_cond_wait failed");
+            }
             printf("pthread_cond_wait \n");
 
 
