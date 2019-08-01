@@ -34,6 +34,7 @@
 #include <signal.h>
 #include <sys/mman.h>
 #include <fcntl.h>
+#include <linux_pipe.h>
 #include "linux_files_interaction.h"
 #include "files_interaction.h"
 #include "linux_thread.h"
@@ -132,139 +133,7 @@ int main(int argc, char *argv[]) {
 
 #if defined(__unix__) || defined(__APPLE__)
 
-    des_mutex_child = shm_open(MUTEX, O_CREAT | O_RDWR | O_TRUNC, S_IRWXU | S_IRWXG);
-
-    if (des_mutex_child < 0) {
-        perror("failure on shm_open on des_mutex");
-        exit(1);
-
-    }
-
-    if (ftruncate(des_mutex_child, sizeof(pthread_mutex_t)) == -1) {
-        perror("Error on ftruncate to sizeof pthread_cond_t\n");
-        exit(-1);
-    }
-
-    mutex_child = (pthread_mutex_t *) mmap(NULL, sizeof(pthread_mutex_t),
-                                           PROT_READ | PROT_WRITE, MAP_SHARED, des_mutex_child, 0);
-
-    if (mutex_child == MAP_FAILED) {
-        perror("Error on mmap on mutex\n");
-        munmap(mutex_child, sizeof(pthread_mutex_t));
-        exit(1);
-    }
-
-    des_cond_child = shm_open(OKTOWRITE, O_CREAT | O_RDWR | O_TRUNC, S_IRWXU | S_IRWXG);
-
-    if (des_cond_child < 0) {
-        perror("failure on shm_open on des_cond");
-        exit(1);
-    }
-
-    if (ftruncate(des_cond_child, sizeof(pthread_cond_t)) == -1) {
-        perror("Error on ftruncate to sizeof pthread_cond_t\n");
-        exit(-1);
-    }
-
-    condition_child = (pthread_cond_t *) mmap(NULL, sizeof(pthread_cond_t), PROT_READ | PROT_WRITE, MAP_SHARED,
-                                              des_cond_child, 0);
-
-    if (condition_child == MAP_FAILED) {
-        perror("Error on mmap on condition\n");
-        munmap(mutex_child, sizeof(pthread_mutex_t));
-        munmap(condition_child, sizeof(pthread_cond_t));
-
-        exit(1);
-    }
-    pthread_mutexattr_t mutexAttr;
-    pthread_mutexattr_init(&mutexAttr);
-    pthread_mutexattr_setpshared(&mutexAttr, PTHREAD_PROCESS_SHARED);
-    pthread_mutex_init(mutex_child, &mutexAttr);
-
-    /* set condition shared between processes */
-    pthread_condattr_t condAttr;
-    pthread_condattr_init(&condAttr);
-    pthread_condattr_setpshared(&condAttr, PTHREAD_PROCESS_SHARED);
-    pthread_cond_init(condition_child, &condAttr);
-
-
-    // main code
-    if (pipe(fd_pipe) < 0) {
-        perror("pipe");
-        exit(-1);
-
-    }
-    child = fork();
-    if (child < 0) {
-        perror("failed child");
-        exit(-1);
-    } else if (child == 0) {
-        printf("FIGLIO È PARTITO IN ATTESA SULLA COND VARIABLE\n");
-        close(fd_pipe[1]);
-
-        while (true) {
-            printf("RISETTO TUTTE LE CONDIZIONI DA CAPO\n");
-
-            pthread_mutex_lock(mutex_child);
-            printf("pthread_mutex_lock\n");
-
-            pthread_cond_wait(condition_child, mutex_child);
-            printf("pthread_cond_wait \n");
-
-
-            printf("Signaled by PARENT process, wake up!!!!!!!!\n");
-
-            // TODO INSERT CONDITION VARIABLE and while true
-            printf("---- child process wrote\n");
-            //FILE* fp_fileLog = fopen(LOG_PATH, "w");
-
-            int fd_log = open(LOG_PATH, O_WRONLY | O_APPEND);
-            //FILE* fp_filelog= fdopen(fd_log, "a");
-            printf("---- child process open\n");
-            if (fd_log == -1) {
-                //if (fp_fileLog == NULL){
-                printf("sono bloccato");
-
-                exit(-1);
-            }
-            //int n;
-            fprintf(stderr, "%s\n", "sono debug3");
-            printf("BOOOOOOL : %d", fd_is_valid(fd_pipe[0]));
-
-            char message[BUFFER_SIZE * 2] = {0};
-            ssize_t nread = read(fd_pipe[0], message, BUFFER_SIZE * 2);
-            // ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
-            // printf("%zu", nread);
-            fprintf(stderr, "%s %zu\n", "read riuscito -> sono debug", nread);
-
-
-            printf("---- child process read\n");
-
-            dprintf(fd_log, "Byte %s", message);
-            //dprintf(fd_log, "<%s>\n", "bho");
-
-            //int err = fprintf(fp_filelog, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);
-            perror("dprintf");
-            //write(fd_log, "cia", sizeof("cia"));
-
-            //printf("SONO N %d \n", n);
-            pthread_mutex_unlock(mutex_child);
-
-            printf("---- child process close\n");
-
-        }
-        pthread_condattr_destroy(&condAttr);
-        pthread_mutexattr_destroy(&mutexAttr);
-        pthread_mutex_destroy(mutex_child);
-        pthread_cond_destroy(condition_child);
-        shm_unlink(OKTOWRITE);
-        shm_unlink(MESSAGE);
-        shm_unlink(MUTEX);
-        close(fd_pipe[0]);
-        exit(0);
-    }
-    close(fd_pipe[0]);
-
+    socket_pipe_new_process();
 
     if (signal(SIGHUP, signal_sighup_handler) == SIG_ERR || signal(SIGCHLD, SIG_IGN)) {
         perror("Signal");

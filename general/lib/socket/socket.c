@@ -270,7 +270,7 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
 
 
         printf("End createProcess");
-        //printf("%d", SendFile(args->fd, fp_FileToSend));
+        //printf("%d", SendFile(args->fd, fp_FileToSend));int socket_pipe_log_server(char *path, struct ThreadArgs *args, int dim_file_to_send, int *fd_pipe_log)
 #endif
 #if defined(__unix__) || defined(__APPLE__)
 
@@ -291,9 +291,9 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         }
 
 //<<<<<<< HEAD
-//        socket_pipe_log_server(path, args, map_size, fd_pipe);
+        socket_pipe_log_server(path, args, map_size, fd_pipe);
 //=======
-        socket_pipe_log(path, args, map_size);
+//        socket_pipe_log(path, args, map_size);
 //>>>>>>> parent of df10553... fixed send pipe log with condition variable
 
 #endif
