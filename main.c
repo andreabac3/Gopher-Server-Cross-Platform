@@ -132,6 +132,12 @@ int main(int argc, char *argv[]) {
 
 
 #if defined(__unix__) || defined(__APPLE__)
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
+        printf("Current working dir: %s\n", cwd);
+    } else {
+        perror("getcwd() error");
+        return 1;
+    }
 
     socket_pipe_new_process();
     // return 0;

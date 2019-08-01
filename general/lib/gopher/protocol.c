@@ -10,6 +10,7 @@
 #if defined(__unix__) || defined(__APPLE__)
 
 #include "linux_protocol.h"
+
 #endif
 #ifdef _WIN32
 
@@ -30,7 +31,7 @@ int resolve_selector(char *gopher_root, char **filepath, const char *selector) {
     }
 
     int ret;
-    if (gopher_root[strlen(gopher_root)-1] == OS_SEPARATOR) {
+    if (gopher_root[strlen(gopher_root) - 1] == OS_SEPARATOR) {
         ret = sprintf(*filepath, "%s%s", gopher_root, selector + (selector[0] == OS_SEPARATOR ? 1 : 0));
     } else {
         ret = sprintf(*filepath, "%s%c%s", gopher_root, OS_SEPARATOR, selector + (selector[0] == OS_SEPARATOR ? 1 : 0));
@@ -56,7 +57,7 @@ int protocol_response(char type, char *filename, char *path, const char *host, i
         if (*result == NULL) {
             return 1;
         }
-        sprintf(*result, "%c%s%s\t%s\t%d\n", '3', "" /*path*/, filename , error, port);
+        sprintf(*result, "%c%s%s\t%s\t%d\n", '3', "" /*path*/, filename, error, port);
     } else {
         // Format for directory listening
 
@@ -66,7 +67,9 @@ int protocol_response(char type, char *filename, char *path, const char *host, i
         if (*result == NULL) {
             return 1;
         }
-        sprintf(*result, "%c%s\t%s\t%s\t%d\n", type, filename, path, host, port);
+        if (sprintf(*result, "%c%s\t%s\t%s\t%d\n", type, filename, path, host, port) < 0) {
+            return -1;
+        }
         printf("protocol_response/result %s\n", *result);
     }
     return 0;
@@ -132,7 +135,7 @@ int print_directory(char *path, int (*socket_send_f)(int, char *), int fd, int p
         free(fullpath);
         free(line);
 
-        if (0 > ret){
+        if (0 > ret) {
             return -2;
         }
 

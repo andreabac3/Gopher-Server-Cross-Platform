@@ -7,6 +7,8 @@
 #define FILES_IS_DIRECTORY 1
 #define FILES_IS_REG_FILE 2
 #define FILES_IS_UNMANAGED_FILE 3
+#define FILES_NOT_PERMITTED 4
+
 // END FILES definition of file types
 
 #define SOCK_START_TIMEOUT 1
@@ -24,6 +26,7 @@
 #define OS_SEPARATOR '/'
 #include <fcntl.h>
 #include <pthread.h>
+char cwd[BUFFER_SIZE];
 #endif
 #ifdef _WIN32
 

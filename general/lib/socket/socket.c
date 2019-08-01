@@ -21,9 +21,12 @@
 #include <pthread.h>
 
 #include <fcntl.h>
+#include <libgen.h>
 #include "linux_memory_mapping.h"
 #include "linux_files_interaction.h"
 #include "linux_pipe.h"
+
+
 #endif
 
 #include "protocol.h"
@@ -203,25 +206,29 @@ int socket_send_message(int fd, char *message_string) {
     return 0;
 }
 
+int socket_send_error_to_client(char* path, char* buf, struct ThreadArgs *args){
+    char *m;
+    int err = protocol_response('3', buf, path, "localhost", args->configs.port_number, &m);
+    if (err != 0) {
+        clean_request(path, buf, args);
+    } else {
+        printf("%s", m);
+        //send(args->fd, m, sizeof(char) * strlen(m), 0);
+        socket_send_message(args->fd, m);
+        free(m);
+    }
+    clean_request(path, buf, args);
+}
+
 void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
 
     int type_file = file_type(path);
-    if (FILES_NOT_EXIST == type_file) {
+    if (FILES_NOT_EXIST == type_file || type_file == FILES_NOT_PERMITTED) {
         args->type_Request = 1;
+
         printf("socket_manage_files: Il file non esiste");
 
-        // tell to client that file do not exists
-        char *m;
-        int err = protocol_response('3', buf, path, "localhost", args->configs.port_number, &m);
-        if (err != 0) {
-            clean_request(path, buf, args);
-        } else {
-            printf("%s", m);
-            //send(args->fd, m, sizeof(char) * strlen(m), 0);
-            socket_send_message(args->fd, m);
-            free(m);
-        }
-        clean_request(path, buf, args);
+        socket_send_error_to_client(path, buf, args);
     }
 
     char code = getGopherCode(path);
@@ -230,14 +237,16 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
     }
 
     if (FILES_IS_DIRECTORY == type_file) {
-        // it's a directory
         args->type_Request = 1;
+
+        // it's a directory
         printf("%s\n", "Sending Directory");
         // TODO che for exit code of print_directory
         print_directory(path, &socket_send_message, args->fd, args->configs.port_number);
     } else if (FILES_IS_REG_FILE == type_file) { // FILES_IS_FILE
         // it's some kind of files
         printf("%s\n", "Sending File");
+
         args->type_Request = 0;
 
 #ifdef _WIN32
@@ -284,7 +293,7 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         printf("going to linux_memory_mapping\n");
         int map_size = linux_memory_mapping((void *) &memory_mapping_args);
 
-        if (map_size < 0){
+        if (map_size < 0) {
             perror("socket_manage_files/linux_memory_mapping");
             // todo return ?
             return;
@@ -388,3 +397,22 @@ int vecchiafork(char *path, char *ip_client, int dim_file_to_send) {
     return 0;
 }
 */
+
+int blackListFile(char *baseDir, char *pathFile, char *black_listed_file) {
+    char *base_name = basename(pathFile);
+    if (strcmp(black_listed_file, base_name) != 0) {
+        return 0;
+    }
+    char *base_dir_abs  = realpath(baseDir, NULL);
+    char *path_file_abs = realpath(pathFile, NULL);
+
+    char *real_base_dir = dirname(base_dir_abs);
+    char* path_file     = dirname(path_file_abs);
+
+
+    if (strcmp(real_base_dir, path_file) != 0) {
+        return 0;
+
+    }
+    return 1;
+}

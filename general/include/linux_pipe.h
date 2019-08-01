@@ -1,7 +1,3 @@
-//
-// Created by valerioneri on 7/28/19.
-//
-
 #ifndef GOPHERLINUX_LINUX_PIPE_H
 #define GOPHERLINUX_LINUX_PIPE_H
 
