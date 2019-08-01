@@ -149,8 +149,8 @@ int linux_socket(struct Configs *configs) {
     timeout.tv_sec = SOCK_START_TIMEOUT;
     timeout.tv_usec = SOCK_START_TIMEOUT;
 
-    for (int connection_counter = 0; MAX_CONNECTIONS_ALLOWED >= connection_counter; connection_counter++) {
-//    for (;;) {
+//    for (int connection_counter = 0; MAX_CONNECTIONS_ALLOWED >= connection_counter; connection_counter++) {
+    for (;;) {
         FD_SET(fd_server, &rset);
 
 

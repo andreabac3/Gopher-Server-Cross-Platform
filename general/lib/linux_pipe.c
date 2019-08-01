@@ -11,12 +11,16 @@
 
 int socket_pipe_log_child(char* path, struct ThreadArgs *args, int dim_file_to_send, int fd_pipe_log[]){
     close(fd_pipe_log[0]);
-    struct PipeArgs pipeArgs1;
-    pipeArgs1.path = path;
-    pipeArgs1.ip_client = args->ip_client;
-    pipeArgs1.dim_file = dim_file_to_send;
-    write(fd_pipe_log[1], &pipeArgs1, sizeof(pipeArgs1));
+//    struct PipeArgs pipeArgs1;
+//    pipeArgs1.path = path;
+//    pipeArgs1.ip_client = args->ip_client;
+//    pipeArgs1.dim_file = dim_file_to_send;
+    char message[BUFFER_SIZE*2];
+    snprintf(message, BUFFER_SIZE*2, "FileName: %s\t%d Byte \t IP Client: %s\n", path, dim_file_to_send, args->ip_client);
+    write(fd_pipe_log[1], &message, sizeof(message));
     close(fd_pipe_log[1]);
+
+    return 0;
 
 }
 
@@ -33,10 +37,11 @@ int socket_pipe_log_father(int fd_pipe_log[]){
         exit(-1);
     }
     //int n;
-    struct PipeArgs data;
+    //struct PipeArgs data;
+    char message[BUFFER_SIZE*2];
 
     //ssize_t nread = read(fd_pipe_log[0], &data, sizeof(data));
-    ssize_t nread = read(fd_pipe_log[0], &data, sizeof(data));
+    ssize_t nread = read(fd_pipe_log[0], &message, sizeof(message));
     printf("%zu", nread);
 
 
@@ -45,14 +50,14 @@ int socket_pipe_log_father(int fd_pipe_log[]){
     printf("---- pid_log process read\n");
 
 
-    //printf("\n sono figlio :-> %s\n", data->ip_client);
-    printf("FileName: %s\n", data.path);
-    printf("%d Byte \n", data.dim_file);
-    printf("IP Client: %s\n", data.ip_client);
+//    //printf("\n sono figlio :-> %s\n", data->ip_client);
+//    printf("FileName: %s\n", data.path);
+//    printf("%d Byte \n", data.dim_file);
+//    printf("IP Client: %s\n", data.ip_client);
 
-    /*int err = */ dprintf(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data.path, data.dim_file,
-                           data.ip_client);
-    //int err = fprintf(fp_filelog, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);
+//    dprintf(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data.path, data.dim_file, data.ip_client);
+    // int err = fprintf(fp_filelog, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);
+    dprintf(fd_log, "%s", message);
     perror("dprintf");
     //write(fd_log, "cia", sizeof("cia"));
 
@@ -60,6 +65,7 @@ int socket_pipe_log_father(int fd_pipe_log[]){
     close(fd_pipe_log[0]);
 
     printf("---- pid_log process close\n");
+    return 0;
 }
 
 
