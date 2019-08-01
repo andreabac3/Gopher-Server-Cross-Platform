@@ -30,16 +30,19 @@
 
 void close_mutex() {
     if (configs->mode_concurrency == M_THREAD) {
-        pthread_mutex_destroy(&p_mutex);
+        if(pthread_mutex_destroy(&p_mutex) != 0){
+            perror("pthread_mutex_destroy");
+        }
     }
 }
 
 void start_mutex() {
 
     if (configs->mode_concurrency == M_THREAD) {
-        printf("Lock setted \n");
-        pthread_mutex_init(&p_mutex, NULL);
-        perror("pthread_mutex_init");
+        printf("pthread_mutex_init/Lock setted \n");
+        if(pthread_mutex_init(&p_mutex, NULL) != 0){
+            perror("pthread_mutex_init");
+        }
     }
 }
 
@@ -61,7 +64,11 @@ int start_server(unsigned int port, unsigned int queue_size) {
 
 //    printf("File descriptor for socket is %d\n", fd);
     int opts = 1;
-    setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opts, sizeof(opts));
+    if(setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opts, sizeof(opts)) != 0){
+        perror("start_server/setsockopt");
+        exit(-1);
+    }
+
 
     // Bind the socket
     static struct sockaddr_in serv_addr;
@@ -85,21 +92,22 @@ int run_concurrency(struct ThreadArgs *args) {
 
     if (args->configs.mode_concurrency == M_THREAD) {
         pthread_t thread;
-        pthread_attr_t attr;
+        /*pthread_attr_t attr;
         pthread_attr_init(&attr);
-        pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-        if ((pthread_create(&thread, &attr, handle_request_thread, (void *) args)) != 0) {
+        pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);*/
+        if ((pthread_create(&thread, NULL, handle_request_thread, (void *) args)) != 0) {
             // printf("%s\n", "Could not create thread, continue non-threaded...");
-            perror("Could not create thread, continue non-threaded...");
+            perror("Could not create thread");
             // handle_request(req_fd);
         }
-        pthread_attr_destroy(&attr);
+        //pthread_attr_destroy(&attr);
+        //pthread_join(thread, NULL);
         return 0;
     } else if (args->configs.mode_concurrency == M_PROCESS) {
 
         pid_t pid_child = fork();
         if (pid_child < 0) {
-            perror("run_concurrency fork child failed");
+            perror("run_concurrency/fork child failed");
         } else if (pid_child == 0) {
             // child
             handle_request(args);
@@ -139,7 +147,7 @@ int linux_socket(struct Configs *configs) {
     timeout.tv_sec = SOCK_START_TIMEOUT;
     timeout.tv_usec = SOCK_START_TIMEOUT;
 
-    //for (int connection_counter = 0; MAX_CONNECTIONS_ALLOWED >= connection_counter; connection_counter++) {
+//    for (int connection_counter = 0; MAX_CONNECTIONS_ALLOWED >= connection_counter; connection_counter++) {
     for (;;) {
         FD_SET(fd_server, &rset);
 
@@ -178,13 +186,16 @@ int linux_socket(struct Configs *configs) {
             }
 
 
-            char clientname[500];
+            char* clientname = calloc(INET_ADDRSTRLEN + 1, sizeof(char));
+            if(clientname == NULL){
+                perror("linux_socket/clientname  calloc");
+                exit(-1);
+            }
+            inet_ntop( AF_INET, &client_addr.sin_addr, clientname, INET_ADDRSTRLEN);
 
-            // TODO why calloc?
             struct ThreadArgs *args = calloc(1, sizeof(struct ThreadArgs));
             args->configs = *configs;
             args->ip_client = clientname;
-
             args->fd = accept_fd;
 
             // QUI VA MULTICORE

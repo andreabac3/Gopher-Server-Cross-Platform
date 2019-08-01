@@ -138,6 +138,7 @@ void clean_request(char *path, char *buf, struct ThreadArgs *args) {
     }
     int ret = 0;
     if (args->configs.mode_concurrency == M_THREAD) {
+        free(args->ip_client);
         free(args);
         pthread_exit(&ret);
     } else { // mode_concurrency == M_PROCESS

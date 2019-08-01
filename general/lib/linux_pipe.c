@@ -203,12 +203,12 @@ int socket_pipe_process(){
             ssize_t nread = read(fd_pipe[0], message, BUFFER_SIZE * 2);
             // ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
             // printf("%zu", nread);
-            fprintf(stderr, "%s %zu\n", "read riuscito -> sono debug", nread);
+            fprintf(stderr, "socket_pipe_process/read from pipe bytes: %zu %s \n", nread, message);
 
 
             printf("---- child process read\n");
 
-            dprintf(fd_log, "Byte %s", message);
+            dprintf(fd_log, "> %s", message);
             //dprintf(fd_log, "<%s>\n", "bho");
 
             //int err = fprintf(fp_filelog, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);
@@ -259,7 +259,9 @@ int socket_pipe_log_server(char *path, struct ThreadArgs *args, int dim_file_to_
     //close(fd_pipe_log[1]);
 
     //printf("SONO N %d \n", n);
-    pthread_cond_signal(condition_child);
+    if(pthread_cond_signal(condition_child) != 0){
+        perror("pthread_cond_signal faild");
+    }
     pthread_mutex_unlock(mutex_child);
 
     return 0;

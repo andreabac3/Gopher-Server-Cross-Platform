@@ -46,7 +46,8 @@ struct PipeArgs {
 struct Configs {
     unsigned int port_number;
     char mode_concurrency;
-    char *root_dir;
+    //char *root_dir;
+    char root_dir[BUFFER_SIZE];
     int used_OPTARG;
     int *reset_config;
 };

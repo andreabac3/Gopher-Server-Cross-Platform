@@ -70,8 +70,9 @@ int conf_read_opt(int argc, char *argv[], struct Configs *configs) {
                 break;
             case 'd':
                 configs->used_OPTARG = true;
-                free(configs->root_dir);
-                configs->root_dir = conf_opts_root_dir(optarg);
+//                free(configs->root_dir);
+//                configs->root_dir = conf_opts_root_dir(optarg);
+                strncpy(configs->root_dir, optarg, BUFFER_SIZE);
                 break;
             default:
                 help();
@@ -182,8 +183,8 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
                 // if the option is root_dir
                 single_word = ut_strtok(NULL, "\"", &saveptr1);
                 wrong |= (unsigned) Assert_nb(single_word != NULL, "Missing root dir value");
-                config->root_dir = calloc(sizeof(char), strlen(single_word) + 1);
-                strcpy(config->root_dir, single_word);
+                //config->root_dir = calloc(sizeof(char), strlen(single_word) + 1);
+                strncpy(config->root_dir, single_word, BUFFER_SIZE);
 //                printf("%s %s \n", single_word, config->root_dir);
             } else {
 

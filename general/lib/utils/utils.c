@@ -136,7 +136,7 @@ void ut_clone_configs(struct Configs* c, struct Configs* n){
     // i = *(c->reset_config);
     //*(n->reset_config) = *(c->reset_config);
 
-    n->root_dir = calloc(strlen(c->root_dir) +1, sizeof(char));
+//    n->root_dir = calloc(strlen(c->root_dir) +1, sizeof(char));
     strcpy(n->root_dir, c->root_dir);
 
     /*

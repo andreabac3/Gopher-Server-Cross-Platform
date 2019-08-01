@@ -31,7 +31,6 @@
 
 #ifdef _WIN32
 
-
 #include <windows.h>
 #include <windows_utils.h>
 #include "windows_socket.h"
@@ -178,11 +177,13 @@ int main(int argc, char *argv[]) {
 
     while (true) {
 
-        printf("conf rott dir %s\n", configs->root_dir);
+        printf("conf root_dir %s\n", configs->root_dir);
         linux_socket(configs);
 
-        c.reset_config = NULL;
-        configs = &c;
+        //c.reset_config = NULL;
+        //configs = &c;
+        configs->reset_config = NULL;
+        //free(configs->root_dir);
         conf_parseConfigFile("../gopher_server_configuration.txt", configs);
 
     }
@@ -223,9 +224,9 @@ int main(int argc, char *argv[]) {
 
 #endif
 
-    if (configs->used_OPTARG == false) {
-        free(configs->root_dir);
-    }
+//    if (configs->used_OPTARG == false) {
+//        free(configs->root_dir);
+//    }
 
     exit(0);
 }
