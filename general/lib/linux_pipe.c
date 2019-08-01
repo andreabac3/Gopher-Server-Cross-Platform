@@ -377,7 +377,7 @@ void socket_pipe_new_process2() {
     __pid_t pid = fork();
     if (pid < 0) {
         perror("pipe_log fork failed");
-    } else if (pid > 0) {
+    } else if (pid == 0) {
 
         printf("child who waits on condition\n");
 
@@ -398,6 +398,7 @@ void socket_pipe_new_process2() {
         shm_unlink(OKTOWRITE);
         shm_unlink(MESSAGE);
         shm_unlink(MUTEX);
+        exit(0);
 
     } else {
 
@@ -441,6 +442,7 @@ int socket_pipe_log_server(char *path, struct ThreadArgs *args, int dim_file_to_
         perror("pthread_cond_signal faild");
     }
     pthread_mutex_unlock(mutex);
+    fprintf(stderr, "signal and unlock\n");
 
     return 0;
 }
