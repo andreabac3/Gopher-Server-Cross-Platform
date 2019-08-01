@@ -16,7 +16,7 @@
 #define CONFIGURATION_PATH "../gopher_server_configuration.txt"
 #define CONNECTION_QUEUE 500
 #define MAX_CONNECTIONS_ALLOWED 1
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 2048
 
 #define SEND_BUFFER_SIZE 512
 
@@ -28,6 +28,7 @@
 #ifdef _WIN32
 
 #define OS_SEPARATOR '\\'
+
 
 #define PIPE_LOG_NAME "\\\\.\\pipe\\Pipe"
 

@@ -10,20 +10,112 @@
 #include <errno.h>
 #include <ws2tcpip.h>
 #include <excpt.h>
+#include <windows_utils.h>
 #include "utils.h"
 #include "windows_socket.h"
 #include "winThread.h"
 #include "definitions.h"
 #include "files_interaction.h"
 #include "socket.h"
+#include "windows_pipe.h"
 
 int end_server(SOCKET fd){
     shutdown(fd, 2);
     closesocket(fd);
     return 0;
 }
-int windows_socket_runner(struct Configs *configs) {
+
+void run_concurrency(struct ThreadArgs* args, SOCKADDR_IN clientAddr, SOCKET client){
+
     HANDLE thread;
+
+
+    args->ip_client = inet_ntoa(clientAddr.sin_addr);
+    printf("Client connected!\n");
+    printf("IP address is: %s\n", args->ip_client);
+    args->fd = client;
+    if(args->configs.mode_concurrency == M_THREAD) {
+        // handle_request((PVOID) &args);
+        // TODO cambiare con _beginthread
+        if (0 != (thread = CreateThread(NULL, 0, handle_request, (PVOID) &args, 0, NULL))) {
+            printf("funziona\n");
+        }
+        CloseHandle(thread);
+    }else if (args->configs.mode_concurrency == M_PROCESS){
+
+    }else{
+        printf("errore in mod concurrency");
+        exit(-1);
+    }
+
+}
+
+void run_process(struct ThreadArgs* args,  SOCKADDR_IN* clientAddr, SOCKET client){
+
+    // Create named pipe
+
+    DWORD dwWritten;
+
+
+    /*hNamedPipe = CreateFile(TEXT("\\\\.\\pipe\\PipeHandleRequest"),
+                       GENERIC_READ | GENERIC_WRITE,
+                       0,
+                       NULL,
+                       OPEN_EXISTING,
+                       0,
+                       NULL);
+
+    if (hNamedPipe == INVALID_HANDLE_VALUE){
+       return;
+    }*/
+
+    // Create Process
+    PROCESS_INFORMATION pi;
+    ZeroMemory(&pi, sizeof(pi));
+    // process
+    STARTUPINFO si;
+    ZeroMemory(&si, sizeof(si));
+    si.cb = sizeof(si);
+
+    char cmd_child[BUFFER_SIZE * 2] = {0};
+    snprintf(cmd_child, BUFFER_SIZE * 2, "%s %d \"%s\" %d", inet_ntoa(clientAddr->sin_addr), configs->port_number, configs->root_dir, configs->mode_concurrency);
+    fprintf(stderr, "cmd child %s\n", cmd_child);
+
+    CreateProcess("gopherWinHandleRequestProcess.exe", cmd_child, NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL, NULL, &si, &pi);
+
+    WSAPROTOCOL_INFO ProtocolInfo;
+
+    BOOL err = WSADuplicateSocketA(client, pi.dwProcessId, &ProtocolInfo);
+
+    if (closesocket(client) != 0) {
+        perror("Close in clean request");
+    }
+
+    if(err)
+    {
+        fprintf(stderr, "WSADuplicateSocket(): failed. Error = %d, %s\n", WSAGetLastError()), windows_perror();
+        //DoCleanup();
+        exit(1);
+    }
+
+
+
+    if (ConnectNamedPipe(hNamedPipe, NULL) != FALSE)   // wait for someone to connect to the pipe
+    {
+        WriteFile(hNamedPipe,
+                  &ProtocolInfo,
+                  sizeof(ProtocolInfo),   // = length of string + terminating '\0' !!!
+                  &dwWritten,
+                  NULL);
+
+        DisconnectNamedPipe(hNamedPipe);
+        //CloseHandle(hNamedPipe);
+    }
+    CloseHandle(pi.hThread);
+    CloseHandle(pi.hProcess);
+}
+
+int windows_socket_runner(struct Configs *configs) {
     WSADATA WSAData;
     SOCKET server, client;
     SOCKADDR_IN serverAddr, clientAddr;
@@ -66,14 +158,13 @@ int windows_socket_runner(struct Configs *configs) {
     struct ThreadArgs args;
     args.configs = *n;
 
-
     FD_ZERO(&read_fds);
     FD_SET(server, &read_fds);
     int n_ready;
     //Windows
     struct timeval timeout;
-    timeout.tv_sec = 1;
-    timeout.tv_usec = 5;
+    timeout.tv_sec = SOCK_START_TIMEOUT;
+    timeout.tv_usec = SOCK_START_TIMEOUT;
     while (MAX_CONNECTIONS_ALLOWED) {
         memcpy(&working_set, &read_fds, sizeof(read_fds));
         printf("\n%s %d\n", "server ->", server);
@@ -82,14 +173,13 @@ int windows_socket_runner(struct Configs *configs) {
         if ((n_ready = select(server + 1, &working_set, NULL, NULL, &timeout)) < 0) {
             if (errno == EINTR) continue;
             else {
-                perror("select");
+                perror("select errno == EINTR");
                 exit(1);
             }
         }
 
         if (n_ready == 0) {
             // printf("  select() timed out.  End program.\n");
-            perror("select");
             if (configs->reset_config != NULL) {
                 //end_server(fd_server);
                 // printf("Reset socket break\n");
@@ -98,8 +188,8 @@ int windows_socket_runner(struct Configs *configs) {
             }
 
             printf("Reset socket continue %ls \n", configs->reset_config);
-            timeout.tv_sec = 2;
-            timeout.tv_usec = 5;
+            timeout.tv_sec = SOCK_LOOP_TIMEOUT;
+            timeout.tv_usec = SOCK_LOOP_TIMEOUT;
             continue;
         }
 
@@ -111,6 +201,11 @@ int windows_socket_runner(struct Configs *configs) {
                     exit(1);
                 }
             }
+            // todo run concurr
+            //run_concurrency(&args, clientAddr, client);
+            HANDLE thread;
+
+
             args.ip_client = inet_ntoa(clientAddr.sin_addr);
             printf("Client connected!\n");
             printf("IP address is: %s\n", args.ip_client);
@@ -124,13 +219,14 @@ int windows_socket_runner(struct Configs *configs) {
                 CloseHandle(thread);
             }else if (args.configs.mode_concurrency == M_PROCESS){
 
+                run_process(&args, &clientAddr, client);
+
             }else{
                 printf("errore in mod concurrency");
                 exit(-1);
             }
         }
     }
-
 }
 
 DWORD WINAPI handle_request(void *params) {

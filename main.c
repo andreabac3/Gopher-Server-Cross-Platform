@@ -15,6 +15,20 @@
 #include "config_file.h"
 #include "files_interaction.h"
 
+
+#ifdef _WIN32
+
+
+#include <windows.h>
+#include <windows_utils.h>
+#include <windows_pipe.h>
+#include "windows_socket.h"
+#include "windows_events.h"
+
+#include "socket.h"
+
+#endif
+
 #if defined(__unix__) || defined(__APPLE__)
 
 #include <signal.h>
@@ -27,17 +41,8 @@
 #include "linux_socket.h"
 #include "linux_signals.h"
 
-#endif
 
-#ifdef _WIN32
 
-#include <windows.h>
-#include <windows_utils.h>
-#include "windows_socket.h"
-#include "windows_events.h"
-
-#include "socket.h"
-#endif
 // reformat Sh + ò
 // comment Sh + ù
 // run Sh + Enter
@@ -73,6 +78,7 @@ void run_in_daemon() {
     }
 
 }
+#endif
 
 int main(int argc, char *argv[]) {
 
@@ -83,70 +89,22 @@ int main(int argc, char *argv[]) {
 
 #ifdef _WIN32
 
-    printf("SONO ARGC%d\n", argc);
+    // Create named pipe
+    DWORD dwWritten;
 
-    SECURITY_ATTRIBUTES securityAttributes = {sizeof(SECURITY_ATTRIBUTES), NULL, TRUE};
 
-    if (false == CreatePipe(&pipe_read, &pipe_write, &securityAttributes, BUFFER_SIZE * 2)) {
-        windows_perror();
-        exit(22);
+    hNamedPipe = CreateNamedPipe(TEXT("\\\\.\\pipe\\PipeHandleRequest"),
+                            PIPE_ACCESS_DUPLEX,
+                            PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT,   // FILE_FLAG_FIRST_PIPE_INSTANCE is not needed but forces CreateNamedPipe(..) to fail if the pipe already exists...
+                            1,
+                            1024 * 16,
+                            1024 * 16,
+                            NMPWAIT_USE_DEFAULT_WAIT,
+                            NULL);
+
+    if (hNamedPipe == INVALID_HANDLE_VALUE){
+        exit (-125);
     }
-    char child_cmd[32];
-    sprintf(child_cmd, "%lld", (ULONG64) (ULONG_PTR) pipe_read);
-    printf(" SONO CHILD CMD %s\n", child_cmd);
-    // pipe std out link
-
-
-    HANDLE father_std_out = GetStdHandle(STD_OUTPUT_HANDLE);
-    if (FALSE == SetStdHandle(STD_OUTPUT_HANDLE, pipe_read)) {
-        windows_perror();
-        printf("FALLITA CREATE SetStdHandle");
-        exit(23);
-
-    }
-
-
-    // process
-    STARTUPINFO si;
-    PROCESS_INFORMATION pi;
-    ZeroMemory(&si, sizeof(si));
-    si.cb = sizeof(si);
-    ZeroMemory(&pi, sizeof(pi));
-    // HANDLE dup_pipe_read;
-    if (true == CreateProcess(
-            "gopherWinPipeProcess.exe",
-            (char *) child_cmd, NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL, NULL, &si, &pi)) {
-
-        //WaitForSingleObject(pi.hProcess, INFINITE);
-
-
-        HANDLE dup_pipe_read = NULL;
-
-        if (false ==
-            DuplicateHandle(GetCurrentProcess(), pipe_read, pi.hProcess, &dup_pipe_read, DUPLICATE_SAME_ACCESS, FALSE,
-                            DUPLICATE_SAME_ACCESS)) {
-            windows_perror();
-            printf("FALLITA CREATE PIPE");
-
-            exit(23);
-        }
-        perror("PIPE RIUSCITA CON SUCCESSO\n");
-        printf("%d\n", dup_pipe_read);
-        printf("%d\n", pipe_read);
-
-
-    } else {
-        perror("create process is failed");
-        windows_perror();
-        exit(24);
-    }
-
-    if (FALSE == SetStdHandle(STD_OUTPUT_HANDLE, father_std_out)) {
-        //windows_perror();
-        fprintf(stderr,"%s\n","FALLITA CREATE SetStdHandle close");
-        exit(23);
-    }
-
 
 #endif
 
@@ -154,14 +112,21 @@ int main(int argc, char *argv[]) {
     c.reset_config = NULL;
     configs = &c;
 
+    printf("Inizio del main\n");
+
+
+    PROCESS_INFORMATION pi;
+    ZeroMemory(&pi, sizeof(pi));
+    pipe_run_process(&pi);
+
 
     conf_parseConfigFile(CONFIGURATION_PATH, configs);
-    printf("\n sono conf.rootdir %s\n", configs->root_dir);
-    if (conf_read_opt(argc, argv, configs) != 0){
+    if (conf_read_opt(argc, argv, configs) != 0) {
         return 1;
     }
 
-    printf("port:%d mode:%d %lu dir:%s\n", configs->port_number, configs->mode_concurrency, strlen(configs->root_dir), configs->root_dir);
+    printf("port:%d mode:%d %lu dir:%s\n", configs->port_number, configs->mode_concurrency, strlen(configs->root_dir),
+           configs->root_dir);
 
 
 #if defined(__unix__) || defined(__APPLE__)
@@ -177,13 +142,11 @@ int main(int argc, char *argv[]) {
 
     while (true) {
 
-        printf("conf root_dir %s\n", configs->root_dir);
+        printf("conf rott dir %s\n", configs->root_dir);
         linux_socket(configs);
 
-        //c.reset_config = NULL;
-        //configs = &c;
-        configs->reset_config = NULL;
-        //free(configs->root_dir);
+        c.reset_config = NULL;
+        configs = &c;
         conf_parseConfigFile("../gopher_server_configuration.txt", configs);
 
     }
@@ -195,38 +158,38 @@ int main(int argc, char *argv[]) {
         pthread_exit(NULL);
     }
 
-
-
 #endif
 #ifdef _WIN32
 
 
     // BOOL running = TRUE;
-        if (!SetConsoleCtrlHandler(consoleHandler, TRUE)) {
-            printf("\nERROR: Could not set control handler");
-            return 1;
-        }
+    if (!SetConsoleCtrlHandler(consoleHandler, TRUE)) {
+        printf("\nERROR: Could not set control handler");
+        return 1;
+    }
 
-        while (true) {
-            windows_socket_runner(configs);
-            c.reset_config = NULL;
-            configs = &c;
-            conf_parseConfigFile("../gopher_server_configuration.txt", configs);
+    while (true) {
+        windows_socket_runner(configs);
+        c.reset_config = NULL;
+        configs = &c;
+        conf_parseConfigFile("../gopher_server_configuration.txt", configs);
 
-        }
-        // todo ??
-        WaitForSingleObject(pi.hProcess, INFINITE);
+    }
+    // todo ??
+    WaitForSingleObject(pi.hProcess, INFINITE);
 
-        CloseHandle(pipe_read);
+    CloseHandle(pipe_read);
+    CloseHandle(hNamedPipe);
 
-        CloseHandle(pi.hThread);
-        CloseHandle(pi.hProcess);
+
+    CloseHandle(pi.hThread);
+    CloseHandle(pi.hProcess);
 
 #endif
 
-//    if (configs->used_OPTARG == false) {
-//        free(configs->root_dir);
-//    }
+    if (configs->used_OPTARG == false) {
+        free(configs->root_dir);
+    }
 
     exit(0);
 }

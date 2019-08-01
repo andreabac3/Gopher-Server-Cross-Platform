@@ -1,2 +1,74 @@
-> FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3570 Byte 	 IP Client: 127.0.0.1
-Byte Byte 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	22 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	22 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/main.c	22 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/main.c	22 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	22 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	22 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/main.c	22 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/main.c	22 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/README.md	22 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/README.md	22 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/f i.t	22 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/f i.t	4 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/README.md	124 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3571 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3571 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3571 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3571 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3571 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3571 Byte 	 IP Client: 
+Byte Byte Byte FileName: /opt/local_projects/gopher-project/main.c	5078 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/main.c	5078 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/main.c	5078 Byte 	 IP Client: 
+Byte Byte FileName: /opt/local_projects/gopher-project/main.c	5264 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/main.c	5264 Byte 	 IP Client: 
+Byte Byte Byte Byte FileName: /opt/local_projects/gopher-project/main.c	5264 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/f i.t	0 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/f i.t	0 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/f i.t	0 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3570 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3570 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3570 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3570 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3570 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3570 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3570 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3570 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3570 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3570 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3570 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3570 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3570 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3570 Byte 	 IP Client: 
+Byte Byte Byte Byte FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3570 Byte 	 IP Client: 
+Byte Byte FileName: /opt/local_projects/gopher-project/README.md	124 Byte 	 IP Client: 
+Byte FileName: /opt/local_projects/gopher-project/README.md	124 Byte 	 IP Client: 
+Byte > W -> FileName: C:\Projects\gopher3\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
+
+> W -> FileName: C:\Projects\gopher3\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
+
+> W -> FileName: C:\Projects\gopher3\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1
+
+> W -> FileName: C:\Projects\gopher3\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1
+
+> W -> FileName: C:\Projects\gopher3\gopher-project\/linux/lib/protocol/linux_protocol.c	4 KByte 	 IP Client: 127.0.0.1
+
+> W -> FileName: C:\Projects\gopher3\gopher-project\/linux/lib/protocol/linux_protocol.c	4 KByte 	 IP Client: 127.0.0.1
+
+> W -> FileName: C:\Projects\gopher3\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1
+
+> W -> FileName: C:\Projects\gopher3\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
+
+> W -> FileName: C:\Projects\gopher3\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
+
+> W -> FileName: C:\Projects\gopher3\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1
+
+> W -> FileName: C:\Projects\gopher3\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
+
+> W -> FileName: C:\Projects\gopher3\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
+
+> W -> FileName: C:\Projects\gopher3\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1
+
+> 
+> W -> FileName: C:\Projects\gopher3\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1
+
