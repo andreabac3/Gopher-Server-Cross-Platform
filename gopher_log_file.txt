@@ -46,3 +46,13 @@ FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memo
 FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3570 Byte 	 IP Client: 127.0.0.1
 FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3570 Byte 	 IP Client: 127.0.0.1
 FileName: /opt/local_projects/gopher-project/linux/lib/memory_mapping/linux_memory_mapping.c	3570 Byte 	 IP Client: 127.0.0.1
+> W -> FileName: C:\Projects\gopher3\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1
+
+> 
+> W -> FileName: C:\Projects\gopher3\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1
+
+> W -> FileName: C:\Projects\gopher3\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1
+
+> 
+> W -> FileName: C:\Projects\gopher3\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
+

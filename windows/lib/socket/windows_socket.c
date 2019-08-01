@@ -11,6 +11,7 @@
 #include <ws2tcpip.h>
 #include <excpt.h>
 #include <windows_utils.h>
+#include <stdbool.h>
 #include "utils.h"
 #include "windows_socket.h"
 #include "winThread.h"
@@ -19,13 +20,13 @@
 #include "socket.h"
 #include "windows_pipe.h"
 
-int end_server(SOCKET fd){
+int end_server(SOCKET fd) {
     shutdown(fd, 2);
     closesocket(fd);
     return 0;
 }
 
-void run_concurrency(struct ThreadArgs* args, SOCKADDR_IN clientAddr, SOCKET client){
+void run_concurrency(struct ThreadArgs *args, SOCKADDR_IN clientAddr, SOCKET client) {
 
     HANDLE thread;
 
@@ -34,23 +35,23 @@ void run_concurrency(struct ThreadArgs* args, SOCKADDR_IN clientAddr, SOCKET cli
     printf("Client connected!\n");
     printf("IP address is: %s\n", args->ip_client);
     args->fd = client;
-    if(args->configs.mode_concurrency == M_THREAD) {
+    if (args->configs.mode_concurrency == M_THREAD) {
         // handle_request((PVOID) &args);
         // TODO cambiare con _beginthread
         if (0 != (thread = CreateThread(NULL, 0, handle_request, (PVOID) &args, 0, NULL))) {
             printf("funziona\n");
         }
         CloseHandle(thread);
-    }else if (args->configs.mode_concurrency == M_PROCESS){
+    } else if (args->configs.mode_concurrency == M_PROCESS) {
 
-    }else{
+    } else {
         printf("errore in mod concurrency");
         exit(-1);
     }
 
 }
 
-void run_process(struct ThreadArgs* args,  SOCKADDR_IN* clientAddr, SOCKET client){
+void run_process(struct ThreadArgs *args, SOCKADDR_IN *clientAddr, SOCKET client) {
 
     // Create named pipe
 
@@ -78,10 +79,15 @@ void run_process(struct ThreadArgs* args,  SOCKADDR_IN* clientAddr, SOCKET clien
     si.cb = sizeof(si);
 
     char cmd_child[BUFFER_SIZE * 2] = {0};
-    snprintf(cmd_child, BUFFER_SIZE * 2, "%s %d \"%s\" %d", inet_ntoa(clientAddr->sin_addr), configs->port_number, configs->root_dir, configs->mode_concurrency);
+    snprintf(cmd_child, BUFFER_SIZE * 2, "%s %d \"%s\" %d", inet_ntoa(clientAddr->sin_addr), configs->port_number,
+             configs->root_dir, configs->mode_concurrency);
     fprintf(stderr, "cmd child %s\n", cmd_child);
 
-    CreateProcess("gopherWinHandleRequestProcess.exe", cmd_child, NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL, NULL, &si, &pi);
+    if (FALSE ==
+        CreateProcess("gopherWinHandleRequestProcess.exe", cmd_child, NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL,
+                      NULL, &si, &pi)) {
+        return;
+    }
 
     WSAPROTOCOL_INFO ProtocolInfo;
 
@@ -91,22 +97,22 @@ void run_process(struct ThreadArgs* args,  SOCKADDR_IN* clientAddr, SOCKET clien
         perror("Close in clean request");
     }
 
-    if(err)
-    {
+    if (err) {
         fprintf(stderr, "WSADuplicateSocket(): failed. Error = %d, %s\n", WSAGetLastError()), windows_perror();
         //DoCleanup();
         exit(1);
     }
 
 
-
     if (ConnectNamedPipe(hNamedPipe, NULL) != FALSE)   // wait for someone to connect to the pipe
     {
-        WriteFile(hNamedPipe,
-                  &ProtocolInfo,
-                  sizeof(ProtocolInfo),   // = length of string + terminating '\0' !!!
-                  &dwWritten,
-                  NULL);
+        if (!WriteFile(hNamedPipe,
+                       &ProtocolInfo,
+                       sizeof(ProtocolInfo),   // = length of string + terminating '\0' !!!
+                       &dwWritten,
+                       NULL)) {
+            windows_perror();
+        }
 
         DisconnectNamedPipe(hNamedPipe);
         //CloseHandle(hNamedPipe);
@@ -210,18 +216,18 @@ int windows_socket_runner(struct Configs *configs) {
             printf("Client connected!\n");
             printf("IP address is: %s\n", args.ip_client);
             args.fd = client;
-            if(args.configs.mode_concurrency == M_THREAD) {
+            if (args.configs.mode_concurrency == M_THREAD) {
                 // handle_request((PVOID) &args);
                 // TODO cambiare con _beginthread
                 if (0 != (thread = CreateThread(NULL, 0, handle_request, (PVOID) &args, 0, NULL))) {
                     printf("funziona\n");
                 }
                 CloseHandle(thread);
-            }else if (args.configs.mode_concurrency == M_PROCESS){
+            } else if (args.configs.mode_concurrency == M_PROCESS) {
 
                 run_process(&args, &clientAddr, client);
 
-            }else{
+            } else {
                 printf("errore in mod concurrency");
                 exit(-1);
             }

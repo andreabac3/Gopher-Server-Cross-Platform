@@ -123,6 +123,9 @@ int pipe_simple_write_to_pipe(struct PipeArgs *args) {
     }
     // TODO event here
     HANDLE eventReadyToReadPipe = CreateEventA (NULL, FALSE, TRUE, "eventReadyToReadPipe");
+    if (eventReadyToReadPipe == NULL){
+        exit(-2);
+    }
     SetEvent(eventReadyToReadPipe);
     CloseHandle(eventReadyToReadPipe);
 
