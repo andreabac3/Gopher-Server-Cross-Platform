@@ -48,14 +48,20 @@ int linux_memory_mapping(void *params) {
     }
 
     if (args->mode_concurrency == M_PROCESS) {
-        lockf(fd, F_LOCK, 0);
+        if(lockf(fd, F_LOCK, 0) != 0){
+            perror("linux_memory_mapping/lockf failed");
+        }
     } else {
-        pthread_mutex_lock(&p_mutex);
+        if(pthread_mutex_lock(&p_mutex)!= 0){
+            perror("linux_memory_mapping/pthread_mutex_lock failed");
+        }
     }
 
     if (fstat(fd, &sb) < 0) {
         perror("linux_memory_mapping/fstat");
-        lockf(fd, F_ULOCK, 0);
+        if(lockf(fd, F_ULOCK, 0)!= 0){
+            perror("linux_memory_mapping/lockf failed");
+        }
         close(fd);
         return -1;
         //pthread_exit(&ret);
@@ -76,7 +82,9 @@ int linux_memory_mapping(void *params) {
 
     if (addr == MAP_FAILED) {
         perror("linux_memory_mapping/mmap");
-        lockf(fd, F_ULOCK, 0);
+        if(lockf(fd, F_ULOCK, 0)!= 0){
+            perror("linux_memory_mapping/lockf failed");
+        }
 
         close(fd);
         return -1;
@@ -103,9 +111,13 @@ int linux_memory_mapping(void *params) {
     }
 
     if (args->mode_concurrency == M_PROCESS) {
-        lockf(fd, F_ULOCK, 0);
+        if(lockf(fd, F_ULOCK, 0)!= 0){
+            perror("linux_memory_mapping/lockf failed");
+        }
     } else {
-        pthread_mutex_unlock(&p_mutex);
+        if(pthread_mutex_unlock(&p_mutex)!= 0){
+            perror("linux_memory_mapping/pthread_mutex_unlock failed");
+        }
     }
 
 
