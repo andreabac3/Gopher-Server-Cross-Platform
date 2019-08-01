@@ -50,7 +50,7 @@
 
 void run_in_daemon() {
 
-    __pid_t d_child1 = fork();
+    pid_t d_child1 = fork();
     perror("deamon forked");
 
     if (d_child1 < 0) {
