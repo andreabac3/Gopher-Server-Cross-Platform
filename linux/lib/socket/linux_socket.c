@@ -114,6 +114,8 @@ int run_concurrency(struct ThreadArgs *args) {
             exit(0);
         } else {
             close(args->fd);
+            free(args->ip_client);
+            free(args);
         }
         return 0;
     } else {

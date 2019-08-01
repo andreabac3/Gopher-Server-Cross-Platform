@@ -106,6 +106,11 @@ int main(int argc, char *argv[]) {
         exit (-125);
     }
 
+    PROCESS_INFORMATION pi;
+    ZeroMemory(&pi, sizeof(pi));
+    pipe_run_process(&pi);
+
+
 #endif
 
     struct Configs c;
@@ -115,9 +120,6 @@ int main(int argc, char *argv[]) {
     printf("Inizio del main\n");
 
 
-    PROCESS_INFORMATION pi;
-    ZeroMemory(&pi, sizeof(pi));
-    pipe_run_process(&pi);
 
 
     conf_parseConfigFile(CONFIGURATION_PATH, configs);
@@ -142,11 +144,13 @@ int main(int argc, char *argv[]) {
 
     while (true) {
 
-        printf("conf rott dir %s\n", configs->root_dir);
+        printf("conf root dir %s\n", configs->root_dir);
         linux_socket(configs);
 
-        c.reset_config = NULL;
-        configs = &c;
+        //c.reset_config = NULL;
+        //configs = &c;
+        configs->reset_config = NULL;
+        //free(configs->root_dir);
         conf_parseConfigFile("../gopher_server_configuration.txt", configs);
 
     }
@@ -187,9 +191,9 @@ int main(int argc, char *argv[]) {
 
 #endif
 
-    if (configs->used_OPTARG == false) {
+    /*if (configs->used_OPTARG == false) {
         free(configs->root_dir);
-    }
+    }*/
 
     exit(0);
 }
