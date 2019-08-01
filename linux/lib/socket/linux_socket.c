@@ -258,7 +258,6 @@ void *handle_request(void *params) {
 
     socket_resolve_selector(args, buf, &path); // parse the request
 
-    // todo fix resolve_selector come su linux
     printf("going to socket_manage_files - full required path: %s \n", path);
     socket_manage_files(path, buf, args); // send response
     printf("going to clean_request exiting handle_request\n");

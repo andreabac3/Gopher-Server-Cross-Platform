@@ -1,7 +1,3 @@
-//
-// Created by andrea on 22/07/19.
-//
-
 #ifndef GOPHERLINUX_MEMORY_MAPPING_H
 #define GOPHERLINUX_MEMORY_MAPPING_H
 
