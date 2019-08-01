@@ -204,8 +204,12 @@ void socket_pipe_new_process() {
         while (true) {
             printf("RISETTO TUTTE LE CONDIZIONI DA CAPO\n");
 
-            pthread_mutex_lock(mutex);
-            printf("pthread_mutex_lock\n");
+            if(pthread_mutex_lock(mutex) != 0){
+                perror("pthread_mutex_lock failed");
+            }
+            if(printf("pthread_mutex_lock\n")!= 0){
+                perror("pthread_mutex_lock failed");
+            }
 
             pthread_cond_wait(condition, mutex);
             printf("pthread_cond_wait \n");
@@ -247,7 +251,9 @@ void socket_pipe_new_process() {
             //write(fd_log, "cia", sizeof("cia"));
 
             //printf("SONO N %d \n", n);
-            pthread_mutex_unlock(mutex);
+            if(pthread_mutex_unlock(mutex) != 0){
+                perror("pthread_mutex_unlock failed");
+            }
 
             printf("---- child process close\n");
 
@@ -467,12 +473,12 @@ void* create_shared_memory(size_t size) {
 
 void socket_pipe_new_process_mmpa() {
 
-    void* sh_mutex = create_shared_memory(sizeof(pthread_mutex_t));
+    //void* sh_mutex = create_shared_memory(sizeof(pthread_mutex_t));
 
-    void* sh_cond = create_shared_memory(sizeof(pthread_mutex_t));
+    //void* sh_cond = create_shared_memory(sizeof(pthread_mutex_t));
 
 }
-
+/*
 void socket_pipe_new_process3() {
 
     pthread_cond_t* condition;
@@ -522,20 +528,15 @@ void socket_pipe_new_process3() {
     }
 
 
-    /* HERE WE GO */
-/**************************************/
 
-    /* set mutex shared between processes */
     pthread_mutexattr_t mutexAttr;
     pthread_mutexattr_setpshared(&mutexAttr, PTHREAD_PROCESS_SHARED);
     pthread_mutex_init(mutex, &mutexAttr);
 
-/* set condition shared between processes */
     pthread_condattr_t condAttr;
     pthread_condattr_setpshared(&condAttr, PTHREAD_PROCESS_SHARED);
     pthread_cond_init(condition, &condAttr);
 
-    /*************************************/
 
     if (!fork()) {
 
@@ -568,5 +569,5 @@ void socket_pipe_new_process3() {
         shm_unlink(MUTEX);
 
     }
-}
+}*/
 
