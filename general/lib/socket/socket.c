@@ -211,7 +211,7 @@ void socket_read_request(struct ThreadArgs *args, char **buf) {
 int socket_drain_tcp(int fd_client) {
     char bufTMP[BUFFER_SIZE];
     int drain_recv = 0;
-    while ((drain_recv = recv(fd_client, bufTMP, BUFFER_SIZE, MSG_DONTWAIT)) > 0) {
+    while ((drain_recv = recv(fd_client, bufTMP, BUFFER_SIZE, SOCKET_NON_BLOCKING)) > 0) {
         // return mess error
     }
     if (0 > drain_recv) {

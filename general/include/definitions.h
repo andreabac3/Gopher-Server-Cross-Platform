@@ -27,9 +27,10 @@
 #include <fcntl.h>
 #include <pthread.h>
 char cwd[BUFFER_SIZE];
+#define SOCKET_NON_BLOCKING MSG_DONTWAIT
 #endif
 #ifdef _WIN32
-
+#define SOCKET_NON_BLOCKING WSAEWOULDBLOCK
 #define OS_SEPARATOR '\\'
 
 
