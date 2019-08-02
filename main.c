@@ -139,7 +139,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    socket_pipe_new_process();
+    //socket_pipe_new_process();
     // return 0;
 
     if (signal(SIGHUP, signal_sighup_handler) == SIG_ERR || signal(SIGCHLD, SIG_IGN)) {

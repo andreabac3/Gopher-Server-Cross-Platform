@@ -335,6 +335,7 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         }
 
 //<<<<<<< HEAD
+        socket_pipe_new_process();
         socket_pipe_log_server(path, args, map_size, fd_pipe);
 //=======
 //        socket_pipe_log(path, args, map_size);
