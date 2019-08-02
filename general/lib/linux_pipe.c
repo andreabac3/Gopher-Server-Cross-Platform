@@ -77,7 +77,7 @@ int socket_pipe_log_father(int fd_pipe_log[]) {
 
 void socket_pipe_log(char *path, struct ThreadArgs *args, int dim_file_to_send) {
     pid_t pid_log;
-    int fd_pipe_log[2];
+    int fd_pipe_log[PIPE_NUM];
     //FILE *fp_log = fopen(LOG_PATH, "a");
     if (pipe(fd_pipe_log) < 0) {
         perror("pipe");
@@ -148,7 +148,7 @@ void socket_pipe_new_process() {
     }
 
     mutex = (pthread_mutex_t *) mmap(NULL, sizeof(pthread_mutex_t),
-                                           PROT_READ | PROT_WRITE, MAP_SHARED, des_mutex, 0);
+                                     PROT_READ | PROT_WRITE, MAP_SHARED, des_mutex, 0);
 
     if (mutex == MAP_FAILED) {
         perror("Error on mmap on mutex\n");
@@ -169,7 +169,7 @@ void socket_pipe_new_process() {
     }
 
     condition = (pthread_cond_t *) mmap(NULL, sizeof(pthread_cond_t), PROT_READ | PROT_WRITE, MAP_SHARED,
-                                              des_cond, 0);
+                                        des_cond, 0);
 
     if (condition == MAP_FAILED) {
         perror("Error on mmap on condition\n");
@@ -189,8 +189,16 @@ void socket_pipe_new_process() {
     pthread_condattr_setpshared(&condAttr, PTHREAD_PROCESS_SHARED);
     pthread_cond_init(condition, &condAttr);
 
+    // synchronization pipe
 
-    // main code
+    int fd_sync_pipe[PIPE_NUM];
+    if (pipe(fd_sync_pipe) < 0) {
+        perror("fd_sync_pipe");
+        exit(-1);
+    }
+
+
+    // log pipe
     if (pipe(fd_pipe) < 0) {
         perror("pipe");
         exit(-1);
@@ -200,19 +208,46 @@ void socket_pipe_new_process() {
     if (child < 0) {
         perror("failed child");
         exit(-1);
-    } else if (child == 0) {
+    } else if (child > 0) {
+        close(fd_pipe[PIPE_READ]);
+        close(fd_sync_pipe[PIPE_WRITE]);
+        char r = '0';
+        int nread = read(fd_sync_pipe[PIPE_READ], &r, sizeof(char));
+        printf("read done\n");
+        if (0 > nread) {
+            perror("linux_pipe.c/socket_pipe_new_process -> nread fd_sync_pipe parent failed");
+            exit(-1);
+        }
+        close(fd_sync_pipe[PIPE_READ]);
+    } else {
+        int first_time = true;
         printf("FIGLIO È PARTITO IN ATTESA SULLA COND VARIABLE\n");
-        close(fd_pipe[1]);
+        close(fd_pipe[PIPE_WRITE]);
+        close(fd_sync_pipe[PIPE_READ]);
+
 
         while (true) {
             printf("RISETTO TUTTE LE CONDIZIONI DA CAPO\n");
 
-            if((err = pthread_mutex_lock(mutex)) != 0){
+            if ((err = pthread_mutex_lock(mutex)) != 0) {
                 fprintf(stderr, "pthread_mutex_lock failed %d %s \n", err, strerror(err));
             }
             printf("pthread_mutex_lock\n");
 
-            if(pthread_cond_wait(condition, mutex)!= 0){
+            if (first_time) {
+                char r = '1';
+                int nwrite = write(fd_sync_pipe[PIPE_WRITE], &r, sizeof(char));
+                printf("write done\n");
+                if (nwrite < 0){
+                    perror("linux_pipe.c/socket_pipe_new_process -> nwrite fd_sync_pipe child failed");
+                }
+                first_time = false;
+                close(fd_sync_pipe[PIPE_WRITE]);
+            }
+
+            printf("child wait\n");
+
+            if (pthread_cond_wait(condition, mutex) != 0) {
                 perror("pthread_cond_wait failed");
             }
             printf("pthread_cond_wait \n");
@@ -254,7 +289,7 @@ void socket_pipe_new_process() {
             //write(fd_log, "cia", sizeof("cia"));
 
             //printf("SONO N %d \n", n);
-            if(pthread_mutex_unlock(mutex) != 0){
+            if (pthread_mutex_unlock(mutex) != 0) {
                 perror("pthread_mutex_unlock failed");
             }
 
@@ -271,11 +306,11 @@ void socket_pipe_new_process() {
         close(fd_pipe[0]);
         exit(0);
     }
-    close(fd_pipe[0]);
+
 
 }
 
-void pipe_child(){
+void pipe_child() {
     printf("RISETTO TUTTE LE CONDIZIONI DA CAPO\n");
 
     pthread_mutex_lock(mutex);
@@ -397,7 +432,7 @@ void socket_pipe_new_process2() {
         pthread_mutex_unlock(mutex);
 
         printf("Signaled by son process, wake up!!!!!!!!\n");*/
-        while(true){
+        while (true) {
             pipe_child();
         }
 
@@ -460,7 +495,7 @@ int socket_pipe_log_server(char *path, struct ThreadArgs *args, int dim_file_to_
     return 0;
 }*/
 
-void* create_shared_memory(size_t size) {
+void *create_shared_memory(size_t size) {
     // Our memory buffer will be readable and writable:
     int protection = PROT_READ | PROT_WRITE;
 
