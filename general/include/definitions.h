@@ -65,6 +65,9 @@ struct ThreadArgs {
 };
 pid_t child;
 int fd_pipe[2];
+#define PIPE_NUM 2
+#define PIPE_WRITE 1
+#define PIPE_READ 0
 
 #define MUTEX "/mutex_lock"
 #define OKTOWRITE "/condwrite"
