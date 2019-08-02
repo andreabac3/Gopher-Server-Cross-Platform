@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
     struct Configs h_configs;
     h_configs.port_number = atoi(argv[1]);
     h_configs.mode_concurrency = argv[3][0];
-    h_configs.root_dir = argv[2];
+    strcpy(h_configs.root_dir, argv[2]);
     printf("I am handle request.exe, my args are: %s %d %s %d", argv[0], h_configs.port_number,  h_configs.root_dir,  h_configs.mode_concurrency);
 
     struct ThreadArgs h_args;

@@ -1,7 +1,3 @@
-//
-// Created by Valerio on 24/07/2019.
-//
-
 //#include <windows.h>
 #include <stdio.h>
 #include "windows_events.h"

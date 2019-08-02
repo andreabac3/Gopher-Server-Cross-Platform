@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
 #ifdef _WIN32
 
     // Create named pipe
-    DWORD dwWritten;
+    //DWORD dwWritten;
 
 
     hNamedPipe = CreateNamedPipe(TEXT("\\\\.\\pipe\\PipeHandleRequest"),
