@@ -313,7 +313,10 @@ void socket_pipe_multiple_process(int *fd_pipe) {
 
 int socket_pipe_log_server_single_process(char *path, struct ThreadArgs *args, int dim_file_to_send, int fd_pipe_log_write) {
 
-
+    int err;
+    if ((err = pthread_mutex_lock(sync_pipe_mutex)) != 0) {
+        fprintf(stderr, "pthread_mutex_lock failed %d %s \n", err, strerror(err));
+    }
 
     char r = '0';
     int nread = read(global_fd_sync_pipe[PIPE_READ], &r, sizeof(char));
@@ -350,11 +353,42 @@ int socket_pipe_log_server_single_process(char *path, struct ThreadArgs *args, i
     }
     pthread_mutex_unlock(mutex);
     fprintf(stderr, "socket_pipe_log_server/pthread_cond_signal and pthread_mutex_unlock made");
+
+    if ((err = pthread_mutex_unlock(sync_pipe_mutex)) != 0) {
+        fprintf(stderr, "pthread_mutex_unlock failed %d %s \n", err, strerror(err));
+    }
+
     return 0;
 }
 
 void socket_pipe_single_process(int *fd_pipe) {
     pid_t child;
+
+    // sync mutex
+
+    des_sync_mutex = shm_open(SYNC_MUTEX, O_CREAT | O_RDWR | O_TRUNC, S_IRWXU | S_IRWXG);
+
+    if (des_sync_mutex < 0) {
+        perror("failure on shm_open on des_mutex");
+        exit(1);
+
+    }
+
+    if (ftruncate(des_sync_mutex, sizeof(pthread_mutex_t)) == -1) {
+        perror("Error on ftruncate to sizeof pthread_cond_t\n");
+        exit(-1);
+    }
+
+    sync_pipe_mutex = (pthread_mutex_t *) mmap(NULL, sizeof(pthread_mutex_t),
+                                     PROT_READ | PROT_WRITE, MAP_SHARED, des_sync_mutex, 0);
+
+    if (sync_pipe_mutex == MAP_FAILED) {
+        perror("Error on mmap on sync_pipe_mutex\n");
+        munmap(mutex, sizeof(pthread_mutex_t));
+        exit(1);
+    }
+
+    // mutex
 
 
     int err;
@@ -402,6 +436,14 @@ void socket_pipe_single_process(int *fd_pipe) {
 
         exit(1);
     }
+
+    //
+    pthread_mutexattr_t mutexSyncAttr;
+    pthread_mutexattr_init(&mutexSyncAttr);
+    pthread_mutexattr_setpshared(&mutexSyncAttr, PTHREAD_PROCESS_SHARED);
+    pthread_mutex_init(sync_pipe_mutex, &mutexSyncAttr);
+
+    // mutex
     pthread_mutexattr_t mutexAttr;
     pthread_mutexattr_init(&mutexAttr);
     pthread_mutexattr_setpshared(&mutexAttr, PTHREAD_PROCESS_SHARED);
@@ -445,7 +487,6 @@ void socket_pipe_single_process(int *fd_pipe) {
         close(global_fd_sync_pipe[PIPE_READ]);
          */
     } else {
-        int first_time = true;
         printf("FIGLIO È PARTITO IN ATTESA SULLA COND VARIABLE\n");
         close(fd_pipe[PIPE_WRITE]);
         close(global_fd_sync_pipe[PIPE_READ]);
@@ -523,11 +564,14 @@ void socket_pipe_single_process(int *fd_pipe) {
 
         pthread_condattr_destroy(&condAttr);
         pthread_mutexattr_destroy(&mutexAttr);
+        pthread_mutexattr_destroy(&mutexSyncAttr);
+        pthread_mutex_destroy(sync_pipe_mutex);
         pthread_mutex_destroy(mutex);
         pthread_cond_destroy(condition);
         shm_unlink(OKTOWRITE);
         shm_unlink(MESSAGE);
         shm_unlink(MUTEX);
+        shm_unlink(SYNC_MUTEX);
         close(fd_pipe[0]);
         close(global_fd_sync_pipe[PIPE_WRITE]);
         exit(0);
