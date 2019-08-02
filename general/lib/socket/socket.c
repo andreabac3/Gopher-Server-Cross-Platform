@@ -169,30 +169,61 @@ void socket_resolve_selector(struct ThreadArgs *args, char *buf, char **path) {
 /*
  * socket_read_request read the request from the client and fill the buffer with the content.
  * */
+
+
+
 void socket_read_request(struct ThreadArgs *args, char **buf) {
 
     int ptr = 0;
     ssize_t got_bytes = 0;
 
-    *buf = calloc(BUFFER_SIZE, sizeof(char));
+    *buf = calloc(BUFFER_SIZE + 1, sizeof(char));
     if (*buf == NULL) {
         clean_request(NULL, NULL, args);
     }
 
-    while (true) {
-        got_bytes = recv(args->fd, *buf + ptr, BUFFER_SIZE - ptr, 0);
-        if (0 > got_bytes) {
-            clean_request(NULL, *buf, args);
-        }
-        if (0 == got_bytes) {
-            (*buf)[ptr] = 0; // Terminate string
-            break;
-        }
-        ptr += got_bytes;
-        if (ut_get_line(*buf, ptr)) {
+
+    got_bytes = recv(args->fd, *buf, BUFFER_SIZE, 0);
+    if (0 > got_bytes) {
+        clean_request(NULL, *buf, args);
+    }
+    if (0 == got_bytes) {
+        // TODO controllare quando recv return 0
+        (*buf)[ptr] = 0; // Terminate string
+    }
+
+    // printf("socket/socket_read_request %d %d |%s|\n", (*buf)[got_bytes - 1], (*buf)[got_bytes - 2], *buf);
+
+    for (int i = 2; 0 <= i; i--) {
+        if (0 != got_bytes && ((*buf)[got_bytes - i] == '\r' || (*buf)[got_bytes - i] == '\n' ) ) {
+            (*buf)[got_bytes - i] = '\0';
             break;
         }
     }
+
+    socket_drain_tcp(args->fd);
+
+    printf("socket/socket_read_request %ld %ld |%s|\n", got_bytes, strlen(*buf), *buf);
+}
+
+
+// TODO controllare errore socket_drain_tcp
+int socket_drain_tcp(int fd_client) {
+    char bufTMP[BUFFER_SIZE];
+    int drain_recv = 0;
+    while ((drain_recv = recv(fd_client, bufTMP, BUFFER_SIZE, MSG_DONTWAIT)) > 0) {
+        // return mess error
+    }
+    if (0 > drain_recv) {
+        if (drain_recv == EAGAIN) {
+
+            perror("recv2 - EAGAIN");
+        } else {
+
+            perror("recv2 gemneric error");
+        }
+    }
+    return 0;
 }
 
 int socket_send_message(int fd, char *message_string) {
@@ -206,7 +237,7 @@ int socket_send_message(int fd, char *message_string) {
     return 0;
 }
 
-int socket_send_error_to_client(char* path, char* buf, struct ThreadArgs *args){
+int socket_send_error_to_client(char *path, char *buf, struct ThreadArgs *args) {
     char *m;
     int err = protocol_response('3', buf, path, "localhost", args->configs.port_number, &m);
     if (err != 0) {
@@ -216,11 +247,12 @@ int socket_send_error_to_client(char* path, char* buf, struct ThreadArgs *args){
         printf("%s", m);
         //send(args->fd, m, sizeof(char) * strlen(m), 0);
         socket_send_message(args->fd, m);
-        if (m != NULL){
+        if (m != NULL) {
             free(m);
         }
     }
     clean_request(path, buf, args);
+    return 0;
 }
 
 void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
@@ -400,22 +432,32 @@ int vecchiafork(char *path, char *ip_client, int dim_file_to_send) {
     return 0;
 }
 */
+/*old version
+ *
+void socket_read_request(struct ThreadArgs *args, char **buf) {
 
-int blackListFile(char *baseDir, char *pathFile, char *black_listed_file) {
-    char *base_name = basename(pathFile);
-    if (strcmp(black_listed_file, base_name) != 0) {
-        return 0;
+    int ptr = 0;
+    ssize_t got_bytes = 0;
+
+    *buf = calloc(BUFFER_SIZE, sizeof(char));
+    if (*buf == NULL) {
+        clean_request(NULL, NULL, args);
     }
-    char *base_dir_abs  = realpath(baseDir, NULL);
-    char *path_file_abs = realpath(pathFile, NULL);
 
-    char *real_base_dir = dirname(base_dir_abs);
-    char* path_file     = dirname(path_file_abs);
-
-
-    if (strcmp(real_base_dir, path_file) != 0) {
-        return 0;
-
+    while (true) {
+        got_bytes = recv(args->fd, *buf + ptr, BUFFER_SIZE - ptr, 0);
+        if (0 > got_bytes) {
+            clean_request(NULL, *buf, args);
+        }
+        if (0 == got_bytes) {
+            (*buf)[ptr] = 0; // Terminate string
+            break;
+        }
+        ptr += got_bytes;
+        if (ut_get_line(*buf, ptr)) {
+            break;
+        }
     }
-    return 1;
-}
+}*/
+
+
