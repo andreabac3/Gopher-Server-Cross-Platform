@@ -63,15 +63,19 @@ struct ThreadArgs {
     char* ip_client;
     int type_Request;
 };
-pid_t child;
-int fd_pipe[2];
+#define LOG_WITH_MULTIPLE_PROCESS false
+
 #define PIPE_NUM 2
 #define PIPE_WRITE 1
 #define PIPE_READ 0
-
 #define MUTEX "/mutex_lock"
+
 #define OKTOWRITE "/condwrite"
 #define MESSAGE "/msg"
+
+pid_t global_child;
+int global_fd_pipe[PIPE_NUM];
+int global_fd_sync_pipe[PIPE_NUM];
 
 //pthread_cond_t *condition_child;
 //pthread_mutex_t *mutex_child;
@@ -79,6 +83,7 @@ int fd_pipe[2];
 
 pthread_cond_t* condition;
 pthread_mutex_t* mutex;
+pthread_mutex_t* sync_pipe_mutex;
 char* message;
 int des_cond, des_msg, des_mutex;
 //int mode = S_IRWXU | S_IRWXG;

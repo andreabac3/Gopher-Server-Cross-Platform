@@ -334,12 +334,13 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
             return;
         }
 
-//<<<<<<< HEAD
-        socket_pipe_new_process();
-        socket_pipe_log_server(path, args, map_size, fd_pipe);
-//=======
-//        socket_pipe_log(path, args, map_size);
-//>>>>>>> parent of df10553... fixed send pipe log with condition variable
+        if(LOG_WITH_MULTIPLE_PROCESS){
+            int fd_pipe[2];
+            socket_pipe_multiple_process(fd_pipe);
+            socket_pipe_log_server(path, args, map_size, fd_pipe[PIPE_WRITE]);
+        }else{
+            socket_pipe_log_server_single_process(path, args, map_size, global_fd_pipe[PIPE_WRITE]);
+        }
 
 #endif
 

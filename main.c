@@ -139,7 +139,9 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    //socket_pipe_new_process();
+    if(!LOG_WITH_MULTIPLE_PROCESS){
+        socket_pipe_single_process(global_fd_pipe);
+    }
     // return 0;
 
     if (signal(SIGHUP, signal_sighup_handler) == SIG_ERR || signal(SIGCHLD, SIG_IGN)) {
@@ -162,6 +164,10 @@ int main(int argc, char *argv[]) {
     }
     printf("close server");
     close_mutex();
+
+    if(!LOG_WITH_MULTIPLE_PROCESS){
+        close(global_fd_sync_pipe[PIPE_READ]);
+    }
 
     if (M_THREAD == configs->mode_concurrency) {
         sleep(1);
