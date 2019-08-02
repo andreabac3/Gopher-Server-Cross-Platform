@@ -19,6 +19,7 @@
 // #include <tclDecls.h>
 #include <errno.h>
 #include <wait.h>
+#include <libgen.h>
 
 
 #include "definitions.h"
@@ -30,7 +31,7 @@
 
 void close_mutex() {
     if (configs->mode_concurrency == M_THREAD) {
-        if(pthread_mutex_destroy(&p_mutex) != 0){
+        if (pthread_mutex_destroy(&p_mutex) != 0) {
             perror("pthread_mutex_destroy");
         }
     }
@@ -40,7 +41,7 @@ void start_mutex() {
 
     if (configs->mode_concurrency == M_THREAD) {
         printf("pthread_mutex_init/Lock setted \n");
-        if(pthread_mutex_init(&p_mutex, NULL) != 0){
+        if (pthread_mutex_init(&p_mutex, NULL) != 0) {
             perror("pthread_mutex_init");
         }
     }
@@ -64,7 +65,7 @@ int start_server(unsigned int port, unsigned int queue_size) {
 
 //    printf("File descriptor for socket is %d\n", fd);
     int opts = 1;
-    if(setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opts, sizeof(opts)) != 0){
+    if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opts, sizeof(opts)) != 0) {
         perror("start_server/setsockopt");
         exit(-1);
     }
@@ -188,12 +189,12 @@ int linux_socket(struct Configs *configs) {
             }
 
 
-            char* clientname = calloc(INET_ADDRSTRLEN + 1, sizeof(char));
-            if(clientname == NULL){
+            char *clientname = calloc(INET_ADDRSTRLEN + 1, sizeof(char));
+            if (clientname == NULL) {
                 perror("linux_socket/clientname  calloc");
                 exit(-1);
             }
-            inet_ntop( AF_INET, &client_addr.sin_addr, clientname, INET_ADDRSTRLEN);
+            inet_ntop(AF_INET, &client_addr.sin_addr, clientname, INET_ADDRSTRLEN);
 
             struct ThreadArgs *args = calloc(1, sizeof(struct ThreadArgs));
             args->configs = *configs;
@@ -229,6 +230,47 @@ int get_line(char *buf, size_t size) {
     }
     return 0;
 }
+
+void *l_sendFile(void *args) {
+
+    struct SendFileArgs *send_args = (struct SendFileArgs *) args;
+
+    int fd_client = send_args->fd_client;
+    char *message_to_send = send_args->message_to_send;
+    int message_len = send_args->message_len;
+
+    int bufferSize = 512;
+    char buffer[BUFFER_SIZE];
+    int sendPosition = 0;
+    while (message_len > 0) {
+        int chunkSize = message_len > bufferSize ? bufferSize : message_len;
+        memcpy(buffer, message_to_send + sendPosition, chunkSize);
+        chunkSize = send(fd_client, buffer, chunkSize, 0);
+        if (chunkSize == -1) { break; }
+        message_len -= chunkSize;
+        sendPosition += chunkSize;
+    }
+    return NULL;
+}
+
+void *linux_sendFile(void *args) {
+
+    struct SendFileArgs *send_args = (struct SendFileArgs *) args;
+
+    int fd_client = send_args->fd_client;
+    char *message_to_send = send_args->message_to_send;
+    int message_len = send_args->message_len;
+
+
+    int ret = send(fd_client, message_to_send, message_len, 0);
+
+    if (0 > ret) {
+        perror("socket.c/socket_send_message: send failed");
+    }
+
+    return NULL;
+}
+
 /*
 void linux_sock_send_error(int *fd) {
     char error[] = "Unable to satisfy the request, retry later";
@@ -267,7 +309,24 @@ void *handle_request(void *params) {
 
 }
 
+int blackListFile(char *baseDir, char *pathFile, char *black_listed_file) {
+    char *base_name = basename(pathFile);
+    if (strcmp(black_listed_file, base_name) != 0) {
+        return 0;
+    }
+    char *base_dir_abs = realpath(baseDir, NULL);
+    char *path_file_abs = realpath(pathFile, NULL);
 
+    char *real_base_dir = dirname(base_dir_abs);
+    char *path_file = dirname(path_file_abs);
+
+
+    if (strcmp(real_base_dir, path_file) != 0) {
+        return 0;
+
+    }
+    return 1;
+}
 
 
 

@@ -7,11 +7,13 @@
 
 #include "definitions.h"
 
-
+int blackListFile(char *baseDir, char *pathFile, char *black_listed_file);
 int linux_socket(struct Configs* configs);
 void * handle_request(void * args);
 void* handle_request_thread(void *params);
 int end_server(int fd);
 void close_mutex();
 void start_mutex();
+void * l_sendFile(void *send_args);
+void * linux_sendFile(void *send_args);
 #endif //GOPHER_LINUX_SOCKET_H

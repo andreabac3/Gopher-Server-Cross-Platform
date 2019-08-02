@@ -9,8 +9,7 @@
 
 int socket_send_error_to_client(char *path, char *buf, struct ThreadArgs *args);
 
-int blackListFile(char *baseDir, char *pathFile, char *black_listed_file);
-
+int socket_drain_tcp(int fd_client);
 
 int SendFile(int write_fd, FILE *read_fd);
 

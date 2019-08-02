@@ -22,6 +22,7 @@
 #include <sys/mman.h>
 #include <linux/version.h>
 #include <sys/socket.h>
+#include <linux_socket.h>
 
 #if LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 22)
 #define _MAP_POPULATE_AVAILABLE
@@ -99,9 +100,9 @@ int linux_memory_mapping(void *params) {
     send_args.message_len = fileSize(fd);
 
     pthread_t thread;
-    if ((pthread_create(&thread, NULL, l_sendFile, (void *) &send_args)) != 0) {
+    if ((pthread_create(&thread, NULL, linux_sendFile, (void *) &send_args)) != 0) {
             perror("Could not create thread, continue non-threaded...");
-            l_sendFile((void *) &send_args);
+            linux_sendFile((void *) &send_args);
         }
     pthread_join(thread, NULL);
     // l_sendFile(&send_args);
@@ -134,27 +135,5 @@ int fileSize(int fd) {
         return (-1);
     }
     return (s.st_size);
-}
-
-void * l_sendFile(void *args) {
-
-    struct SendFileArgs *send_args = (struct SendFileArgs* ) args;
-
-    int fd_client = send_args->fd_client;
-    char *message_to_send = send_args->message_to_send;
-    int message_len = send_args->message_len;
-
-    int bufferSize = 512;
-    char buffer[BUFFER_SIZE];
-    int sendPosition = 0;
-    while (message_len > 0) {
-        int chunkSize = message_len > bufferSize ? bufferSize : message_len;
-        memcpy(buffer, message_to_send + sendPosition, chunkSize);
-        chunkSize = send(fd_client, buffer, chunkSize, 0);
-        if (chunkSize == -1) { break; }
-        message_len -= chunkSize;
-        sendPosition += chunkSize;
-    }
-    return NULL;
 }
 
