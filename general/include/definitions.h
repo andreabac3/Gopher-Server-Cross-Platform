@@ -69,6 +69,7 @@ struct ThreadArgs {
 #define PIPE_WRITE 1
 #define PIPE_READ 0
 #define MUTEX "/mutex_lock"
+#define SYNC_MUTEX "/sync_mutex_lock"
 
 #define OKTOWRITE "/condwrite"
 #define MESSAGE "/msg"
@@ -85,7 +86,7 @@ pthread_cond_t* condition;
 pthread_mutex_t* mutex;
 pthread_mutex_t* sync_pipe_mutex;
 char* message;
-int des_cond, des_msg, des_mutex;
+int des_cond, des_msg, des_mutex, des_sync_mutex;
 //int mode = S_IRWXU | S_IRWXG;
 
 struct MemoryMappingArgs {
