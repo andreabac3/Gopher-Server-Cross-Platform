@@ -1,24 +1,23 @@
 #include <windows.h>
-
-
 #include <winsock2.h>
 #include <stdio.h>
 #include <io.h>
 #include <unistd.h>
-#include <protocol.h>
-#include <windows_protocol.h>
 #include <errno.h>
 #include <ws2tcpip.h>
 #include <excpt.h>
-#include <windows_utils.h>
 #include <stdbool.h>
+#include <libgen.h>
 #include "utils.h"
 #include "windows_socket.h"
 #include "winThread.h"
 #include "definitions.h"
 #include "files_interaction.h"
 #include "socket.h"
+#include "protocol.h"
 #include "windows_pipe.h"
+#include "windows_protocol.h"
+#include "windows_utils.h"
 
 int end_server(SOCKET fd) {
     shutdown(fd, 2);
@@ -283,5 +282,34 @@ DWORD WINAPI w_sendFile(PVOID args) {
         sendPosition += chunkSize;
     }
     return 0;
+}
+
+int blackListFile(char *baseDir, char *pathFile, char *black_listed_file) {
+    char *base_name = basename(pathFile);
+    if (strcmp(black_listed_file, base_name) != 0) {
+        return 0;
+    }
+    TCHAR **lppPart = {NULL};
+
+    char base_dir_abs[2048] = {0};
+    int ret = GetFullPathNameA(baseDir, 2047, base_dir_abs, lppPart);
+    if (ret == 0) {
+        return -1;
+    }
+    char path_file_abs[2048] = {0};
+    ret = GetFullPathNameA(pathFile, 2047, path_file_abs, lppPart);
+    if (ret == 0) {
+        return -1;
+    }
+
+    char *real_base_dir = dirname(base_dir_abs);
+    char *path_file = dirname(path_file_abs);
+
+
+    if (strcmp(real_base_dir, path_file) != 0) {
+        return 0;
+
+    }
+    return 1;
 }
 
