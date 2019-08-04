@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <socket.h>
+#include <windows_socket.h>
 #include "utils.h"
 #include "files_interaction.h"
 #include "ut_dict.h"
@@ -26,12 +27,10 @@ int file_type(char *filename) {
         if (s.st_mode & S_IFDIR) {
             return FILES_IS_DIRECTORY;
         } else if (s.st_mode & S_IFREG) {
-#if defined(__unix__) || defined(__APPLE__)
 
             if (blackListFile(cwd, filename, "gopher_log_file.txt")){
                 return FILES_NOT_PERMITTED;
             }
-#endif
             return FILES_IS_REG_FILE;
         } else {
             return FILES_IS_UNMANAGED_FILE;

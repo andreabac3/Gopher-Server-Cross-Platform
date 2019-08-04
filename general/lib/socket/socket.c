@@ -11,6 +11,7 @@
 #include <windows_memory_mapping.h>
 #include <process.h>
 #include <windows_pipe.h>
+#include <windows_utils.h>
 
 #endif
 
@@ -117,6 +118,7 @@ void clean_request(char *path, char *buf, struct ThreadArgs *args) {
     } else { // mode_concurrency == M_PROCESS
         free(args);
         perror("i processi ancora non sono stati implementati");
+        exit(0);
     }
 }
 
@@ -287,6 +289,10 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
 #ifdef _WIN32
         int dim_file_to_send = windows_memory_mapping(args->fd, path);
         //clean_request(path, buf, args);
+        if (-1 == dim_file_to_send){
+            perror("dim_file_to_send");
+            windows_perror();
+        }
         printf("HO INVIATO IL FILE\n");
         struct PipeArgs pipeargs1;
         pipeargs1.path = path;

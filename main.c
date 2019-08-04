@@ -130,14 +130,15 @@ int main(int argc, char *argv[]) {
     printf("port:%d mode:%d %lu dir:%s\n", configs->port_number, configs->mode_concurrency, strlen(configs->root_dir),
            configs->root_dir);
 
-
-#if defined(__unix__) || defined(__APPLE__)
     if (getcwd(cwd, sizeof(cwd)) != NULL) {
         printf("Current working dir: %s\n", cwd);
     } else {
         perror("getcwd() error");
         return 1;
     }
+
+#if defined(__unix__) || defined(__APPLE__)
+
 
     if(!LOG_WITH_MULTIPLE_PROCESS){
         socket_pipe_single_process(global_fd_pipe);
@@ -207,6 +208,7 @@ int main(int argc, char *argv[]) {
     /*if (configs->used_OPTARG == false) {
         free(configs->root_dir);
     }*/
-
+    return 0;
     exit(0);
 }
+
