@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <socket.h>
-#include <windows_socket.h>
+//#include <windows_socket.h>
 #include "utils.h"
 #include "files_interaction.h"
 #include "ut_dict.h"
