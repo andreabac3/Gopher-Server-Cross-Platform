@@ -1,7 +1,8 @@
-W -> FileName: C:\Users\andrea\CLionProjects\gopher5\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1
-W -> FileName: C:\Users\andrea\CLionProjects\gopher5\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1
-W -> FileName: C:\Users\andrea\CLionProjects\gopher5\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1
-W -> FileName: C:\Users\andrea\CLionProjects\gopher5\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1
-W -> FileName: C:\Users\andrea\CLionProjects\gopher5\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1
-W -> FileName: C:\Users\andrea\CLionProjects\gopher5\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
-Byte FileName: /opt/local_projects/gopher-project/main.c	4411 Byte 	 IP Client: 77.39.173.69
+Byte FileName: /home/andrea/CLionProjects/gopher-project/main.c	4413 Byte 	 IP Client: 127.0.0.1
+Byte FileName: /home/andrea/CLionProjects/gopher-project/main.c	4413 Byte 	 IP Client: 127.0.0.1
+Byte FileName: /home/andrea/CLionProjects/gopher-project/README.md	124 Byte 	 IP Client: 127.0.0.1
+Byte FileName: /home/andrea/CLionProjects/gopher-project/README.md	124 Byte 	 IP Client: 127.0.0.1
+L->  FileName: /home/andrea/CLionProjects/gopher-project/README.md	124 Byte 	 IP Client: 127.0.0.1 Port: 9090
+
+L->  FileName: /home/andrea/CLionProjects/gopher-project/README.md	124 Byte 	 IP Client: 127.0.0.1 Port: 9090
+

@@ -1,7 +1,3 @@
-//
-// Created by valerioneri on 7/28/19.
-//
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <zconf.h>
@@ -21,8 +17,9 @@ int socket_pipe_log_child(char *path, struct ThreadArgs *args, int dim_file_to_s
 //    pipeArgs1.ip_client = args->ip_client;
 //    pipeArgs1.dim_file = dim_file_to_send;
     char message[BUFFER_SIZE * 2];
-    snprintf(message, BUFFER_SIZE * 2, "FileName: %s\t%d Byte \t IP Client: %s\n", path, dim_file_to_send,
-             args->ip_client);
+    snprintf(message, BUFFER_SIZE * 2, "FileName: %s\t%d Byte \t IP Client: %s Port: %d\n", path, dim_file_to_send,
+             args->ip_client, args->configs.port_number);
+    // TODO cosa succede se si aggiorna la struttura? meglio passarsi ip e porta come args.
     write(fd_pipe_log[1], &message, sizeof(message));
     close(fd_pipe_log[1]);
 
@@ -63,7 +60,7 @@ int socket_pipe_log_father(int fd_pipe_log[]) {
 
 //    dprintf(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data.path, data.dim_file, data.ip_client);
     // int err = fprintf(fp_filelog, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);
-    dprintf(fd_log, "%s", message);
+    dprintf(fd_log, "L -> %s", message);
     perror("dprintf");
     //write(fd_log, "cia", sizeof("cia"));
 
@@ -334,8 +331,8 @@ int socket_pipe_log_server_single_process(char *path, struct ThreadArgs *args, i
 //    pipeArgs1.ip_client = args->ip_client;
 //    pipeArgs1.dim_file = dim_file_to_send;
     char message[BUFFER_SIZE * 2 + 1] = {0};
-    snprintf(message, BUFFER_SIZE * 2, "FileName: %s\t%d Byte \t IP Client: %s", path, dim_file_to_send,
-             args->ip_client);
+    snprintf(message, BUFFER_SIZE * 2, "FileName: %s\t%d Byte \t IP Client: %s Port: %d", path, dim_file_to_send,
+             args->ip_client, args->configs.port_number);
 
     int n_write = write(fd_pipe_log_write, message, BUFFER_SIZE * 2);
     if (n_write == 0) {
@@ -546,7 +543,7 @@ void socket_pipe_single_process(int *fd_pipe) {
 
             printf("---- child process read\n");
 
-            dprintf(fd_log, "Byte %s\n", message);
+            dprintf(fd_log, "L->  %s\n", message);
             //dprintf(fd_log, "<%s>\n", "bho");
 
             //int err = fprintf(fp_filelog, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);

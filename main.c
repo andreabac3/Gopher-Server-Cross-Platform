@@ -83,7 +83,7 @@ void run_in_daemon() {
 int main(int argc, char *argv[]) {
 
     printf("%s\n", "Gopher start ...");
-    printf("PID: %d", getpid());
+    printf("PID: %d\n", getpid());
 
     //perror("main#");
 
