@@ -146,41 +146,33 @@ int linux_socket(struct Configs *configs) {
 
     FD_ZERO(&rset);
     int maxfdp1 = fd_server + 1;
-    struct timeval timeout;
-    timeout.tv_sec = SOCK_START_TIMEOUT;
-    timeout.tv_usec = SOCK_START_TIMEOUT;
 
-//    for (int connection_counter = 0; MAX_CONNECTIONS_ALLOWED >= connection_counter; connection_counter++) {
+
     for (;;) {
         FD_SET(fd_server, &rset);
 
+        printf("sono qui\n");
 
-        // if ((accept_fd = accept(fd_server, (struct sockaddr *) &client_addr, &slen)) == -1) { break; }
 
-        if ((n_ready = select(maxfdp1, &rset, NULL, NULL, &timeout)) < 0) {
-            if (errno == EINTR) continue;
+        if ((n_ready = select(maxfdp1, &rset, NULL, NULL, NULL)) < 0) {
+            if (errno == EINTR) {
+                if (configs->reset_config != NULL) {
+                    //end_server(fd_server);
+                    printf("sono qua dentro\n");
+                    printf("Reset configs\n");
+                    end_server(fd_server);
+                    return -1;
+                }
+                continue;
+            }
             else {
                 perror("select");
                 return 1;
             }
         }
-        if (0 == n_ready) {
-
-            // Reset configs
-            if (configs->reset_config != NULL) {
-                //end_server(fd_server);
-                printf("Reset configs\n");
-                end_server(fd_server);
-                return -1;
-            }
-            //printf("Reset socket continue %ls \n", configs->reset_config);
-            timeout.tv_sec = SOCK_LOOP_TIMEOUT;
-            timeout.tv_usec = SOCK_LOOP_TIMEOUT;
-
-            continue;
-        }
         if (FD_ISSET(fd_server, &rset)) {
             if ((accept_fd = accept(fd_server, (struct sockaddr *) &client_addr, &slen)) < 0) {
+                // TODO va levato il continue, se riceve un interrupt deve continuare ad eseguire con la richiesta
                 if (errno == EINTR) continue;
                 else {
                     perror("accept");

@@ -1,6 +1,3 @@
-//
-// Created by andrea on 22/07/19.
-//
 #include <signal.h>
 #include <stdio.h>
 
