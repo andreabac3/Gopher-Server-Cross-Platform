@@ -12,7 +12,7 @@
 // END FILES definition of file types
 
 #define SOCK_START_TIMEOUT 1
-#define SOCK_LOOP_TIMEOUT 2
+#define SOCK_LOOP_TIMEOUT 10
 
 #define LOG_PATH "../gopher_log_file.txt"
 #define CONFIGURATION_PATH "../gopher_server_configuration.txt"

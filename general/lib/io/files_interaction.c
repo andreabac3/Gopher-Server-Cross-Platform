@@ -3,12 +3,15 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <socket.h>
-//#include <windows_socket.h>
 #include "utils.h"
 #include "files_interaction.h"
 #include "ut_dict.h"
 #include "definitions.h"
 
+#ifdef _WIN32
+#include <windows_socket.h>
+
+#endif
 
 #if defined(__unix__) || defined(__APPLE__)
 

@@ -6,6 +6,7 @@
 
 
 #if defined(__unix__) || defined(__APPLE__)
+#include <zconf.h>
 
 //#include "gopher_server_configuration_linux.h"
 
@@ -19,8 +20,9 @@ using namespace std;
 #endif
 
 #include <string.h>
-#include <zconf.h>
-
+#ifdef _WIN32
+#include <io.h>
+#endif
 void help() {
     char *helpString = "";
     printf("%s\n", helpString);
