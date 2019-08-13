@@ -106,16 +106,23 @@ void clean_request(char *path, char *buf, struct ThreadArgs *args) {
 
     // shutdown(*fd, SHUT_WR);
 
-    int err = closesocket(args->fd);
-    if (err != 0) {
-        perror("Close in clean request");
-    }
+
     //int ret = 0;
     if (args->configs.mode_concurrency == M_THREAD) {
+        int err = closesocket(args->fd);
+        if (err != 0) {
+            perror("Close in clean request");
+        }
         free(args);
         //ExitThread(ret);
         _endthread();
     } else { // mode_concurrency == M_PROCESS
+#if defined(__unix__) || defined(__APPLE__)
+        int err = closesocket(args->fd);
+        if (err != 0) {
+            perror("Close in clean request");
+        }
+#endif
         free(args);
         perror("i processi ancora non sono stati implementati");
         exit(0);

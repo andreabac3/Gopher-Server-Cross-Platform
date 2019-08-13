@@ -8,6 +8,7 @@
 #include <excpt.h>
 #include <stdbool.h>
 #include <libgen.h>
+#include <tchar.h>
 #include "utils.h"
 #include "windows_socket.h"
 #include "winThread.h"
@@ -82,8 +83,7 @@ void run_process(struct ThreadArgs *args, SOCKADDR_IN *clientAddr, SOCKET client
              configs->root_dir, configs->mode_concurrency);
     fprintf(stderr, "cmd child %s\n", cmd_child);
 
-    if (FALSE ==
-        CreateProcess("gopherWinHandleRequestProcess.exe", cmd_child, NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL,
+    if (FALSE == CreateProcess("gopherWinHandleRequestProcess.exe", cmd_child, NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL,
                       NULL, &si, &pi)) {
         return;
     }
@@ -92,15 +92,16 @@ void run_process(struct ThreadArgs *args, SOCKADDR_IN *clientAddr, SOCKET client
 
     BOOL err = WSADuplicateSocketA(client, pi.dwProcessId, &ProtocolInfo);
 
-    if (closesocket(client) != 0) {
-        perror("Close in clean request");
-    }
+
 
     if (err) {
         fprintf(stderr, "WSADuplicateSocket(): failed. Error = %d, %s\n", WSAGetLastError()), windows_perror();
         //DoCleanup();
         exit(1);
     }
+
+
+
 
 
     if (ConnectNamedPipe(hNamedPipe, NULL) != FALSE)   // wait for someone to connect to the pipe
@@ -116,8 +117,25 @@ void run_process(struct ThreadArgs *args, SOCKADDR_IN *clientAddr, SOCKET client
         DisconnectNamedPipe(hNamedPipe);
         //CloseHandle(hNamedPipe);
     }
+
+    printf("SONO QUIIIII OHH");
+
+    WaitForSingleObject(pi.hProcess, INFINITE);
+
+    if (closesocket(client) != 0) {
+        perror("Close in clean request");
+    }
+
+
+
     CloseHandle(pi.hThread);
     CloseHandle(pi.hProcess);
+    printf("prima di sleep");
+
+
+
+    printf("Dopo close socket di sleep");
+
 }
 
 int windows_socket_runner(struct Configs *configs) {
