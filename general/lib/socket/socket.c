@@ -217,13 +217,12 @@ int socket_drain_tcp(int fd_client) {
         // return mess error
     }
     if (0 > drain_recv) {
+
         if (drain_recv == EAGAIN) {
-
-            perror("recv2 - EAGAIN");
         } else {
-
-            perror("recv2 gemneric error");
+            printf("%d \t %s\n", drain_recv ,"gemneric error");
         }
+        return -1;
     }
     return 0;
 }

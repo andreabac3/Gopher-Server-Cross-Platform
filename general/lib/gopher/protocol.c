@@ -57,7 +57,11 @@ int protocol_response(char type, char *filename, char *path, const char *host, i
         if (*result == NULL) {
             return 1;
         }
-        sprintf(*result, "%c%s%s\t%s\t%d\n", '3', "" /*path*/, filename, error, port);
+        int ret = sprintf(*result, "%c%s%s\t%s\t%d\n", '3', "" /*path*/, filename, error, port);
+        if (ret < 0) {
+            perror("sprintf fail in protocol.c/resolve_selector");
+            return NEED_TO_FREE;
+        }
     } else {
         // Format for directory listening
 
@@ -68,7 +72,7 @@ int protocol_response(char type, char *filename, char *path, const char *host, i
             return 1;
         }
         if (sprintf(*result, "%c%s\t%s\t%s\t%d\n", type, filename, path, host, port) < 0) {
-            return -1;
+            return NEED_TO_FREE;
         }
         printf("protocol_response/result %s\n", *result);
     }
@@ -104,6 +108,9 @@ int print_directory(char *path, int (*socket_send_f)(int, char *), int fd, int p
 
 
         char *fullpath = calloc(pathlen + strlen(filename) + 5, sizeof(char));
+        if (fullpath == NULL){
+            return -1;
+        }
         int err = sprintf(fullpath, "%s/%s", path, filename);
 
         if (err < 0) {
@@ -117,23 +124,25 @@ int print_directory(char *path, int (*socket_send_f)(int, char *), int fd, int p
         char code = getGopherCode(fullpath);
 
         // get line to send for gopher
-        char *line;
-        err = protocol_response(code, filename, fullpath, "localhost", port, &line);
+        char *response_line;
+        err = protocol_response(code, filename, fullpath, "localhost", port, &response_line);
 
         if (err != 0) {
 
             perror("Error:print_directory:protocol_response");
             free(fullpath);
-            free(line);
+            if (err == NEED_TO_FREE){
+                free(response_line);
+            }
 
             return -1;
         }
 
         // send line
-        int ret = (*socket_send_f)(fd, line);
+        int ret = (*socket_send_f)(fd, response_line);
 
         free(fullpath);
-        free(line);
+        free(response_line);
 
         if (0 > ret) {
             return -2;
@@ -141,8 +150,7 @@ int print_directory(char *path, int (*socket_send_f)(int, char *), int fd, int p
 
     }
 
-    if (closedir(dir) != 0)
-        perror("Error:print_directory:close_dir");
+    if (closedir(dir) != 0) perror("Error:print_directory:close_dir");
 
     return 0;
 }
