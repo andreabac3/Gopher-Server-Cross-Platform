@@ -19,6 +19,7 @@ using namespace std;
 #endif
 
 #include <string.h>
+#include <zconf.h>
 
 void help() {
     char *helpString = "";
@@ -181,4 +182,14 @@ void ut_clone_configs(struct Configs *c, struct Configs *n) {
    printf("struct c: port:%d mode:%d dir:%s\n", configs->port_number, configs->mode_concurrency, configs->root_dir);
    */
 
+}
+
+
+void ut_get_cwd(){
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
+        printf("Current working dir: %s\n", cwd);
+    } else {
+        perror("getcwd() error");
+        exit(-2);
+    }
 }

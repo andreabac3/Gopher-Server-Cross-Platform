@@ -133,12 +133,7 @@ int main(int argc, char *argv[]) {
     printf("port:%d mode:%d %lu dir:%s\n", configs->port_number, configs->mode_concurrency, strlen(configs->root_dir),
            configs->root_dir);
 
-    if (getcwd(cwd, sizeof(cwd)) != NULL) {
-        printf("Current working dir: %s\n", cwd);
-    } else {
-        perror("getcwd() error");
-        return 1;
-    }
+    ut_get_cwd();
 
 #if defined(__unix__) || defined(__APPLE__)
 
