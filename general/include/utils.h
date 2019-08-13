@@ -11,6 +11,7 @@ struct dict_entry {
     char *str;
     char n;
 };
+void ut_get_cwd();
 
 int compare(const void *s1, const void *s2);
 
