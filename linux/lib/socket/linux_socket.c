@@ -54,7 +54,10 @@ int end_server(int fd) {
     return close(fd);
 }
 
-int start_server(unsigned int port, unsigned int queue_size) {
+int start_server(unsigned int port, int queue_size) {
+    if (queue_size < 1){
+        return -1;
+    }
     int fd = 0;
 
     // signal(SIGPIPE, catch_sigpipe);
@@ -99,6 +102,7 @@ int run_concurrency(struct ThreadArgs *args) {
         if ((pthread_create(&thread, NULL, handle_request_thread, (void *) args)) != 0) {
             // printf("%s\n", "Could not create thread, continue non-threaded...");
             perror("Could not create thread");
+            return -1;
             // handle_request(req_fd);
         }
         //pthread_attr_destroy(&attr);
@@ -109,11 +113,12 @@ int run_concurrency(struct ThreadArgs *args) {
         pid_t pid_child = fork();
         if (pid_child < 0) {
             perror("run_concurrency/fork child failed");
+            return -1;
         } else if (pid_child == 0) {
             // child
             handle_request(args);
             exit(0);
-        } else {
+        } else { // parent
             close(args->fd);
             free(args->ip_client);
             free(args);
@@ -164,19 +169,19 @@ int linux_socket(struct Configs *configs) {
                     return -1;
                 }
                 continue;
-            }
-            else {
+            } else {
                 perror("select");
-                return 1;
+                continue;
             }
         }
         if (FD_ISSET(fd_server, &rset)) {
             if ((accept_fd = accept(fd_server, (struct sockaddr *) &client_addr, &slen)) < 0) {
                 // TODO va levato il continue, se riceve un interrupt deve continuare ad eseguire con la richiesta
-                if (errno == EINTR) continue;
+                if (errno == EINTR);// continue;
                 else {
                     perror("accept");
-                    exit(1);
+                    // exit(1);
+                    continue;
                 }
             }
 
@@ -184,7 +189,8 @@ int linux_socket(struct Configs *configs) {
             char *clientname = calloc(INET_ADDRSTRLEN + 1, sizeof(char));
             if (clientname == NULL) {
                 perror("linux_socket/clientname  calloc");
-                exit(-1);
+                // exit(-1);
+                continue;
             }
             inet_ntop(AF_INET, &client_addr.sin_addr, clientname, INET_ADDRSTRLEN);
 
@@ -194,7 +200,7 @@ int linux_socket(struct Configs *configs) {
             args->fd = accept_fd;
 
             // QUI VA MULTICORE
-            if (run_concurrency(args)) {
+            if (run_concurrency(args) < 0) {
                 perror("invalid option");
             }
 

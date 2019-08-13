@@ -169,7 +169,7 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
                 // if the option is port
                 single_word = ut_strtok(NULL, " ", &saveptr1);
                 wrong |= (unsigned) Assert_nb(single_word != NULL, "Missing port value");
-                config->port_number = conf_opts_port_number(single_word); // FUNZIONE VALERIO
+                config->port_number = conf_opts_port_number(single_word);
 
             } else if (strcmp(mod, single_word) == 0) {
 
@@ -193,7 +193,7 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
                     free(StringsArray[it]);
                 }
                 free(StringsArray);
-                Assert(0, "Unknow parameters in configuration file");
+                Assert(0, "Unknown parameters in configuration file");
             }
         }
     }

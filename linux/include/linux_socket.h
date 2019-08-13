@@ -16,4 +16,5 @@ void close_mutex();
 void start_mutex();
 void * l_sendFile(void *send_args);
 void * linux_sendFile(void *send_args);
+int start_server(unsigned int port, int queue_size);
 #endif //GOPHER_LINUX_SOCKET_H
