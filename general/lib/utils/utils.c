@@ -17,7 +17,9 @@
 
 using namespace std;
 #endif
+
 #include <string.h>
+
 void help() {
     char *helpString = "";
     printf("%s\n", helpString);
@@ -29,10 +31,17 @@ void help() {
  *
  */
 char *concat(const char *s1, const char *s2) {
-    char *result = malloc(strlen(s1) + strlen(s2) + 1); // +1 for the null-terminator
+    char *result = calloc(strlen(s1) + strlen(s2) + 1, sizeof(char)); // +1 for the null-terminator
+    if (result == NULL) {
+        return NULL;
+    }
     // in real code you would check for errors in malloc here
-    strcpy(result, s1);
-    strcat(result, s2);
+    if (strcpy(result, s1) == NULL) {
+        return NULL;
+    }
+    if (strcat(result, s2) == NULL) {
+        return NULL;
+    }
 
     return result;
 }
@@ -44,26 +53,26 @@ int ut_strtoint(char *str) {
     Assert(strcmp(end, "") == 0, "ut_strtoint, The value is not a valid integer");
     return i;
 }
-char *ut_win_strtok_r(char *str, const char *delim, char **save)
-{
+
+char *ut_win_strtok_r(char *str, const char *delim, char **save) {
     char *res, *last;
 
-    if( !save )
+    if (!save)
         return strtok(str, delim);
-    if( !str && !(str = *save) )
+    if (!str && !(str = *save))
         return NULL;
     last = str + strlen(str);
-    if( (*save = res = strtok(str, delim)) )
-    {
+    if ((*save = res = strtok(str, delim))) {
         *save += strlen(res);
-        if( *save < last )
+        if (*save < last)
             (*save)++;
         else
             *save = NULL;
     }
     return res;
 }
-char* ut_strtok(char* str, const char* delimiters, char** context){
+
+char *ut_strtok(char *str, const char *delimiters, char **context) {
 #if defined(__unix__) || defined(__APPLE__)
 
     return strtok_r(str, delimiters, context);
@@ -114,7 +123,7 @@ int ut_get_line(char *buf, size_t size) {
 }
 
 // TODO da testare bene
-void ut_clone_configs(struct Configs* c, struct Configs* n){
+void ut_clone_configs(struct Configs *c, struct Configs *n) {
     /*
     unsigned int port_number;
     char mode_concurrency;

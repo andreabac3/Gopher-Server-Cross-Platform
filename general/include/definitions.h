@@ -139,6 +139,7 @@ struct menu_item {
     unsigned int port;
     char delimiter;
 };
+char ip_buffer[BUFFER_SIZE];
 
 //struct request_t {
 //    int fd;
