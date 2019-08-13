@@ -20,6 +20,7 @@
 #include <errno.h>
 #include <wait.h>
 #include <libgen.h>
+#include <ifaddrs.h>
 
 
 #include "definitions.h"
@@ -326,5 +327,46 @@ int blackListFile(char *baseDir, char *pathFile, char *black_listed_file) {
     return 1;
 }
 
+int getServerIP(){
+    struct ifaddrs *iflist, *iface;
 
+    if (getifaddrs(&iflist) < 0) {
+        perror("getifaddrs");
+        return 1;
+    }
 
+    for (iface = iflist; iface; iface = iface->ifa_next) {
+        int af = iface->ifa_addr->sa_family;
+        const void *addr;
+        char addrp[INET6_ADDRSTRLEN];
+
+        switch (af) {
+            case AF_INET:
+                addr = &((struct sockaddr_in *)iface->ifa_addr)->sin_addr;
+                break;
+            case AF_INET6:
+                addr = &((struct sockaddr_in6 *)iface->ifa_addr)->sin6_addr;
+                break;
+            default:
+                addr = NULL;
+        }
+
+        if (addr) {
+            if (inet_ntop(af, addr, addrp, sizeof addrp) == NULL) {
+                perror("inet_ntop");
+                continue;
+            }
+            if (strcmp(iface->ifa_name, "eno1") == 0 && addrp[3] == '.'){
+
+                printf("Interface %s has address %s\n", iface->ifa_name, addrp);
+                strncpy(ip_buffer, addrp, BUFFER_SIZE-1);
+                ip_buffer[BUFFER_SIZE] = '\0';
+                break;
+            }
+
+        }
+    }
+
+    freeifaddrs(iflist);
+    return 0;
+}

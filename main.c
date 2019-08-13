@@ -33,8 +33,8 @@
 
 #include <signal.h>
 #include <sys/mman.h>
-#include <fcntl.h>
 #include <linux_pipe.h>
+
 #include "linux_files_interaction.h"
 #include "files_interaction.h"
 #include "linux_thread.h"
@@ -79,6 +79,9 @@ void run_in_daemon() {
 
 }
 #endif
+
+
+
 
 int main(int argc, char *argv[]) {
 
@@ -139,6 +142,7 @@ int main(int argc, char *argv[]) {
 
 #if defined(__unix__) || defined(__APPLE__)
 
+    getServerIP();
 
     if(!LOG_WITH_MULTIPLE_PROCESS){
         socket_pipe_single_process(global_fd_pipe);

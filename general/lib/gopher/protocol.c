@@ -47,6 +47,11 @@ int resolve_selector(char *gopher_root, char **filepath, const char *selector) {
 int protocol_response(char type, char *filename, char *path, const char *host, int port, char **result) {
 
 
+    if (type == -1){
+        perror("type in protocol response is less than 0");
+        return 1;
+    }
+
     if (type == '3') { // ERROR type 3
         // format
         // 3 '/gopher/clients/sdas.txt' doesn't exist!		error.host	1
@@ -123,9 +128,10 @@ int print_directory(char *path, int (*socket_send_f)(int, char *), int fd, int p
 
         char code = getGopherCode(fullpath);
 
+
         // get line to send for gopher
         char *response_line;
-        err = protocol_response(code, filename, fullpath, "localhost", port, &response_line);
+        err = protocol_response(code, filename, fullpath, ip_buffer, port, &response_line);
 
         if (err != 0) {
 

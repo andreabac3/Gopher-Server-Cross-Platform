@@ -1,7 +1,3 @@
-//
-// Created by valerioneri on 7/10/19.
-//
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -63,6 +59,9 @@ char getGopherCode(char* path){
     char gopher_code;
 
     char *command = concat("file -b --mime-type ", path);
+    if (command == NULL){
+        return -1;
+    }
     FILE *fp = popen(command, "r");
 
     if (!fp) {
@@ -76,6 +75,8 @@ char getGopherCode(char* path){
     size_t len = 0;
 
     if (getline(&mime_type, &len, fp) == -1) {
+        pclose(fp);
+        free(command);
         return -2;
         //fputs("file command failed", stderr);
         //return -1;
