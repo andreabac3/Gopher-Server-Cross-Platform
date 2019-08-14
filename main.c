@@ -138,6 +138,7 @@ int main(int argc, char *argv[]) {
 #if defined(__unix__) || defined(__APPLE__)
 
     getServerIP();
+    printf("\n%s IP DEL SERVER\n", ip_buffer);
 
     if(!LOG_WITH_MULTIPLE_PROCESS){
         socket_pipe_single_process(global_fd_pipe);
