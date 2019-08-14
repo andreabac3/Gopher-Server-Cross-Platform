@@ -116,7 +116,7 @@ int pipe_simple_write_to_pipe(struct PipeArgs *args) {
 
         WriteFile(pipe_write, message, BUFFER_SIZE*2, &numWritten, NULL);
         //WriteFile(hPipe, args, sizeof(*args), &dwWritten, // number of written bytes NULL);
-        printf("NumWritten  PIPE %d", numWritten);
+        printf("NumWritten4444444444444333333333333333  PIPE %d", numWritten);
     } else {
         //windows_perror();
         perror("crashato pipe_simple_write_to_pipe");
