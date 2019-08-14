@@ -356,8 +356,7 @@ int getServerIP(){
                 perror("inet_ntop");
                 continue;
             }
-            if (strcmp(iface->ifa_name, "eno1") == 0 && addrp[3] == '.'){
-
+            if ((strncmp(iface->ifa_name, "docker", strlen("docker")) != 0  &&  addrp[3] == '.' && strncmp(addrp, "127.0", strlen("127.0")) != 0 ) ){
                 printf("Interface %s has address %s\n", iface->ifa_name, addrp);
                 strncpy(ip_buffer, addrp, BUFFER_SIZE-1);
                 ip_buffer[BUFFER_SIZE] = '\0';
