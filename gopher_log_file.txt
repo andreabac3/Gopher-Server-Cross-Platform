@@ -15,3 +15,10 @@ L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4270 Byte 	 IP C
 L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4270 Byte 	 IP Client: 127.0.0.1 Port: 7070
 L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4270 Byte 	 IP Client: 127.0.0.1 Port: 9090
 L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4270 Byte 	 IP Client: 192.168.1.101 Port: 9090
+W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
+W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
+W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
+W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
+W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
+W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
+W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1

@@ -108,12 +108,13 @@ int main(int argc, char *argv[]) {
     if (hNamedPipe == INVALID_HANDLE_VALUE){
         exit (-125);
     }
-
     PROCESS_INFORMATION pi;
+
+/*
     ZeroMemory(&pi, sizeof(pi));
     pipe_run_process(&pi);
 
-
+*/
 #endif
 
     struct Configs c;
@@ -134,6 +135,8 @@ int main(int argc, char *argv[]) {
            configs->root_dir);
 
     ut_get_cwd();
+
+
 
 #if defined(__unix__) || defined(__APPLE__)
 
@@ -177,9 +180,13 @@ int main(int argc, char *argv[]) {
 
 #endif
 #ifdef _WIN32
+    if (configs->mode_concurrency == M_THREAD) {
+        ZeroMemory(&pi, sizeof(pi));
+        pipe_run_process(&pi);
+    }
 
 
-    // BOOL running = TRUE;
+        // BOOL running = TRUE;
     if (!SetConsoleCtrlHandler(consoleHandler, TRUE)) {
         printf("\nERROR: Could not set control handler");
         return 1;
@@ -194,15 +201,16 @@ int main(int argc, char *argv[]) {
 
     }
 
-    WaitForSingleObject(pi.hProcess, INFINITE);
+    // WaitForSingleObject(pi.hProcess, INFINITE);
+    if (configs->mode_concurrency == M_THREAD) {
 
-    CloseHandle(pipe_read);
-    CloseHandle(hNamedPipe);
+        CloseHandle(pipe_read);
+        CloseHandle(hNamedPipe);
 
 
-    CloseHandle(pi.hThread);
-    CloseHandle(pi.hProcess);
-
+        CloseHandle(pi.hThread);
+        CloseHandle(pi.hProcess);
+    }
 #endif
 
     /*if (configs->used_OPTARG == false) {
