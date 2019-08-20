@@ -180,10 +180,7 @@ int main(int argc, char *argv[]) {
 
 #endif
 #ifdef _WIN32
-    if (configs->mode_concurrency == M_THREAD) {
-        ZeroMemory(&pi, sizeof(pi));
-        pipe_run_process(&pi);
-    }
+
 
 
         // BOOL running = TRUE;
@@ -193,12 +190,20 @@ int main(int argc, char *argv[]) {
     }
 
     while (true) {
+        if (configs->mode_concurrency == M_THREAD) {
+            ZeroMemory(&pi, sizeof(pi));
+            pipe_run_process(&pi);
+        }
+        int mod = configs->mode_concurrency;
         windows_socket_runner(configs);
         //c.reset_config = NULL;
         //configs = &c;
         configs->reset_config = NULL;
         conf_parseConfigFile("../gopher_server_configuration.txt", configs);
-
+        if (mod != configs->mode_concurrency && mod == M_THREAD){
+            CloseHandle(pi.hThread);
+            CloseHandle(pi.hProcess);
+        }
     }
 
     // WaitForSingleObject(pi.hProcess, INFINITE);
