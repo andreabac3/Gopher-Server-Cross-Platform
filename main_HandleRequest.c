@@ -21,6 +21,7 @@
 #include <conio.h>
 #include <windows_utils.h>
 #include <socket.h>
+#include <windows_pipe.h>
 #include "windows_socket.h"
 
 
@@ -30,17 +31,23 @@ int main(int argc, char *argv[]) {
     h_configs.port_number = atoi(argv[1]);
     h_configs.mode_concurrency = argv[3][0];
     strcpy(h_configs.root_dir, argv[2]);
-    printf("I am handle request.exe, my args are: %s %d %s %d", argv[0], h_configs.port_number,  h_configs.root_dir,  h_configs.mode_concurrency);
+    printf("I am handle request.exe, my args are: %s %d %s %d", argv[0], h_configs.port_number, h_configs.root_dir,
+           h_configs.mode_concurrency);
 
     struct ThreadArgs h_args;
     h_args.configs = h_configs;
     h_args.ip_client = argv[0];
+    PROCESS_INFORMATION pi;
+    if (h_args.configs.mode_concurrency == M_PROCESS) {
 
+
+        ZeroMemory(&pi, sizeof(pi));
+        pipe_run_process(&pi);
+    }
 
     WSADATA wsaData;
     int nStatus;
-    if ((nStatus = WSAStartup(0x202,&wsaData)) != 0)
-    {
+    if ((nStatus = WSAStartup(0x202, &wsaData)) != 0) {
         fprintf(stderr, "\nWinsock 2 DLL initialization failed: %d\n", nStatus);
         WSACleanup();
         exit(-1);
@@ -67,7 +74,7 @@ int main(int argc, char *argv[]) {
     }
 
 
-    if(!ReadFile(hPipe, &ProtocolInfo, sizeof(WSAPROTOCOL_INFO) - 1, &dwRead, NULL)){
+    if (!ReadFile(hPipe, &ProtocolInfo, sizeof(WSAPROTOCOL_INFO) - 1, &dwRead, NULL)) {
         windows_perror();
         exit(-1);
     }
@@ -78,7 +85,7 @@ int main(int argc, char *argv[]) {
                                0,
                                0);
 
-    if(sockDuplicated == INVALID_SOCKET){
+    if (sockDuplicated == INVALID_SOCKET) {
         windows_perror();
         exit(-1);
     }
@@ -90,6 +97,11 @@ int main(int argc, char *argv[]) {
     h_args.fd = sockDuplicated;
 
     handle_request(&h_args);
+    if (h_args.configs.mode_concurrency == M_PROCESS) {
+        CloseHandle(pipe_write);
+        CloseHandle(pi.hThread);
+        CloseHandle(pi.hProcess);
+    }
 
     /*socket_send_message(sockDuplicated, "Risposta da processo");
     windows_perror();
