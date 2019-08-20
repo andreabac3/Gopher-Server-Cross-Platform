@@ -37,13 +37,12 @@ int main(int argc, char *argv[]) {
     struct ThreadArgs h_args;
     h_args.configs = h_configs;
     h_args.ip_client = argv[0];
+
     PROCESS_INFORMATION pi;
-    if (h_args.configs.mode_concurrency == M_PROCESS) {
 
+    ZeroMemory(&pi, sizeof(pi));
+    pipe_run_process(&pi);
 
-        ZeroMemory(&pi, sizeof(pi));
-        pipe_run_process(&pi);
-    }
 
     WSADATA wsaData;
     int nStatus;
@@ -97,11 +96,7 @@ int main(int argc, char *argv[]) {
     h_args.fd = sockDuplicated;
 
     handle_request(&h_args);
-    if (h_args.configs.mode_concurrency == M_PROCESS) {
-        CloseHandle(pipe_write);
-        CloseHandle(pi.hThread);
-        CloseHandle(pi.hProcess);
-    }
+
 
     /*socket_send_message(sockDuplicated, "Risposta da processo");
     windows_perror();
