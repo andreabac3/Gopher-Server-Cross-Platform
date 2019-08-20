@@ -95,8 +95,20 @@ int main(int argc, char *argv[]) {
     printf("get duplicated socket");
     h_args.fd = sockDuplicated;
 
-    handle_request(&h_args);
 
+    handle_request(&h_args);
+    /*
+     * TODO MOD PROCESSO: questa funzione non chiude o termina l'invio del file a meno di fare ctrl+c dal client.
+    if (configs->mode_concurrency == M_PROCESS) {
+
+        //CloseHandle(pipe_read);
+        CloseHandle(hNamedPipe);
+
+
+        CloseHandle(pi.hThread);
+        CloseHandle(pi.hProcess);
+    }
+     */
 
     /*socket_send_message(sockDuplicated, "Risposta da processo");
     windows_perror();
