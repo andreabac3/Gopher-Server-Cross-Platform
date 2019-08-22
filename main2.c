@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
 
     //printf("%s" , argv[0]);
     HANDLE eventReadyToReadPipe = CreateEventA(NULL, FALSE, TRUE, "eventReadyToReadPipe");
-    while (TRUE) {
+    do  {
         WaitForSingleObject(eventReadyToReadPipe, INFINITE);
         HANDLE child_std_out = GetStdHandle(STD_OUTPUT_HANDLE);
         char buf[BUFFER_SIZE * 2] = {0};
@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
             fprintf(fp_log, "%s", buf);
             fclose(fp_log);
         }
-    }
+    }while(atoi(argv[1]) == M_THREAD);
     CloseHandle(eventReadyToReadPipe);
 
 

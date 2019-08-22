@@ -192,7 +192,7 @@ int main(int argc, char *argv[]) {
     while (true) {
         if (configs->mode_concurrency == M_THREAD) {
             ZeroMemory(&pi, sizeof(pi));
-            pipe_run_process(&pi);
+            pipe_run_process(&pi, configs->mode_concurrency);
         }
         int mod = configs->mode_concurrency;
         windows_socket_runner(configs);
