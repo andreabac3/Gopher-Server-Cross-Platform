@@ -8,5 +8,5 @@
 HANDLE hNamedPipe;
 int pipe_simple_write_to_pipe(struct PipeArgs *args);
 int pipe_write_to_pipe(char *name, struct PipeArgs *args);
-int pipe_run_process(PROCESS_INFORMATION * pi);
+int pipe_run_process(PROCESS_INFORMATION *pi, int mode);
 #endif //GOPHERWIN_WINDOWS_PIPE_H

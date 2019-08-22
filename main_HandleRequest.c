@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
     PROCESS_INFORMATION pi;
 
     ZeroMemory(&pi, sizeof(pi));
-    pipe_run_process(&pi);
+    pipe_run_process(&pi, h_configs.mode_concurrency);
 
 
     WSADATA wsaData;

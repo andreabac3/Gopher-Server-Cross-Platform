@@ -143,7 +143,7 @@ int pipe_simple_write_to_pipe(struct PipeArgs *args) {
     return 0;
 }
 
-int pipe_run_process(PROCESS_INFORMATION * pi) {
+int pipe_run_process(PROCESS_INFORMATION *pi, int mode) {
 
     SECURITY_ATTRIBUTES securityAttributes = {sizeof(SECURITY_ATTRIBUTES), NULL, TRUE};
 
@@ -152,8 +152,8 @@ int pipe_run_process(PROCESS_INFORMATION * pi) {
         exit(22);
     }
     char child_cmd[32];
-    sprintf(child_cmd, "%lld", (ULONG64) (ULONG_PTR) pipe_read);
-    printf(" SONO CHILD CMD %s\n", child_cmd);
+    sprintf(child_cmd, "%lld %d", (ULONG64) (ULONG_PTR) pipe_read, 1 + mode);
+    printf(" SONO CHILD CMD %s \n", child_cmd);
     // pipe std out link
 
 
@@ -173,7 +173,7 @@ int pipe_run_process(PROCESS_INFORMATION * pi) {
 
     // HANDLE dup_pipe_read;
     printf("Creando la pipe log\n");
-    if (true == CreateProcess("gopherWinPipeProcess.exe", (char *) child_cmd, NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL, NULL, &si, pi)) {
+    if (true == CreateProcess("gopherWinPipeProcess.exe", (char *) child_cmd, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, NULL, &si, pi)) {
 
         //WaitForSingleObject(pi.hProcess, INFINITE);
 
