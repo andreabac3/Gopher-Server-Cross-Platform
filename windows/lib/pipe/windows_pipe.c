@@ -92,6 +92,8 @@ int pipe_simple_write_to_pipe(struct PipeArgs *args) {
      * Change the STDOUT of p process to the child process
      */
 
+    printf("%s \n", "inside pipe_simple_write_to_pipe");
+
     HANDLE father_std_out = GetStdHandle(STD_OUTPUT_HANDLE);
     if (FALSE == SetStdHandle(STD_OUTPUT_HANDLE, pipe_read)) {
         windows_perror();

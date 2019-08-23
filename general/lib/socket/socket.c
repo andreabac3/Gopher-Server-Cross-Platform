@@ -299,13 +299,29 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
             perror("dim_file_to_send");
             windows_perror();
         }
-        printf("HO INVIATO IL FILE\n");
+        printf("HO INVIATO IL FILE %c \n", args->configs.mode_concurrency);
         struct PipeArgs pipeargs1;
         pipeargs1.path = path;
         pipeargs1.ip_client = args->ip_client;
         pipeargs1.dim_file = dim_file_to_send;
 
-        pipe_simple_write_to_pipe(&pipeargs1);
+        //pipe_simple_write_to_pipe(&pipeargs1);
+
+        if (args->configs.mode_concurrency == M_THREAD) {
+            PROCESS_INFORMATION pi;
+
+            ZeroMemory(&pi, sizeof(pi));
+            pipe_run_process(&pi, configs->mode_concurrency);
+
+            pipe_simple_write_to_pipe(&pipeargs1);
+
+            WaitForSingleObject(&pi.hProcess, INFINITE);
+
+            CloseHandle(pi.hThread);
+            CloseHandle(pi.hProcess);
+        } else{
+            pipe_simple_write_to_pipe(&pipeargs1);
+        }
 /*
         STARTUPINFO si;
         PROCESS_INFORMATION pi;

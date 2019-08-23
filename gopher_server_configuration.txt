@@ -1,3 +1,3 @@
-port 7071
-root_dir "/opt/local_projects/gopher-project/"
-mode_concurrency Thread
+port 9090
+root_dir "C:\Projects\gopher3\gopher-project"
+mode_concurrency Process
