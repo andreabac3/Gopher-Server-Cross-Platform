@@ -46,6 +46,7 @@ struct PipeArgs {
     char *ip_client;
     int dim_file;
     char *path;
+    int port;
 };
 
 struct Configs {

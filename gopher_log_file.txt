@@ -8,3 +8,10 @@ W -> FileName: C:\Projects\gopher3\gopher-project\/main.c	4 KByte 	 IP Client: 1
 W -> FileName: C:\Projects\gopher3\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
 W -> FileName: C:\Projects\gopher3\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
 W -> FileName: C:\Projects\gopher3\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
+W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 7070 
+ 49 W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 7070 
+ 49 W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
+W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
+W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
+W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
+W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 

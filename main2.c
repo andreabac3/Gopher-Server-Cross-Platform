@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
         DWORD numRead;
 
         if(ReadFile(child_std_out, buf, BUFFER_SIZE * 2, &numRead, NULL)){
-            fprintf(stderr, "NumRead PIPE%d \n%s\n", numRead ,buf);
+            fprintf(stderr, "NumRead PIPE%d \n%s %s\n", numRead ,buf, argv[1] );
             FILE *fp_log = fopen(LOG_PATH, "a+");
             fprintf(fp_log, "%s", buf);
             fclose(fp_log);
