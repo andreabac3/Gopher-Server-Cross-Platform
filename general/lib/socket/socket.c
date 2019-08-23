@@ -304,6 +304,8 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         pipeargs1.path = path;
         pipeargs1.ip_client = args->ip_client;
         pipeargs1.dim_file = dim_file_to_send;
+        pipeargs1.port = args->configs.port_number;
+
 
         //pipe_simple_write_to_pipe(&pipeargs1);
 

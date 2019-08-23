@@ -111,7 +111,7 @@ int pipe_simple_write_to_pipe(struct PipeArgs *args) {
     //DWORD dwWritten;
 
     char message[BUFFER_SIZE*2] = {0};
-    sprintf(message, "W -> FileName: %s\t%d KByte \t IP Client: %s\n", args->path, args->dim_file, args->ip_client);
+    sprintf(message, "W -> FileName: %s\t%d KByte \t IP Client: %s\t Port: %d \n", args->path, args->dim_file, args->ip_client, args->port);
 
     if (pipe_write != INVALID_HANDLE_VALUE) {
         DWORD numWritten;
