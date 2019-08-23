@@ -97,18 +97,15 @@ int main(int argc, char *argv[]) {
 
 
     handle_request(&h_args);
-    /*
-     * TODO MOD PROCESSO: questa funzione non chiude o termina l'invio del file a meno di fare ctrl+c dal client.
-    if (configs->mode_concurrency == M_PROCESS) {
+    WaitForSingleObject(&pi.hProcess, INFINITE);
+    // TODO MOD PROCESSO: questa funzione non chiude o termina l'invio del file a meno di fare ctrl+c dal client.
 
-        //CloseHandle(pipe_read);
-        CloseHandle(hNamedPipe);
+    //CloseHandle(pipe_read);
+    CloseHandle(hNamedPipe);
 
 
-        CloseHandle(pi.hThread);
-        CloseHandle(pi.hProcess);
-    }
-     */
+    CloseHandle(pi.hThread);
+    CloseHandle(pi.hProcess);
 
     /*socket_send_message(sockDuplicated, "Risposta da processo");
     windows_perror();

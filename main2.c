@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
             fprintf(fp_log, "%s", buf);
             fclose(fp_log);
         }
-    }while(atoi(argv[1]) == M_THREAD);
+    }while(atoi(argv[1]) == M_THREAD && 0);
     CloseHandle(eventReadyToReadPipe);
 
 
