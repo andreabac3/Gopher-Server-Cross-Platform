@@ -207,7 +207,7 @@ int windows_socket_runner(struct Configs *configs) {
             if (configs->reset_config != NULL) {
                 //end_server(fd_server);
                 // printf("Reset socket break\n");
-                // printf("SONO SHUTDOWN %d\n", end_server(server));
+                printf("SONO SHUTDOWN %d\n", end_server(server));
                 return -1;
             }
 
