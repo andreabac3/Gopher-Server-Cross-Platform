@@ -97,7 +97,7 @@ void run_process(struct ThreadArgs *args, SOCKADDR_IN *clientAddr, SOCKET client
     if (err) {
         fprintf(stderr, "WSADuplicateSocket(): failed. Error = %d, %s\n", WSAGetLastError()), windows_perror();
         //DoCleanup();
-        exit(1);
+        return;
     }
 
 
@@ -117,10 +117,8 @@ void run_process(struct ThreadArgs *args, SOCKADDR_IN *clientAddr, SOCKET client
         DisconnectNamedPipe(hNamedPipe);
         //CloseHandle(hNamedPipe);
     }
-
-    printf("SONO QUIIIII OHH");
-
     WaitForSingleObject(pi.hProcess, INFINITE);
+
 
     if (closesocket(client) != 0) {
         perror("Close in clean request");
@@ -130,17 +128,12 @@ void run_process(struct ThreadArgs *args, SOCKADDR_IN *clientAddr, SOCKET client
 
     CloseHandle(pi.hThread);
     CloseHandle(pi.hProcess);
-    printf("prima di sleep");
-
-
-
-    printf("Dopo close socket di sleep");
 
 }
 
 int windows_socket_runner(struct Configs *configs) {
     WSADATA WSAData;
-    SOCKET server, client;
+    SOCKET client;
     SOCKADDR_IN serverAddr, clientAddr;
     /* socket */
     fd_set read_fds;
@@ -155,6 +148,7 @@ int windows_socket_runner(struct Configs *configs) {
     if (0 > server) {
         printf("Errore creazione socket");
         perror("Server = socket ");
+        return -1;
     }
 
     serverAddr.sin_addr.s_addr = INADDR_ANY;
@@ -196,8 +190,9 @@ int windows_socket_runner(struct Configs *configs) {
         if ((n_ready = select(server + 1, &working_set, NULL, NULL, &timeout)) < 0) {
             if (errno == EINTR) continue;
             else {
-                perror("select errno == EINTR");
-                exit(1);
+                windows_perror();
+                perror("select");
+                return -1;
             }
         }
 
@@ -221,7 +216,7 @@ int windows_socket_runner(struct Configs *configs) {
                 if (errno == EINTR) continue;
                 else {
                     perror("accept");
-                    exit(1);
+                    continue;
                 }
             }
             // todo run concurr
@@ -238,6 +233,8 @@ int windows_socket_runner(struct Configs *configs) {
                 // TODO cambiare con _beginthread
                 if (0 != (thread = CreateThread(NULL, 0, handle_request, (PVOID) &args, 0, NULL))) {
                     printf("funziona\n");
+                }else{
+                    continue;
                 }
                 CloseHandle(thread);
             } else if (args.configs.mode_concurrency == M_PROCESS) {

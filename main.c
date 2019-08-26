@@ -106,6 +106,7 @@ int main(int argc, char *argv[]) {
                             NULL);
 
     if (hNamedPipe == INVALID_HANDLE_VALUE){
+        windows_perror();
         exit (-125);
     }
     PROCESS_INFORMATION pi;
@@ -190,17 +191,19 @@ int main(int argc, char *argv[]) {
     }
 
     while (true) {
+        printf("%s\n", "sono nel while");
         /*if (configs->mode_concurrency == M_THREAD) {
             ZeroMemory(&pi, sizeof(pi));
             pipe_run_process(&pi, configs->mode_concurrency);
         }
          */
-        int mod = configs->mode_concurrency;
         windows_socket_runner(configs);
         //c.reset_config = NULL;
         //configs = &c;
         configs->reset_config = NULL;
         conf_parseConfigFile("../gopher_server_configuration.txt", configs);
+        printf("After EVENT port:%d mode:%d %lu dir:%s\n", configs->port_number, configs->mode_concurrency, strlen(configs->root_dir),
+               configs->root_dir);
 
         /*
         if (mod != configs->mode_concurrency && mod == M_THREAD){
