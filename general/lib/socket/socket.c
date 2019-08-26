@@ -324,27 +324,10 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         } else{
             pipe_simple_write_to_pipe(&pipeargs1);
         }
-/*
-        STARTUPINFO si;
-        PROCESS_INFORMATION pi;
-        ZeroMemory(&si, sizeof(si));
-        si.cb = sizeof(si);
-        ZeroMemory(&pi, sizeof(pi));
-        if (CreateProcess("C:\\Users\\andrea\\CLionProjects\\gopher5\\gopher-project\\cmake-build-debug\\gopherWinSubProcess.exe",
-                          "readPipe", NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL, NULL, &si, &pi)) {
-            // WaitForSingleObject(pi.hProcess, INFINITE);
-        }else{
-            perror("createprocess = false");
-        }
 
-
-        // CloseHandle(pi.hThread);
-        // CloseHandle(pi.hProcess);
-*/
 
 
         printf("End createProcess");
-        //printf("%d", SendFile(args->fd, fp_FileToSend));int socket_pipe_log_server(char *path, struct ThreadArgs *args, int dim_file_to_send, int *fd_pipe_log)
 #endif
 #if defined(__unix__) || defined(__APPLE__)
 
