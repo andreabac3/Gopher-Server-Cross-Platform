@@ -10,7 +10,7 @@ BOOL WINAPI consoleHandler(DWORD signal) {
         int flagOne = 1;
         (*configs).reset_config = &flagOne;
         //shutdown(server, 2);
-        closesocket(server);
+        //closesocket(server);
         printf("End Ctrl-C handled\n");
 
     }
