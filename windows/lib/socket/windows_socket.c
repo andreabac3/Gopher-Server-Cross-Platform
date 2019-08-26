@@ -97,7 +97,7 @@ void run_process(struct ThreadArgs *args, SOCKADDR_IN *clientAddr, SOCKET client
     if (err) {
         fprintf(stderr, "WSADuplicateSocket(): failed. Error = %d, %s\n", WSAGetLastError()), windows_perror();
         //DoCleanup();
-        return;
+        exit(1);
     }
 
 
@@ -117,8 +117,10 @@ void run_process(struct ThreadArgs *args, SOCKADDR_IN *clientAddr, SOCKET client
         DisconnectNamedPipe(hNamedPipe);
         //CloseHandle(hNamedPipe);
     }
-    WaitForSingleObject(pi.hProcess, INFINITE);
 
+    printf("SONO QUIIIII OHH");
+
+    WaitForSingleObject(pi.hProcess, INFINITE);
 
     if (closesocket(client) != 0) {
         perror("Close in clean request");
@@ -128,12 +130,17 @@ void run_process(struct ThreadArgs *args, SOCKADDR_IN *clientAddr, SOCKET client
 
     CloseHandle(pi.hThread);
     CloseHandle(pi.hProcess);
+    printf("prima di sleep");
+
+
+
+    printf("Dopo close socket di sleep");
 
 }
 
 int windows_socket_runner(struct Configs *configs) {
     WSADATA WSAData;
-    SOCKET client;
+    SOCKET server, client;
     SOCKADDR_IN serverAddr, clientAddr;
     /* socket */
     fd_set read_fds;
@@ -148,7 +155,6 @@ int windows_socket_runner(struct Configs *configs) {
     if (0 > server) {
         printf("Errore creazione socket");
         perror("Server = socket ");
-        return -1;
     }
 
     serverAddr.sin_addr.s_addr = INADDR_ANY;
@@ -191,7 +197,7 @@ int windows_socket_runner(struct Configs *configs) {
             if (errno == EINTR) continue;
             else {
                 windows_perror();
-                perror("select");
+                perror("select errno == EINTR");
                 return -1;
             }
         }
@@ -233,8 +239,6 @@ int windows_socket_runner(struct Configs *configs) {
                 // TODO cambiare con _beginthread
                 if (0 != (thread = CreateThread(NULL, 0, handle_request, (PVOID) &args, 0, NULL))) {
                     printf("funziona\n");
-                }else{
-                    continue;
                 }
                 CloseHandle(thread);
             } else if (args.configs.mode_concurrency == M_PROCESS) {
