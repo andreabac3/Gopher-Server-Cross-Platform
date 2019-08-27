@@ -30,6 +30,7 @@ int main(int argc, char *argv[]) {
     struct Configs h_configs;
     h_configs.port_number = atoi(argv[1]);
     h_configs.mode_concurrency = argv[3][0];
+    if (strlen(argv[2]) > BUFFER_SIZE) { return -1; }
     strcpy(h_configs.root_dir, argv[2]);
     printf("I am handle request.exe, my args are: %s %d %s %d", argv[0], h_configs.port_number, h_configs.root_dir,
            h_configs.mode_concurrency);
@@ -49,6 +50,8 @@ int main(int argc, char *argv[]) {
     if ((nStatus = WSAStartup(0x202, &wsaData)) != 0) {
         fprintf(stderr, "\nWinsock 2 DLL initialization failed: %d\n", nStatus);
         WSACleanup();
+        CloseHandle(pi.hThread);
+        CloseHandle(pi.hProcess);
         exit(-1);
     }
 
@@ -75,6 +78,7 @@ int main(int argc, char *argv[]) {
 
     if (!ReadFile(hPipe, &ProtocolInfo, sizeof(WSAPROTOCOL_INFO) - 1, &dwRead, NULL)) {
         windows_perror();
+        CloseHandle(hPipe);
         exit(-1);
     }
     sockDuplicated = WSASocket(FROM_PROTOCOL_INFO,
@@ -86,6 +90,9 @@ int main(int argc, char *argv[]) {
 
     if (sockDuplicated == INVALID_SOCKET) {
         windows_perror();
+        CloseHandle(pi.hThread);
+        CloseHandle(pi.hProcess);
+        CloseHandle(hPipe);
         exit(-1);
     }
 
