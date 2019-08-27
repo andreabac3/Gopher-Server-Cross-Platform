@@ -72,6 +72,8 @@ int main(int argc, char *argv[]) {
 
     if (hPipe == INVALID_HANDLE_VALUE) {
         windows_perror();
+        CloseHandle(pi.hThread);
+        CloseHandle(pi.hProcess);
         exit(-1);
     }
 
@@ -79,6 +81,8 @@ int main(int argc, char *argv[]) {
     if (!ReadFile(hPipe, &ProtocolInfo, sizeof(WSAPROTOCOL_INFO) - 1, &dwRead, NULL)) {
         windows_perror();
         CloseHandle(hPipe);
+        CloseHandle(pi.hThread);
+        CloseHandle(pi.hProcess);
         exit(-1);
     }
     sockDuplicated = WSASocket(FROM_PROTOCOL_INFO,
