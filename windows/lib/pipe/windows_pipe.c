@@ -63,13 +63,13 @@ int pipe_write_to_pipe(char *name, struct PipeArgs *args) {
         windows_perror();
         windows_perror();
     }
-    char message[BUFFER_SIZE*2] = {0};
+    char message[BUFFER_SIZE * 2] = {0};
     sprintf(message, "W -> FileName: %s\t%d KByte \t IP Client: %s\n", args->path, args->dim_file, args->ip_client);
 
     if (hPipe != INVALID_HANDLE_VALUE) {
         DWORD numWritten;
 
-        WriteFile(hPipe, message, BUFFER_SIZE*2, &numWritten, NULL);
+        WriteFile(hPipe, message, BUFFER_SIZE * 2, &numWritten, NULL);
         //WriteFile(hPipe, args, sizeof(*args), &dwWritten, // number of written bytes NULL);
 
         CloseHandle(hPipe);
@@ -77,7 +77,7 @@ int pipe_write_to_pipe(char *name, struct PipeArgs *args) {
         windows_perror();
     }
 
-   // printf("%lu\n", dwWritten);
+    // printf("%lu\n", dwWritten);
     printf("%zu\n", sizeof(*args));
 
     return 0;
@@ -85,10 +85,7 @@ int pipe_write_to_pipe(char *name, struct PipeArgs *args) {
 
 int pipe_simple_write_to_pipe(struct PipeArgs *args) {
 
-    // TODO mutex
-
     /*
-     *
      * Change the STDOUT of p process to the child process
      */
 
@@ -98,7 +95,7 @@ int pipe_simple_write_to_pipe(struct PipeArgs *args) {
     if (FALSE == SetStdHandle(STD_OUTPUT_HANDLE, pipe_read)) {
         windows_perror();
         printf("FALLITA CREATE SetStdHandle");
-        exit(23);
+        return -2;
 
     }
 
@@ -110,13 +107,16 @@ int pipe_simple_write_to_pipe(struct PipeArgs *args) {
 
     //DWORD dwWritten;
 
-    char message[BUFFER_SIZE*2] = {0};
-    sprintf(message, "W -> FileName: %s\t%d KByte \t IP Client: %s\t Port: %d \n", args->path, args->dim_file, args->ip_client, args->port);
-
+    char message[BUFFER_SIZE * 2] = {0};
+    int ret = sprintf(message, "W -> FileName: %s\t%d KByte \t IP Client: %s\t Port: %d \n", args->path,
+            args->dim_file, args->ip_client, args->port);
+    if (0 > ret) {
+        return -1;
+    }
     if (pipe_write != INVALID_HANDLE_VALUE) {
         DWORD numWritten;
 
-        WriteFile(pipe_write, message, BUFFER_SIZE*2, &numWritten, NULL);
+        WriteFile(pipe_write, message, BUFFER_SIZE * 2, &numWritten, NULL);
         //WriteFile(hPipe, args, sizeof(*args), &dwWritten, // number of written bytes NULL);
         printf("NumWritten4444444444444333333333333333  PIPE %d", numWritten);
     } else {
@@ -124,9 +124,9 @@ int pipe_simple_write_to_pipe(struct PipeArgs *args) {
         perror("crashato pipe_simple_write_to_pipe");
     }
     // TODO event here
-    HANDLE eventReadyToReadPipe = CreateEventA (NULL, FALSE, TRUE, "eventReadyToReadPipe");
-    if (eventReadyToReadPipe == NULL){
-        exit(-2);
+    HANDLE eventReadyToReadPipe = CreateEventA(NULL, FALSE, TRUE, "eventReadyToReadPipe");
+    if (eventReadyToReadPipe == NULL) {
+        return -2;
     }
     SetEvent(eventReadyToReadPipe);
     CloseHandle(eventReadyToReadPipe);
@@ -136,9 +136,10 @@ int pipe_simple_write_to_pipe(struct PipeArgs *args) {
      */
 
     if (FALSE == SetStdHandle(STD_OUTPUT_HANDLE, father_std_out)) {
-        //windows_perror();
-        fprintf(stderr,"%s\n","FALLITA CREATE SetStdHandle close");
-        exit(23);
+        windows_perror();
+        fprintf(stderr, "%s\n", "FALLITA CREATE SetStdHandle close");
+        //exit(23);
+        return -1;
     }
 
 
@@ -151,7 +152,8 @@ int pipe_run_process(PROCESS_INFORMATION *pi, int mode) {
 
     if (false == CreatePipe(&pipe_read, &pipe_write, &securityAttributes, BUFFER_SIZE * 2)) {
         windows_perror();
-        exit(22);
+        //exit(22);
+        return 22;
     }
     char child_cmd[32];
     sprintf(child_cmd, "%lld %d", (ULONG64) (ULONG_PTR) pipe_read, 1 + mode);
@@ -163,11 +165,10 @@ int pipe_run_process(PROCESS_INFORMATION *pi, int mode) {
     if (FALSE == SetStdHandle(STD_OUTPUT_HANDLE, pipe_read)) {
         windows_perror();
         printf("FALLITA CREATE SetStdHandle");
-        exit(23);
+        //exit(23);
+        return 23;
 
     }
-
-
     // process
     STARTUPINFO si;
     ZeroMemory(&si, sizeof(si));
@@ -175,7 +176,9 @@ int pipe_run_process(PROCESS_INFORMATION *pi, int mode) {
 
     // HANDLE dup_pipe_read;
     printf("Creando la pipe log\n");
-    if (true == CreateProcess("gopherWinPipeProcess.exe", (char *) child_cmd, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, NULL, &si, pi)) {
+    if (true ==
+        CreateProcess("gopherWinPipeProcess.exe", (char *) child_cmd, NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL,
+                      NULL, &si, pi)) {
 
         //WaitForSingleObject(pi.hProcess, INFINITE);
 
@@ -188,7 +191,7 @@ int pipe_run_process(PROCESS_INFORMATION *pi, int mode) {
             windows_perror();
             printf("FALLITA CREATE PIPE");
 
-            exit(23);
+            return 23;
         }
         perror("PIPE RIUSCITA CON SUCCESSO\n");
         printf("%d\n", dup_pipe_read);
@@ -198,13 +201,14 @@ int pipe_run_process(PROCESS_INFORMATION *pi, int mode) {
     } else {
         perror("create process is failed");
         windows_perror();
-        exit(24);
+        return 24;
     }
 
     if (FALSE == SetStdHandle(STD_OUTPUT_HANDLE, father_std_out)) {
-        //windows_perror();
-        fprintf(stderr,"%s\n","FALLITA CREATE SetStdHandle close");
-        exit(23);
+        windows_perror();
+        fprintf(stderr, "%s\n", "FALLITA CREATE SetStdHandle close");
+        //exit(23);
+        return 23;
     }
     return 0;
 }
