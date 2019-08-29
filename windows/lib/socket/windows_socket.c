@@ -19,7 +19,7 @@
 #include "windows_pipe.h"
 #include "windows_protocol.h"
 #include "windows_utils.h"
-
+#include "windows_socket.h"
 int end_server(SOCKET fd) {
     shutdown(fd, 2);
     closesocket(fd);
@@ -58,18 +58,6 @@ void run_process(struct ThreadArgs *args, SOCKADDR_IN *clientAddr, SOCKET client
     DWORD dwWritten;
 
 
-    /*hNamedPipe = CreateFile(TEXT("\\\\.\\pipe\\PipeHandleRequest"),
-                       GENERIC_READ | GENERIC_WRITE,
-                       0,
-                       NULL,
-                       OPEN_EXISTING,
-                       0,
-                       NULL);
-
-    if (hNamedPipe == INVALID_HANDLE_VALUE){
-       return;
-    }*/
-
     // Create Process
     PROCESS_INFORMATION pi;
     ZeroMemory(&pi, sizeof(pi));
@@ -83,7 +71,8 @@ void run_process(struct ThreadArgs *args, SOCKADDR_IN *clientAddr, SOCKET client
              configs->root_dir, configs->mode_concurrency);
     fprintf(stderr, "cmd child %s\n", cmd_child);
 
-    if (FALSE == CreateProcess("gopherWinHandleRequestProcess.exe", cmd_child, NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL,
+    if (FALSE ==
+        CreateProcess("gopherWinHandleRequestProcess.exe", cmd_child, NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS, NULL,
                       NULL, &si, &pi)) {
         return;
     }
@@ -93,15 +82,11 @@ void run_process(struct ThreadArgs *args, SOCKADDR_IN *clientAddr, SOCKET client
     BOOL err = WSADuplicateSocketA(client, pi.dwProcessId, &ProtocolInfo);
 
 
-
     if (err) {
         fprintf(stderr, "WSADuplicateSocket(): failed. Error = %d, %s\n", WSAGetLastError()), windows_perror();
         //DoCleanup();
         exit(1);
     }
-
-
-
 
 
     if (ConnectNamedPipe(hNamedPipe, NULL) != FALSE)   // wait for someone to connect to the pipe
@@ -127,11 +112,9 @@ void run_process(struct ThreadArgs *args, SOCKADDR_IN *clientAddr, SOCKET client
     }
 
 
-
     CloseHandle(pi.hThread);
     CloseHandle(pi.hProcess);
     printf("prima di sleep");
-
 
 
     printf("Dopo close socket di sleep");
@@ -155,14 +138,25 @@ int windows_socket_runner(struct Configs *configs) {
     if (0 > server) {
         printf("Errore creazione socket");
         perror("Server = socket ");
+        windows_perror();
+        return -1;
     }
 
     serverAddr.sin_addr.s_addr = INADDR_ANY;
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(configs->port_number);
 
-    bind(server, (SOCKADDR *) &serverAddr, sizeof(serverAddr));
-    listen(server, 0);
+    if (0 != bind(server, (SOCKADDR *) &serverAddr, sizeof(serverAddr))) {
+        windows_perror();
+
+        return -1;
+    }
+
+    if (0 != listen(server, 0)) {
+        windows_perror();
+
+        return -1;
+    }
 
     printf("Listening for incoming connections...");
 
@@ -207,7 +201,7 @@ int windows_socket_runner(struct Configs *configs) {
             if (configs->reset_config != NULL) {
                 //end_server(fd_server);
                 // printf("Reset socket break\n");
-                printf("SONO SHUTDOWN %d\n", end_server(server));
+                end_server(server);
                 return -1;
             }
 
@@ -283,7 +277,7 @@ DWORD WINAPI handle_request(void *params) {
 
 
 DWORD WINAPI w_sendFile(PVOID args) {
-
+    // correct
     struct sendArgs *send_args = (struct sendArgs *) args;
     int fd_client = send_args->fd;
     char *message_to_send = send_args->buff;
@@ -303,7 +297,27 @@ DWORD WINAPI w_sendFile(PVOID args) {
     return 0;
 }
 
+
+DWORD WINAPI windows_sendFile(PVOID args) {
+    struct sendArgs *send_args = (struct sendArgs *) args;
+    int fd_client = send_args->fd;
+    char *message_to_send = send_args->buff;
+    size_t message_len = strlen(message_to_send);
+
+
+    int ret = send(fd_client, message_to_send, message_len, 0);
+
+    if (0 > ret) {
+        perror("socket.c/socket_send_message: send failed");
+        return -1;
+    }
+
+    return 0;
+}
+
+
 int blackListFile(char *baseDir, char *pathFile, char *black_listed_file) {
+    // return true if file is not permitted to send
     char *base_name = basename(pathFile);
     if (strcmp(black_listed_file, base_name) != 0) {
         return 0;
