@@ -40,6 +40,29 @@ W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP
 W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
 W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
 W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
+L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
