@@ -180,8 +180,36 @@ void socket_resolve_selector(struct ThreadArgs *args, char *buf, char **path) {
  * */
 
 
-
 void socket_read_request(struct ThreadArgs *args, char **buf) {
+
+    int ptr = 0;
+    ssize_t got_bytes = 0;
+
+    *buf = calloc(BUFFER_SIZE+1, sizeof(char));
+    if (*buf == NULL) {
+        clean_request(NULL, NULL, args);
+    }
+
+    while (true) {
+        got_bytes = recv(args->fd, *buf + ptr, BUFFER_SIZE - ptr, 0);
+        if (0 > got_bytes) {
+            clean_request(NULL, *buf, args);
+        }
+        if (0 == got_bytes) {
+            (*buf)[ptr] = 0; // Terminate string
+            break;
+        }
+        ptr += got_bytes;
+        if (ptr>BUFFER_SIZE){
+            socket_drain_tcp(args->fd);
+            break;
+        }
+        if (ut_get_line(*buf, ptr)) {
+            break;
+        }
+    }
+}
+void socket_read_request2(struct ThreadArgs *args, char **buf) {
 
     int ptr = 0;
     ssize_t got_bytes = 0;
@@ -204,7 +232,7 @@ void socket_read_request(struct ThreadArgs *args, char **buf) {
     // printf("socket/socket_read_request %d %d |%s|\n", (*buf)[got_bytes - 1], (*buf)[got_bytes - 2], *buf);
 
     for (int i = 2; 0 <= i; i--) {
-        if (0 != got_bytes && ((*buf)[got_bytes - i] == '\r' || (*buf)[got_bytes - i] == '\n' ) ) {
+        if (0 != got_bytes && ((*buf)[got_bytes - i] == '\r' || (*buf)[got_bytes - i] == '\n')) {
             (*buf)[got_bytes - i] = '\0';
             break;
         }
@@ -227,7 +255,7 @@ int socket_drain_tcp(int fd_client) {
 
         if (drain_recv == EAGAIN) {
         } else {
-            printf("%d \t %s\n", drain_recv ,"gemneric error");
+            printf("%d \t %s\n", drain_recv, "gemneric error");
         }
         return -1;
     }
@@ -347,11 +375,11 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
             return;
         }
 
-        if(LOG_WITH_MULTIPLE_PROCESS){
+        if (LOG_WITH_MULTIPLE_PROCESS) {
             int fd_pipe[2];
             socket_pipe_multiple_process(fd_pipe);
             socket_pipe_log_server(path, args, map_size, fd_pipe[PIPE_WRITE]);
-        }else{
+        } else {
             socket_pipe_log_server_single_process(path, args, map_size, global_fd_pipe[PIPE_WRITE]);
         }
 
