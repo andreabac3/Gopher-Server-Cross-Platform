@@ -16,7 +16,7 @@
 
 #define LOG_PATH "../gopher_log_file.txt"
 #define CONFIGURATION_PATH "../gopher_server_configuration.txt"
-#define CONNECTION_QUEUE 500
+#define CONNECTION_QUEUE 5000
 #define MAX_CONNECTIONS_ALLOWED 1
 #define BUFFER_SIZE 2048
 

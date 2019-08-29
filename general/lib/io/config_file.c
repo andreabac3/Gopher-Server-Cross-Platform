@@ -6,10 +6,12 @@
 #include <string.h>
 #include <getopt.h>
 #include <stdbool.h>
+#include <regex.h>
+#include <f2fs_fs.h>
 #include "config_file.h"
 #include "definitions.h"
 #include "utils.h"
-
+#include <math.h>
 
 #if defined(__unix__) || defined(__APPLE__)
 #endif
@@ -43,6 +45,33 @@ int conf_opts_port_number(char *opt) {
 }
 
 
+int check_ip(const char *ip) {
+    regex_t re;
+
+    int dot_count = 0;
+    int len_ip = fmin(strlen(ip), BUFFER_SIZE - 1);
+    if (len_ip == BUFFER_SIZE - 1) {
+        return REG_NOMATCH;
+    }
+    for (int i = 0; i < len_ip; i++) {
+        if (ip[i] == '.') {
+            dot_count++;
+        }
+    }
+    if (regcomp(&re,
+                "\\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b",
+                REG_EXTENDED | REG_NOSUB) != 0)
+        return -1;
+
+    if (dot_count != 3) {
+        return REG_NOMATCH;
+    }
+    int status = regexec(&re, ip, 0, NULL, 0);
+    regfree(&re);
+    return status;
+}
+
+
 char conf_opts_mode_concurrency(char *opt) {
 
     Assert((strcmp(opt, "Thread") != 0) ^ (strcmp(opt, "Process") != 0), "Unsupported mode_concurrency");
@@ -60,7 +89,7 @@ char *conf_opts_root_dir(char *opt) {
 int conf_read_opt(int argc, char *argv[], struct Configs *configs) {
     int opt;
 
-    while ((opt = getopt(argc, argv, "m:d:p:")) != -1) {
+    while ((opt = getopt(argc, argv, "m:d:p:i:")) != -1) {
         switch (opt) {
             case 'p':
                 configs->port_number = conf_opts_port_number(optarg);
@@ -68,6 +97,14 @@ int conf_read_opt(int argc, char *argv[], struct Configs *configs) {
             case 'm':
                 configs->mode_concurrency = conf_opts_mode_concurrency(optarg);
                 break;
+            case 'i':
+                if (strlen(optarg) > BUFFER_SIZE - 1) {
+                    fprintf(stderr, "config_file.c/ conf_read_opt error in external_ip");
+                } else {
+                    strcpy(ip_buffer, optarg);
+                }
+                break;
+
             case 'd':
                 configs->used_OPTARG = true;
 //                free(configs->root_dir);
@@ -79,6 +116,10 @@ int conf_read_opt(int argc, char *argv[], struct Configs *configs) {
                 return 1;
         }
     }
+    if (ip_buffer[0] == 0) {
+        exit(-1);
+    }
+
     return 0;
 }
 
@@ -99,6 +140,12 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
     char *port = "port";
     char *mod = "mode_concurrency";
     char *rootdir = "root_dir";
+    char *external_ip = "external_ip";
+
+    int count_port = 0;
+    int count_ip = 0;
+    int count_root_dir = 0;
+    int count_mode = 0;
 
     unsigned int wrong = 0;
 
@@ -166,12 +213,14 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
         if (single_word != NULL) {
 
             if (strcmp(port, single_word) == 0) {
+                count_port++;
                 // if the option is port
                 single_word = ut_strtok(NULL, " ", &saveptr1);
                 wrong |= (unsigned) Assert_nb(single_word != NULL, "Missing port value");
                 config->port_number = conf_opts_port_number(single_word);
 
             } else if (strcmp(mod, single_word) == 0) {
+                count_mode++;
 
                 // if the option is mode_concurrency
                 single_word = ut_strtok(NULL, " ", &saveptr1);
@@ -180,11 +229,28 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
                 config->mode_concurrency = conf_opts_mode_concurrency(single_word);
 
             } else if (strcmp(rootdir, single_word) == 0) {
+                count_root_dir++;
                 // if the option is root_dir
                 single_word = ut_strtok(NULL, "\"", &saveptr1);
                 wrong |= (unsigned) Assert_nb(single_word != NULL, "Missing root dir value");
                 //config->root_dir = calloc(sizeof(char), strlen(single_word) + 1);
                 strncpy(config->root_dir, single_word, BUFFER_SIZE);
+
+//                printf("%s %s \n", single_word, config->root_dir);
+            } else if (strcmp(external_ip, single_word) == 0) {
+                count_ip++;
+                // if the option is root_dir
+                single_word = ut_strtok(NULL, "\"", &saveptr1);
+                wrong |= (unsigned) Assert_nb(single_word != NULL, "Missing ip value");
+                //config->root_dir = calloc(sizeof(char), strlen(single_word) + 1);
+                printf("%s", single_word);
+                //wrong |= (unsigned) Assert_nb(REG_NOMATCH !=  check_ip(single_word), "Wrong ip value");
+                if (strlen(single_word) > BUFFER_SIZE - 1) {
+                    wrong |= 1;
+                    fprintf(stderr, "error in external_ip");
+                } else {
+                    strncpy(ip_buffer, single_word, BUFFER_SIZE - 1);
+                }
 //                printf("%s %s \n", single_word, config->root_dir);
             } else {
 
@@ -203,8 +269,8 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
 
     free(StringsArray);
 //    printf("\n%d\n", wrong);
-    if (Assert_nb(wrong == 0, "Something gone wrong in configuration file") == ASS_CRASH) {
-        free(config->root_dir);
+    if (Assert_nb(count_ip == 1 && count_mode == 1 && count_port == 1 && count_root_dir == 1 && wrong == 0, "Something gone wrong in configuration file") == ASS_CRASH ) {
+        //free(config->root_dir);
         exit(1);
     }
     config->used_OPTARG = 0;

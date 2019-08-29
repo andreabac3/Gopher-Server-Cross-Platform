@@ -65,13 +65,13 @@ int start_server(unsigned int port, int queue_size) {
 
     // Create a socket
     fd = socket(PF_INET, SOCK_STREAM, 0);
-    if (fd == -1) return fd;
+    if (fd == -1) return -1;
 
 //    printf("File descriptor for socket is %d\n", fd);
     int opts = 1;
     if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opts, sizeof(opts)) != 0) {
         perror("start_server/setsockopt");
-        exit(-1);
+        return -1;
     }
 
 
@@ -196,13 +196,19 @@ int linux_socket(struct Configs *configs) {
             inet_ntop(AF_INET, &client_addr.sin_addr, clientname, INET_ADDRSTRLEN);
 
             struct ThreadArgs *args = calloc(1, sizeof(struct ThreadArgs));
+            if (args == NULL){
+
+                free(clientname);
+                continue;
+            }
             args->configs = *configs;
             args->ip_client = clientname;
             args->fd = accept_fd;
 
             // QUI VA MULTICORE
             if (run_concurrency(args) < 0) {
-                perror("invalid option");
+                perror("linux_socket.c/linux_socket  unable to run run_concurrency");
+                continue;
             }
 
             printf("%s\n", "Accepted request");
@@ -345,10 +351,11 @@ int getServerIP(){
                 addr = &((struct sockaddr_in *)iface->ifa_addr)->sin_addr;
                 break;
             case AF_INET6:
-                addr = &((struct sockaddr_in6 *)iface->ifa_addr)->sin6_addr;
-                break;
+                continue;
+                // addr = &((struct sockaddr_in6 *)iface->ifa_addr)->sin6_addr;
+                // break;
             default:
-                addr = NULL;
+                continue;
         }
 
         if (addr) {
