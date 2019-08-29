@@ -1,6 +1,3 @@
-//
-// Created by andrea on 23-Jul-19.
-//
 
 #include <afxres.h>
 #include <stdio.h>
@@ -69,7 +66,8 @@ int windows_memory_mapping(int fd_client, char *path) {
     memory_args.buff = pBuf;
     memory_args.fd = fd_client;
     HANDLE thread;
-    if (0 != (thread = CreateThread(NULL, 0, w_sendFile, (PVOID) &memory_args, 0, NULL))) {
+    // if (0 != (thread = CreateThread(NULL, 0, w_sendFile, (PVOID) &memory_args, 0, NULL))) { // old send file
+    if (0 != (thread = CreateThread(NULL, 0, windows_sendFile, (PVOID) &memory_args, 0, NULL))) {
         printf("funziona\n");
     }
     WaitForSingleObject(thread, 0);

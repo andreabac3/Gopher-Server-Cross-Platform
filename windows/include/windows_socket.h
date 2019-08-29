@@ -8,5 +8,6 @@ int windows_socket_runner(struct Configs *configs);
 DWORD WINAPI w_sendFile(PVOID args);
 DWORD WINAPI handle_request(void *params);
 int blackListFile(char *baseDir, char *pathFile, char *black_listed_file);
+DWORD WINAPI windows_sendFile(PVOID args);
 #endif //GOPHERWIN_WINDOWS_SOCKET_H
 
