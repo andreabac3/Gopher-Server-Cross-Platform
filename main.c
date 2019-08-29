@@ -132,6 +132,8 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+
+
     printf("port:%d mode:%d %lu dir:%s\n", configs->port_number, configs->mode_concurrency, strlen(configs->root_dir),
            configs->root_dir);
 
@@ -141,7 +143,7 @@ int main(int argc, char *argv[]) {
 
 #if defined(__unix__) || defined(__APPLE__)
 
-    getServerIP();
+    //getServerIP();
     printf("\n%s IP DEL SERVER\n", ip_buffer);
 
     if(!LOG_WITH_MULTIPLE_PROCESS){
