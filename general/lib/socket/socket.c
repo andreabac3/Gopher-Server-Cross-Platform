@@ -200,7 +200,8 @@ void socket_read_request(struct ThreadArgs *args, char **buf) {
             break;
         }
         ptr += got_bytes;
-        if (ptr>BUFFER_SIZE){
+        if (ptr>=BUFFER_SIZE){
+            printf("%s %d\n", "effettuo il drain", ptr);
             socket_drain_tcp(args->fd);
             break;
         }
