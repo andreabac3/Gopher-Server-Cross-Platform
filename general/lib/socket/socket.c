@@ -185,7 +185,7 @@ void socket_read_request(struct ThreadArgs *args, char **buf) {
     int ptr = 0;
     ssize_t got_bytes = 0;
 
-    *buf = calloc(BUFFER_SIZE+1, sizeof(char));
+    *buf = calloc(BUFFER_SIZE + 1, sizeof(char));
     if (*buf == NULL) {
         clean_request(NULL, NULL, args);
     }
@@ -200,7 +200,7 @@ void socket_read_request(struct ThreadArgs *args, char **buf) {
             break;
         }
         ptr += got_bytes;
-        if (ptr>=BUFFER_SIZE){
+        if (ptr >= BUFFER_SIZE) {
             printf("%s %d\n", "effettuo il drain", ptr);
             socket_drain_tcp(args->fd);
             break;
@@ -210,6 +210,7 @@ void socket_read_request(struct ThreadArgs *args, char **buf) {
         }
     }
 }
+
 void socket_read_request2(struct ThreadArgs *args, char **buf) {
 
     int ptr = 0;
@@ -245,8 +246,26 @@ void socket_read_request2(struct ThreadArgs *args, char **buf) {
 }
 
 
-// TODO controllare errore socket_drain_tcp
 int socket_drain_tcp(int fd_client) {
+    char bufTMP[BUFFER_SIZE];
+    int drain_recv = 0;
+    while (true) {
+        drain_recv = recv(fd_client, bufTMP, BUFFER_SIZE, 0);
+        if (0 > drain_recv) {
+            printf("%d \t %s\n", drain_recv, "gemneric error");
+            return -1;
+        } else if (drain_recv == 0) {
+            break;
+        }
+        if (ut_get_line(bufTMP, drain_recv)) {
+            break;
+        }
+    }
+
+    return 0;
+}
+
+int socket_drain_tcp2(int fd_client) {
     char bufTMP[BUFFER_SIZE];
     int drain_recv = 0;
     while ((drain_recv = recv(fd_client, bufTMP, BUFFER_SIZE, SOCKET_NON_BLOCKING)) > 0) {
