@@ -56,6 +56,7 @@ struct Configs {
     char root_dir[BUFFER_SIZE];
     int used_OPTARG;
     int *reset_config;
+    char* hostname;
 };
 struct Configs *configs;
 #if defined(__unix__) || defined(__APPLE__)
@@ -113,6 +114,7 @@ struct ThreadArgs {
     struct Configs configs;
     char *ip_client;
     int type_Request;
+    char* hostname;
 };
 #endif
 

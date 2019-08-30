@@ -1,13 +1,8 @@
-//
-// Created by andreabacciu on 6/6/19.
-//
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <getopt.h>
 #include <stdbool.h>
-#include <regex.h>
-#include <f2fs_fs.h>
 #include "config_file.h"
 #include "definitions.h"
 #include "utils.h"
@@ -45,31 +40,6 @@ int conf_opts_port_number(char *opt) {
 }
 
 
-int check_ip(const char *ip) {
-    regex_t re;
-
-    int dot_count = 0;
-    int len_ip = fmin(strlen(ip), BUFFER_SIZE - 1);
-    if (len_ip == BUFFER_SIZE - 1) {
-        return REG_NOMATCH;
-    }
-    for (int i = 0; i < len_ip; i++) {
-        if (ip[i] == '.') {
-            dot_count++;
-        }
-    }
-    if (regcomp(&re,
-                "\\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b",
-                REG_EXTENDED | REG_NOSUB) != 0)
-        return -1;
-
-    if (dot_count != 3) {
-        return REG_NOMATCH;
-    }
-    int status = regexec(&re, ip, 0, NULL, 0);
-    regfree(&re);
-    return status;
-}
 
 
 char conf_opts_mode_concurrency(char *opt) {
@@ -119,6 +89,7 @@ int conf_read_opt(int argc, char *argv[], struct Configs *configs) {
     if (ip_buffer[0] == 0) {
         exit(-1);
     }
+    configs->hostname = ip_buffer;
 
     return 0;
 }
@@ -273,6 +244,7 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
         //free(config->root_dir);
         exit(1);
     }
+    configs->hostname = ip_buffer;
     config->used_OPTARG = 0;
 //    printf("\n prima di fare return  -->  %s\n ", config->root_dir);
     return 0;

@@ -70,6 +70,7 @@ int protocol_response(char type, char *filename, char *path, const char *host, i
     } else {
         // Format for directory listening
 
+
         *result = calloc(//result,
                 (1 /*type len*/ + strlen(path) + strlen(filename) + strlen(host) + 6 /*port len*/ +
                  4 /*spaces*/ + 4 /*extra space*/), sizeof(char));
@@ -131,6 +132,7 @@ int print_directory(char *path, int (*socket_send_f)(int, char *), int fd, int p
 
         // get line to send for gopher
         char *response_line;
+        printf("SONO HOSTNAME");
         err = protocol_response(code, filename, fullpath, ip_buffer, port, &response_line);
 
         if (err != 0) {

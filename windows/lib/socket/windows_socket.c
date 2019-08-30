@@ -67,8 +67,8 @@ void run_process(struct ThreadArgs *args, SOCKADDR_IN *clientAddr, SOCKET client
     si.cb = sizeof(si);
 
     char cmd_child[BUFFER_SIZE * 2] = {0};
-    snprintf(cmd_child, BUFFER_SIZE * 2, "%s %d \"%s\" %d", inet_ntoa(clientAddr->sin_addr), configs->port_number,
-             configs->root_dir, configs->mode_concurrency);
+    snprintf(cmd_child, BUFFER_SIZE * 2, "%s %d \"%s\" %d %s", inet_ntoa(clientAddr->sin_addr), configs->port_number,
+             configs->root_dir, configs->mode_concurrency, ip_buffer);
     fprintf(stderr, "cmd child %s\n", cmd_child);
 
     if (FALSE ==

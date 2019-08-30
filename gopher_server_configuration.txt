@@ -1,4 +1,4 @@
 port 7090
-root_dir "/home/andrea/CLionProjects/gopher-project"
+root_dir "C:\Users\Andrea\CLionProjects\gopher-project"
 mode_concurrency Process
 external_ip 1.1.1.1
