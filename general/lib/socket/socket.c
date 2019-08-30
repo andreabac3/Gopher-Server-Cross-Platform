@@ -193,14 +193,24 @@ void socket_read_request(struct ThreadArgs *args, char **buf) {
     while (true) {
         got_bytes = recv(args->fd, *buf + ptr, BUFFER_SIZE - ptr, 0);
         if (0 > got_bytes) {
+            // The receive was interrupted by delivery of a signal before any data were available; see signal(7).
+            if (errno == EINTR) {
+                continue;
+            }
             clean_request(NULL, *buf, args);
         }
+
+        if (0 == ptr &&  0 == got_bytes) {
+            clean_request(NULL, *buf, args);
+        }
+
         if (0 == got_bytes) {
             (*buf)[ptr] = 0; // Terminate string
             break;
         }
         ptr += got_bytes;
         if (ptr >= BUFFER_SIZE) {
+            // clean_request(NULL, *buf, args);
             printf("%s %d\n", "effettuo il drain", ptr);
             socket_drain_tcp(args->fd);
             break;
@@ -252,7 +262,11 @@ int socket_drain_tcp(int fd_client) {
     while (true) {
         drain_recv = recv(fd_client, bufTMP, BUFFER_SIZE, 0);
         if (0 > drain_recv) {
-            printf("%d \t %s\n", drain_recv, "gemneric error");
+            // The receive was interrupted by delivery of a signal before any data were available; see signal(7).
+            if (errno == EINTR) {
+                continue;
+            }
+            printf("%d \t %s\n", drain_recv, "generic error");
             return -1;
         } else if (drain_recv == 0) {
             break;
@@ -261,7 +275,6 @@ int socket_drain_tcp(int fd_client) {
             break;
         }
     }
-
     return 0;
 }
 
