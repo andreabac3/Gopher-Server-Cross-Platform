@@ -17,8 +17,7 @@ long windows_GetFileSize(const TCHAR *fileName) {
         return -1;
 
     fOk = GetFileAttributesEx(fileName, GetFileExInfoStandard, (void *) &fileInfo);
-    if (!fOk)
-        return -1;
+    if (!fOk) return -1;
     assert(0 == fileInfo.nFileSizeHigh);
     return (long) fileInfo.nFileSizeLow;
 }

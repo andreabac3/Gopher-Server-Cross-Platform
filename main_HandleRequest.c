@@ -26,7 +26,7 @@
 
 
 int main(int argc, char *argv[]) {
-    printf("I am handle request.exe, my args are: %s %s %s %s", argv[0], argv[1], argv[2], argv[3]);
+    printf("I am handle request.exe, my args are: %s %s %s %s %s", argv[0], argv[1], argv[2], argv[3], argv[4]);
     struct Configs h_configs;
     h_configs.port_number = atoi(argv[1]);
     h_configs.mode_concurrency = argv[3][0];
@@ -38,7 +38,11 @@ int main(int argc, char *argv[]) {
     struct ThreadArgs h_args;
     h_args.configs = h_configs;
     h_args.ip_client = argv[0];
-
+    h_args.hostname = argv[4];
+    printf("\nSONO ARGV4 %s \n", argv[4]);
+    if (strlen(argv[4]) < BUFFER_SIZE) {
+        strcpy(ip_buffer, argv[4]);
+    }
     PROCESS_INFORMATION pi;
 
     ZeroMemory(&pi, sizeof(pi));

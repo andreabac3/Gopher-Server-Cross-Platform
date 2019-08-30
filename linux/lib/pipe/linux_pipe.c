@@ -331,8 +331,8 @@ int socket_pipe_log_server_single_process(char *path, struct ThreadArgs *args, i
 //    pipeArgs1.ip_client = args->ip_client;
 //    pipeArgs1.dim_file = dim_file_to_send;
     char message[BUFFER_SIZE * 2 + 1] = {0};
-    snprintf(message, BUFFER_SIZE * 2, "FileName: %s\t%d Byte \t IP Client: %s Port: %d", path, dim_file_to_send,
-             args->ip_client, args->configs.port_number);
+    snprintf(message, BUFFER_SIZE * 2, "FileName: %s\t%d Byte \t IP Client: %s \t %s Port: %d", path, dim_file_to_send,
+             args->ip_client, args->configs.hostname, args->configs.port_number);
 
     int n_write = write(fd_pipe_log_write, message, BUFFER_SIZE * 2);
     if (n_write == 0) {

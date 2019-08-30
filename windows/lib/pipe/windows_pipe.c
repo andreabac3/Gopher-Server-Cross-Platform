@@ -109,7 +109,7 @@ int pipe_simple_write_to_pipe(struct PipeArgs *args) {
 
     char message[BUFFER_SIZE * 2] = {0};
     int ret = sprintf(message, "W -> FileName: %s\t%d KByte \t IP Client: %s\t Port: %d \n", args->path,
-            args->dim_file, args->ip_client, args->port);
+            args->dim_file, args->ip_client , args->port);
     if (0 > ret) {
         return -1;
     }
