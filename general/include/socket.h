@@ -17,7 +17,7 @@ FILE *sendFileToClient(int fd);
 
 int fsize(FILE *fp);
 
-void socket_read_request(struct ThreadArgs *args, char **buf);
+int socket_read_request(struct ThreadArgs *args, char **buf);
 
 void socket_resolve_selector(struct ThreadArgs *args, char *buf, char **path);
 

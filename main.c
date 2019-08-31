@@ -84,7 +84,7 @@ void run_in_daemon() {
 
 
 int main(int argc, char *argv[]) {
-
+    DOS_PROTECTION = 0;
     printf("%s\n", "Gopher start ...");
     printf("PID: %d\n", getpid());
 

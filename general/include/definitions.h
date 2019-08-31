@@ -19,7 +19,8 @@
 #define CONNECTION_QUEUE 5000
 #define MAX_CONNECTIONS_ALLOWED 1
 #define BUFFER_SIZE 2048
-
+// DOS_PROTECTION is a switcher used in socket.c, when it is true we close the connection immediately without read the whole message, else we read the entire message and we response with error.
+int DOS_PROTECTION;
 #define SEND_BUFFER_SIZE 512
 char cwd[BUFFER_SIZE];
 #if defined(__unix__) || defined(__APPLE__)
