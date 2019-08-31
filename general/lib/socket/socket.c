@@ -224,6 +224,7 @@ int socket_read_request(struct ThreadArgs *args, char **buf) {
             break;
         }
     }
+    return 0;
 }
 
 void socket_read_request2(struct ThreadArgs *args, char **buf) {
