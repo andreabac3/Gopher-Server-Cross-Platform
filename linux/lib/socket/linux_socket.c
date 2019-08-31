@@ -301,10 +301,10 @@ void *handle_request(void *params) {
     printf("%s\n", "------- new handle request ---------------");
 //    printf("args: %d\n", args->fd);
 
-    socket_read_request(args, &buf); // fill the buffer with the request
+    int ret = socket_read_request(args, &buf); // fill the buffer with the request
 
     socket_resolve_selector(args, buf, &path); // parse the request
-
+    if (ret == -2) socket_send_error_to_client(path, buf, args);
     printf("going to socket_manage_files - full required path: %s \n", path);
     socket_manage_files(path, buf, args); // send response
     printf("going to clean_request exiting handle_request\n");

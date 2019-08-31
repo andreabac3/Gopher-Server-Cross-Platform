@@ -13,6 +13,7 @@
 #include <windows_pipe.h>
 #include <windows_utils.h>
 
+
 #endif
 
 #if defined(__unix__) || defined(__APPLE__)
@@ -34,6 +35,7 @@
 #include "socket.h"
 #include "utils.h"
 #include "files_interaction.h"
+#include "definitions.h"
 
 
 int write_to_log(struct PipeArgs *data);
@@ -180,7 +182,7 @@ void socket_resolve_selector(struct ThreadArgs *args, char *buf, char **path) {
  * */
 
 
-void socket_read_request(struct ThreadArgs *args, char **buf) {
+int socket_read_request(struct ThreadArgs *args, char **buf) {
 
     int ptr = 0;
     ssize_t got_bytes = 0;
@@ -200,7 +202,7 @@ void socket_read_request(struct ThreadArgs *args, char **buf) {
             clean_request(NULL, *buf, args);
         }
 
-        if (0 == ptr &&  0 == got_bytes) {
+        if (0 == ptr &&  0 == got_bytes) { // empty body case
             clean_request(NULL, *buf, args);
         }
 
@@ -210,10 +212,13 @@ void socket_read_request(struct ThreadArgs *args, char **buf) {
         }
         ptr += got_bytes;
         if (ptr >= BUFFER_SIZE) {
-            // clean_request(NULL, *buf, args);
             printf("%s %d\n", "effettuo il drain", ptr);
+
+            // DOS_PROTECTION is a switcher used in socket.c, when it is true we close the connection immediately without read the whole message, else we read the entire message and we response with error.
+            if (DOS_PROTECTION) clean_request(NULL, *buf, args);
             socket_drain_tcp(args->fd);
-            break;
+            return -2;
+            //socket_send_error_to_client();
         }
         if (ut_get_line(*buf, ptr)) {
             break;
