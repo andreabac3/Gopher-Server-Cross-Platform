@@ -310,7 +310,6 @@ void socket_pipe_multiple_process(int *fd_pipe) {
 
 int socket_pipe_log_server_single_process(char *path, struct ThreadArgs *args, int dim_file_to_send, int fd_pipe_log_write) {
 
-    int err;
 //    if ((err = pthread_mutex_lock(sync_pipe_mutex)) != 0) {
 //        fprintf(stderr, "pthread_mutex_lock failed %d %s \n", err, strerror(err));
 //    }
