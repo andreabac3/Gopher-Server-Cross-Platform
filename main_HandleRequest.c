@@ -26,7 +26,7 @@
 
 
 int main(int argc, char *argv[]) {
-    printf("I am handle request.exe, my args are: %s %s %s %s %s", argv[0], argv[1], argv[2], argv[3], argv[4]);
+    printf("I am handle request.exe, my args are: %s %s %s %s %s", argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
     struct Configs h_configs;
     h_configs.port_number = atoi(argv[1]);
     h_configs.mode_concurrency = argv[3][0];
@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
     strcpy(h_configs.root_dir, argv[2]);
     printf("I am handle request.exe, my args are: %s %d %s %d", argv[0], h_configs.port_number, h_configs.root_dir,
            h_configs.mode_concurrency);
-
+    DOS_PROTECTION = atoi(argv[5]);
     struct ThreadArgs h_args;
     h_args.configs = h_configs;
     h_args.ip_client = argv[0];
