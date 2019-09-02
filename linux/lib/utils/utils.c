@@ -1,6 +1,3 @@
-//
-// Created by andreabacciu on 6/6/19.
-//
 
 #include <fcntl.h>
 #include <errno.h>

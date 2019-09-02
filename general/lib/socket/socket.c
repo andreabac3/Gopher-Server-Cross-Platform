@@ -54,7 +54,7 @@ int SendFile(int write_fd, FILE *read_fd) {
         if ((n = fread(buffer, sizeof(char), SEND_BUFFER_SIZE, read_fd)) == -1) {
             return -1;
         }
-        // printf("send_buffer: |%s| %zu %zu\n", buffer, n, strlen(buffer));
+        // log_ut("send_buffer: |%s| %zu %zu\n", buffer, n, strlen(buffer));
         if (send(write_fd, buffer, (size_t) n, 0) == -1) {
             return -2;
         }
@@ -67,7 +67,7 @@ int SendFile(int write_fd, FILE *read_fd) {
 FILE *sendFileToClient(int fd) {
     //FILE *fp = fopen(pathFilename, "rb");
     FILE *fp = fdopen(fd, "rb");
-    printf("sono qui");
+    log_ut("sono qui");
     if (fp == NULL) {
         fprintf(stderr, "Error opening file --> %s", strerror(errno));
         exit(EXIT_FAILURE);
@@ -167,7 +167,7 @@ void clean_request(char *path, char *buf, struct ThreadArgs *args) {
  * Wrapper for protocol.resolve_selector, control errors and clean the request
  * */
 void socket_resolve_selector(struct ThreadArgs *args, char *buf, char **path) {
-    //printf("Selector string: %s\n", buf);
+    //log_ut("Selector string: %s\n", buf);
     //char *path;
     int ret_resolve_relector = resolve_selector(args->configs.root_dir, path, buf);
     if (ret_resolve_relector == NO_FREE) {
@@ -212,7 +212,7 @@ int socket_read_request(struct ThreadArgs *args, char **buf) {
         }
         ptr += got_bytes;
         if (ptr >= BUFFER_SIZE) {
-            printf("%s %d\n", "effettuo il drain", ptr);
+            log_ut("%s %d\n", "effettuo il drain", ptr);
 
             // DOS_PROTECTION is a switcher used in socket.c, when it is true we close the connection immediately without read the whole message, else we read the entire message and we response with error.
             if (DOS_PROTECTION) clean_request(NULL, *buf, args);
@@ -247,7 +247,7 @@ void socket_read_request2(struct ThreadArgs *args, char **buf) {
         (*buf)[ptr] = 0; // Terminate string
     }
 
-    // printf("socket/socket_read_request %d %d |%s|\n", (*buf)[got_bytes - 1], (*buf)[got_bytes - 2], *buf);
+    // log_ut("socket/socket_read_request %d %d |%s|\n", (*buf)[got_bytes - 1], (*buf)[got_bytes - 2], *buf);
 
     for (int i = 2; 0 <= i; i--) {
         if (0 != got_bytes && ((*buf)[got_bytes - i] == '\r' || (*buf)[got_bytes - i] == '\n')) {
@@ -258,7 +258,7 @@ void socket_read_request2(struct ThreadArgs *args, char **buf) {
 
     socket_drain_tcp(args->fd);
 
-    printf("socket/socket_read_request %ld %ld |%s|\n", got_bytes, strlen(*buf), *buf);
+    log_ut("socket/socket_read_request %ld %ld |%s|\n", got_bytes, strlen(*buf), *buf);
 }
 
 
@@ -272,7 +272,7 @@ int socket_drain_tcp(int fd_client) {
             if (errno == EINTR) {
                 continue;
             }
-            printf("%d \t %s\n", drain_recv, "generic error");
+            log_ut("%d \t %s\n", drain_recv, "generic error");
             return -1;
         } else if (drain_recv == 0) {
             break;
@@ -294,7 +294,7 @@ int socket_drain_tcp2(int fd_client) {
 
         if (drain_recv == EAGAIN) {
         } else {
-            printf("%d \t %s\n", drain_recv, "gemneric error");
+            log_ut("%d \t %s\n", drain_recv, "gemneric error");
         }
         return -1;
     }
@@ -303,7 +303,7 @@ int socket_drain_tcp2(int fd_client) {
 
 int socket_send_message(int fd, char *message_string) {
 
-//    printf("socket_send_message: %d, %s", fd, message_string);
+//    log_ut("socket_send_message: %d, %s", fd, message_string);
     int ret = send(fd, message_string, sizeof(char) * strlen(message_string), 0);
     if (0 > ret) {
         perror("socket.c/socket_send_message: send failed");
@@ -319,7 +319,7 @@ int socket_send_error_to_client(char *path, char *buf, struct ThreadArgs *args) 
         clean_request(path, buf, args);
     } else {
 
-        printf("%s", m);
+        log_ut("%s", m);
         //send(args->fd, m, sizeof(char) * strlen(m), 0);
         socket_send_message(args->fd, m);
         if (m != NULL) {
@@ -336,7 +336,7 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
     if (FILES_NOT_EXIST == type_file || type_file == FILES_NOT_PERMITTED) {
         args->type_Request = 1;
 
-        printf("socket_manage_files: Il file non esiste");
+        log_ut("socket_manage_files: Il file non esiste");
 
         socket_send_error_to_client(path, buf, args);
     }
@@ -350,12 +350,12 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         args->type_Request = 1;
 
         // it's a directory
-        printf("%s\n", "Sending Directory");
+        log_ut("%s\n", "Sending Directory");
         // TODO che for exit code of print_directory
         print_directory(path, &socket_send_message, args->fd, args->configs.port_number);
     } else if (FILES_IS_REG_FILE == type_file) { // FILES_IS_FILE
         // it's some kind of files
-        printf("%s\n", "Sending File");
+        log_ut("%s\n", "Sending File");
 
         args->type_Request = 0;
 
@@ -394,7 +394,7 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
 
 
 
-        printf("End createProcess");
+        log_ut("End createProcess");
 #endif
 #if defined(__unix__) || defined(__APPLE__)
 
@@ -405,7 +405,7 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         memory_mapping_args.mode_concurrency = args->configs.mode_concurrency;
         memory_mapping_args.fd = args->fd;
 
-        printf("going to linux_memory_mapping\n");
+        log_ut("going to linux_memory_mapping\n");
         int map_size = linux_memory_mapping((void *) &memory_mapping_args);
 
         if (map_size < 0) {
@@ -430,11 +430,11 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
 int write_to_log(struct PipeArgs *data) {
     FILE *fp_log = fopen("../gopher_log_file.txt", "a");
     if (fp_log == NULL) {
-        printf("%s", "PERCHÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉ");
+        log_ut("%s", "PERCHÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉ");
         return -1;
     }
     fprintf(fp_log, "%s", "ciaoo");
-    printf("sono dentro la funzionee");
+    log_ut("sono dentro la funzionee");
     fclose(fp_log);
 
     return 0;
@@ -471,14 +471,14 @@ int vecchiafork(char *path, char *ip_client, int dim_file_to_send) {
         close(fd_pipe[1]);
     } else if (child == 0) {
         close(fd_pipe[1]);
-        printf("---- child process wrote\n");
+        write_log("---- child process wrote\n");
         //FILE* fp_fileLog = fopen(LOG_PATH, "w");
         int fd_log = open(LOG_PATH, O_WRONLY | O_APPEND);
         //FILE* fp_filelog= fdopen(fd_log, "a");
-        printf("---- child process open\n");
+        write_log("---- child process open\n");
         if (fd_log == -1) {
             //if (fp_fileLog == NULL){
-            printf("sono bloccato");
+            write_log("sono bloccato");
             exit(-1);
         }
         //int n;
@@ -486,29 +486,29 @@ int vecchiafork(char *path, char *ip_client, int dim_file_to_send) {
 
         //ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
         ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
-        printf("%zu", nread);
+        write_log("%zu", nread);
 
 
-        printf("%zu", nread);
+        write_log("%zu", nread);
 
-        printf("---- child process read\n");
+        write_log("---- child process read\n");
 
 
-        //printf("\n sono figlio :-> %s\n", data->ip_client);
-        printf("FileName: %s\n", data.path);
-        printf("%d Byte \n", data.dim_file);
-        printf("IP Client: %s\n", data.ip_client);
+        //write_log("\n sono figlio :-> %s\n", data->ip_client);
+        write_log("FileName: %s\n", data.path);
+        write_log("%d Byte \n", data.dim_file);
+        log_ut("IP Client: %s\n", data.ip_client);
 
-         dprintf(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data.path, data.dim_file,
+         dwrite_log(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data.path, data.dim_file,
                                data.ip_client);
-        //int err = fprintf(fp_filelog, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);
-        perror("dprintf");
+        //int err = fwrite_log(fp_filelog, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);
+        perror("dwrite_log");
         //write(fd_log, "cia", sizeof("cia"));
 
-        //printf("SONO N %d \n", n);
+        //write_log("SONO N %d \n", n);
         close(fd_pipe[0]);
 
-        printf("---- child process close\n");
+        write_log("---- child process close\n");
         exit(0);
     }
     return 0;

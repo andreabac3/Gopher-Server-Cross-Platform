@@ -29,14 +29,14 @@ int socket_pipe_log_child(char *path, struct ThreadArgs *args, int dim_file_to_s
 
 int socket_pipe_log_father(int fd_pipe_log[]) {
     close(fd_pipe_log[1]);
-    printf("---- pid_log process wrote\n");
+    log_ut("---- pid_log process wrote\n");
     //FILE* fp_fileLog = fopen(LOG_PATH, "w");
     int fd_log = open(LOG_PATH, O_WRONLY | O_APPEND);
     //FILE* fp_filelog= fdopen(fd_log, "a");
-    printf("---- pid_log process open\n");
+    log_ut("---- pid_log process open\n");
     if (fd_log == -1) {
         //if (fp_fileLog == NULL){
-        printf("sono bloccato");
+        log_ut("sono bloccato");
         exit(-1);
     }
     //int n;
@@ -45,29 +45,30 @@ int socket_pipe_log_father(int fd_pipe_log[]) {
 
     //ssize_t nread = read(fd_pipe_log[0], &data, sizeof(data));
     ssize_t nread = read(fd_pipe_log[0], &message, sizeof(message));
-    printf("%zu", nread);
+    log_ut("%zu", nread);
 
 
-    printf("%zu", nread);
+    log_ut("%zu", nread);
 
-    printf("---- pid_log process read\n");
+    log_ut("---- pid_log process read\n");
 
 
-//    //printf("\n sono figlio :-> %s\n", data->ip_client);
-//    printf("FileName: %s\n", data.path);
-//    printf("%d Byte \n", data.dim_file);
-//    printf("IP Client: %s\n", data.ip_client);
+//    //log_ut("\n sono figlio :-> %s\n", data->ip_client);
+//    log_ut("FileName: %s\n", data.path);
+//    log_ut("%d Byte \n", data.dim_file);
+//    log_ut("IP Client: %s\n", data.ip_client);
 
 //    dprintf(fd_log, "FileName: %s\t%d Byte \t IP Client: %s\n", data.path, data.dim_file, data.ip_client);
     // int err = fprintf(fp_filelog, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);
-    dprintf(fd_log, "L -> %s", message);
-    perror("dprintf");
+    if(0 > dprintf(fd_log, "L -> %s", message)){
+        perror("dprintf");
+    }
     //write(fd_log, "cia", sizeof("cia"));
 
-    //printf("SONO N %d \n", n);
+    //log_ut("SONO N %d \n", n);
     close(fd_pipe_log[0]);
 
-    printf("---- pid_log process close\n");
+    log_ut("---- pid_log process close\n");
     return 0;
 }
 
@@ -117,15 +118,15 @@ int socket_pipe_log_server(char *path, struct ThreadArgs *args, int dim_file_to_
     if (n_write < 0) {
         perror("socket_pipe_log_server - error on pipe");
     }
-    printf("socket_pipe_log_server write on pipe %d\n", n_write);
+    log_ut("socket_pipe_log_server write on pipe %d\n", n_write);
     //close(fd_pipe_log[1]);
 
-    //printf("SONO N %d \n", n);
+    //log_ut("SONO N %d \n", n);
     if (pthread_cond_signal(condition) != 0) {
         perror("pthread_cond_signal faild");
     }
     pthread_mutex_unlock(mutex);
-    fprintf(stderr, "socket_pipe_log_server/pthread_cond_signal and pthread_mutex_unlock made");
+    vlog_ut(2, "socket_pipe_log_server/pthread_cond_signal and pthread_mutex_unlock made\n");
     return 0;
 }
 
@@ -213,29 +214,29 @@ void socket_pipe_multiple_process(int *fd_pipe) {
         close(fd_sync_pipe[PIPE_WRITE]);
         char r = '0';
         int nread = read(fd_sync_pipe[PIPE_READ], &r, sizeof(char));
-        printf("read done\n");
+        log_ut("read done\n");
         if (0 > nread) {
             perror("linux_pipe.c/socket_pipe_multiple_process -> nread global_fd_sync_pipe parent failed");
         }
         close(fd_sync_pipe[PIPE_READ]);
     } else {
         int first_time = true;
-        printf("FIGLIO È PARTITO IN ATTESA SULLA COND VARIABLE\n");
+        log_ut("FIGLIO È PARTITO IN ATTESA SULLA COND VARIABLE\n");
         close(fd_pipe[PIPE_WRITE]);
         close(fd_sync_pipe[PIPE_READ]);
 
 
-        printf("RISETTO TUTTE LE CONDIZIONI DA CAPO\n");
+        log_ut("RISETTO TUTTE LE CONDIZIONI DA CAPO\n");
 
         if ((err = pthread_mutex_lock(mutex)) != 0) {
             fprintf(stderr, "pthread_mutex_lock failed %d %s \n", err, strerror(err));
         }
-        printf("pthread_mutex_lock\n");
+        log_ut("pthread_mutex_lock\n");
 
         if (first_time) {
             char r = '1';
             int nwrite = write(fd_sync_pipe[PIPE_WRITE], &r, sizeof(char));
-            printf("write done\n");
+            log_ut("write done\n");
             if (nwrite < 0) {
                 perror("linux_pipe.c/socket_pipe_multiple_process -> nwrite global_fd_sync_pipe child failed");
             }
@@ -243,55 +244,57 @@ void socket_pipe_multiple_process(int *fd_pipe) {
             close(fd_sync_pipe[PIPE_WRITE]);
         }
 
-        printf("child wait\n");
+        log_ut("child wait\n");
 
         if (pthread_cond_wait(condition, mutex) != 0) {
             perror("pthread_cond_wait failed");
         }
-        printf("pthread_cond_wait \n");
+        log_ut("pthread_cond_wait \n");
 
 
-        printf("Signaled by PARENT process, wake up!!!!!!!!\n");
+        log_ut("Signaled by PARENT process, wake up!!!!!!!!\n");
 
         // TODO INSERT CONDITION VARIABLE and while true
-        printf("---- child process wrote\n");
+        log_ut("---- child process wrote\n");
         //FILE* fp_fileLog = fopen(LOG_PATH, "w");
 
         int fd_log = open(LOG_PATH, O_WRONLY | O_APPEND);
         //FILE* fp_filelog= fdopen(fd_log, "a");
-        printf("---- child process open\n");
+        log_ut("---- child process open\n");
         if (fd_log == -1) {
             //if (fp_fileLog == NULL){
-            printf("sono bloccato");
+            log_ut("sono bloccato");
 
             exit(-1);
         }
         //int n;
-        fprintf(stderr, "%s\n", "sono debug3");
-        printf("BOOOOOOL : %d", fd_is_valid(fd_pipe[0]));
+        vlog_ut(4, "%s\n", "sono debug3");
+        log_ut("BOOOOOOL : %d", fd_is_valid(fd_pipe[0]));
 
         char message[BUFFER_SIZE * 2] = {0};
         ssize_t nread = read(fd_pipe[0], message, BUFFER_SIZE * 2);
         // ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
-        // printf("%zu", nread);
-        fprintf(stderr, "%s %zu\n", "read riuscito -> sono debug", nread);
+        // log_ut("%zu", nread);
+        vlog_ut(4, "%s %zu\n", "read riuscito -> sono debug", nread);
 
 
-        printf("---- child process read\n");
+        log_ut("---- child process read\n");
 
-        dprintf(fd_log, "Byte %s\n", message);
+        if (0 > dprintf(fd_log, "Byte %s\n", message)){
+            perror("dprintf");
+        }
+
         //dprintf(fd_log, "<%s>\n", "bho");
 
         //int err = fprintf(fp_filelog, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);
-        perror("dprintf");
         //write(fd_log, "cia", sizeof("cia"));
 
-        //printf("SONO N %d \n", n);
+        //log_ut("SONO N %d \n", n);
         if (pthread_mutex_unlock(mutex) != 0) {
             perror("pthread_mutex_unlock failed");
         }
 
-        printf("---- child process close\n");
+        log_ut("---- child process close\n");
 
 
         pthread_condattr_destroy(&condAttr);
@@ -316,13 +319,13 @@ int socket_pipe_log_server_single_process(char *path, struct ThreadArgs *args, i
 
     char r = '0';
     int nread = read(global_fd_sync_pipe[PIPE_READ], &r, sizeof(char));
-    printf("read done\n");
+    log_ut("read done\n");
     if (0 > nread) {
         perror("linux_pipe.c/socket_pipe_multiple_process -> nread global_fd_sync_pipe parent failed");
     }
 
     pthread_mutex_lock(mutex);
-    printf("Server in mutex\n");
+    log_ut("Server in mutex\n");
 
 
 //    struct PipeArgs pipeArgs1;
@@ -340,15 +343,15 @@ int socket_pipe_log_server_single_process(char *path, struct ThreadArgs *args, i
     if (n_write < 0) {
         perror("socket_pipe_log_server - error on pipe");
     }
-    printf("socket_pipe_log_server write on pipe %d\n", n_write);
+    log_ut("socket_pipe_log_server write on pipe %d\n", n_write);
     //close(fd_pipe_log[1]);
 
-    //printf("SONO N %d \n", n);
+    //log_ut("SONO N %d \n", n);
     if (pthread_cond_signal(condition) != 0) {
         perror("pthread_cond_signal faild");
     }
     pthread_mutex_unlock(mutex);
-    fprintf(stderr, "socket_pipe_log_server/pthread_cond_signal and pthread_mutex_unlock made");
+    vlog_ut(3, "socket_pipe_log_server/pthread_cond_signal and pthread_mutex_unlock made");
 
 //    if ((err = pthread_mutex_unlock(sync_pipe_mutex)) != 0) {
 //        fprintf(stderr, "pthread_mutex_unlock failed %d %s \n", err, strerror(err));
@@ -476,29 +479,29 @@ void socket_pipe_single_process(int *fd_pipe) {
         /*
         char r = '0';
         int nread = read(global_fd_sync_pipe[PIPE_READ], &r, sizeof(char));
-        printf("read done\n");
+        log_ut("read done\n");
         if (0 > nread) {
             perror("linux_pipe.c/socket_pipe_multiple_process -> nread global_fd_sync_pipe parent failed");
         }
         close(global_fd_sync_pipe[PIPE_READ]);
          */
     } else {
-        printf("FIGLIO È PARTITO IN ATTESA SULLA COND VARIABLE\n");
+        log_ut("FIGLIO È PARTITO IN ATTESA SULLA COND VARIABLE\n");
         close(fd_pipe[PIPE_WRITE]);
         close(global_fd_sync_pipe[PIPE_READ]);
 
         while(true) {
-            printf("RISETTO TUTTE LE CONDIZIONI DA CAPO\n");
+            log_ut("RISETTO TUTTE LE CONDIZIONI DA CAPO\n");
 
             if ((err = pthread_mutex_lock(mutex)) != 0) {
                 fprintf(stderr, "pthread_mutex_lock failed %d %s \n", err, strerror(err));
             }
-            printf("pthread_mutex_lock\n");
+            log_ut("pthread_mutex_lock\n");
 
             //if (first_time) {
                 char r = '1';
                 int nwrite = write(global_fd_sync_pipe[PIPE_WRITE], &r, sizeof(char));
-                printf("write done\n");
+            log_ut("write done\n");
                 if (nwrite < 0) {
                     perror("linux_pipe.c/socket_pipe_multiple_process -> nwrite global_fd_sync_pipe child failed");
                 }
@@ -506,55 +509,56 @@ void socket_pipe_single_process(int *fd_pipe) {
                 //close(global_fd_sync_pipe[PIPE_WRITE]);
             //}
 
-            printf("child wait\n");
+            log_ut("child wait\n");
 
             if (pthread_cond_wait(condition, mutex) != 0) {
                 perror("pthread_cond_wait failed");
             }
-            printf("pthread_cond_wait \n");
+            log_ut("pthread_cond_wait \n");
 
 
-            printf("Signaled by PARENT process, wake up!!!!!!!!\n");
+            log_ut("Signaled by PARENT process, wake up!!!!!!!!\n");
 
             // TODO INSERT CONDITION VARIABLE and while true
-            printf("---- child process wrote\n");
+            log_ut("---- child process wrote\n");
             //FILE* fp_fileLog = fopen(LOG_PATH, "w");
 
             int fd_log = open(LOG_PATH, O_WRONLY | O_APPEND);
             //FILE* fp_filelog= fdopen(fd_log, "a");
-            printf("---- child process open\n");
+            log_ut("---- child process open\n");
             if (fd_log == -1) {
                 //if (fp_fileLog == NULL){
-                printf("sono bloccato");
+                log_ut("sono bloccato");
 
                 exit(-1);
             }
             //int n;
-            fprintf(stderr, "%s\n", "sono debug3");
-            printf("BOOOOOOL : %d", fd_is_valid(fd_pipe[0]));
+            vlog_ut(4, "%s\n", "sono debug3");
+            log_ut("BOOOOOOL : %d", fd_is_valid(fd_pipe[0]));
 
             char message[BUFFER_SIZE * 2] = {0};
             ssize_t nread = read(fd_pipe[0], message, BUFFER_SIZE * 2);
             // ssize_t nread = read(fd_pipe[0], &data, sizeof(data));
-            // printf("%zu", nread);
-            fprintf(stderr, "%s %zu\n", "read riuscito -> sono debug", nread);
+            // log_ut("%zu", nread);
+            vlog_ut(3, "%s %zu\n", "read riuscito -> sono debug", nread);
 
 
-            printf("---- child process read\n");
+            log_ut("---- child process read\n");
 
-            dprintf(fd_log, "L->  %s\n", message);
+            if(0 > dprintf(fd_log, "L->  %s\n", message)){
+                perror("dprintf");
+            }
             //dprintf(fd_log, "<%s>\n", "bho");
 
             //int err = fprintf(fp_filelog, "FileName: %s\t%d Byte \t IP Client: %s\n", data->path, data->dim_file, data->ip_client);
-            perror("dprintf");
             //write(fd_log, "cia", sizeof("cia"));
 
-            //printf("SONO N %d \n", n);
+            //log_ut("SONO N %d \n", n);
             if (pthread_mutex_unlock(mutex) != 0) {
                 perror("pthread_mutex_unlock failed");
             }
 
-            printf("---- child process close\n");
+            log_ut("---- child process close\n");
         }
 
 
@@ -599,7 +603,7 @@ int socket_pipe_log_server(char *path, struct ThreadArgs *args, int dim_file_to_
     printf("socket_pipe_log_server write on pipe %d\n", n_write);
     //close(fd_pipe_log[1]);
 
-    //printf("SONO N %d \n", n);
+    //log_ut("SONO N %d \n", n);
     if(pthread_cond_signal(condition) != 0){
         perror("pthread_cond_signal faild");
     }
@@ -709,7 +713,7 @@ void socket_pipe_new_process3() {
         pthread_cond_wait(condition, mutex);
         pthread_mutex_unlock(mutex);
 
-        printf("Signaled by son process, wake up!!!!!!!!\n");
+        log_ut("Signaled by son process, wake up!!!!!!!!\n");
 
         pthread_condattr_destroy(&condAttr);
         pthread_mutexattr_destroy(&mutexAttr);

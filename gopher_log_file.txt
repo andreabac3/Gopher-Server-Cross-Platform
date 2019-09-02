@@ -1,91 +1,52 @@
-W -> FileName: C:\Projects\gopher3\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1
-W -> FileName: C:\Projects\gopher3\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1
-W -> FileName: C:\Projects\gopher3\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1
-W -> FileName: C:\Projects\gopher3\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
-W -> FileName: C:\Projects\gopher3\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
-W -> FileName: C:\Projects\gopher3\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
-W -> FileName: C:\Projects\gopher3\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
-W -> FileName: C:\Projects\gopher3\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
-W -> FileName: C:\Projects\gopher3\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
-W -> FileName: C:\Projects\gopher3\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 7070 
- 49 W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 7070 
- 49 W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
-W -> FileName: C:\Projects\gopher3\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
-W -> FileName: C:\Projects\gopher3\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
-W -> FileName: C:\Projects\gopher3\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1	 Port: 7071 
-W -> FileName: C:\Projects\gopher3\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1	 Port: 7071 
-W -> FileName: C:\Projects\gopher3\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
-W -> FileName: C:\Projects\gopher3\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
-W -> FileName: C:\Projects\gopher3\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1	 Port: 7071 
-W -> FileName: C:\Projects\gopher3\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1	 Port: 7071 
-W -> FileName: C:\Projects\gopher3\gopher-project\/README.md	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
-W -> FileName: C:\Projects\gopher3\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
-W -> FileName: C:\Projects\gopher3\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 7071 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 9090 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 9090 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 9090 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 8080 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 8080 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 8080 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 127.0.0.1	 Port: 7070 
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-L->  FileName: /home/andrea/CLionProjects/gopher-project/main.c	4061 Byte 	 IP Client: 77.39.168.75 Port: 7090
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 77.39.168.75	 Port: 7090 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 77.39.168.75	 Port: 7090 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 77.39.168.75	 1.1.1.1 	 Port: 7090 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 77.39.168.75	 Port: 7090 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 77.39.168.75	 Port: 7090 
-W -> FileName: C:\Users\Andrea\CLionProjects\gopher-project\/main.c	4 KByte 	 IP Client: 77.39.168.75	 Port: 7090 
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/io/linux_files_interaction.c	712 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/utils/utils.c	187 Byte 	 IP Client: 127.0.0.1 	 1.1.1.1 Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/utils/utils.c	187 Byte 	 IP Client: 127.0.0.1 	 cloud.valerioneri.com Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/linux/lib/utils/utils.c	187 Byte 	 IP Client: 127.0.0.1 	 cloud.valerioneri.com Port: 7090
+L->  FileName: /opt/local_projects/gopher-project/main.c	5041 Byte 	 IP Client: 127.0.0.1 	 cloud.valerioneri.com Port: 7080
+L->  FileName: /opt/local_projects/gopher-project/main.c	5041 Byte 	 IP Client: 127.0.0.1 	 cloud.valerioneri.com Port: 7080
+L->  FileName: /opt/local_projects/gopher-project/main.c	5041 Byte 	 IP Client: 127.0.0.1 	 cloud.valerioneri.com Port: 7080
+L->  FileName: /opt/local_projects/gopher-project/main.c	5041 Byte 	 IP Client: 127.0.0.1 	 cloud.valerioneri.com Port: 7080
+L->  FileName: /opt/local_projects/gopher-project/main.c	5041 Byte 	 IP Client: 127.0.0.1 	 cloud.valerioneri.com Port: 7080
+L->  FileName: /opt/local_projects/gopher-project/main.c	5041 Byte 	 IP Client: 127.0.0.1 	 cloud.valerioneri.com Port: 7080
+L->  FileName: /opt/local_projects/gopher-project/main.c	5041 Byte 	 IP Client: 127.0.0.1 	 cloud.valerioneri.com Port: 7080
+L->  FileName: /opt/local_projects/gopher-project/main.c	5041 Byte 	 IP Client: 127.0.0.1 	 cloud.valerioneri.com Port: 7080
+L->  FileName: /opt/local_projects/gopher-project/windows/keep.sh	172 Byte 	 IP Client: 127.0.0.1 	 cloud.valerioneri.com Port: 7080
+L->  FileName: /opt/local_projects/gopher-project/windows/keep.sh	172 Byte 	 IP Client: 127.0.0.1 	 cloud.valerioneri.com Port: 7080
+L->  FileName: /opt/local_projects/gopher-project/windows/keep.sh	172 Byte 	 IP Client: 127.0.0.1 	 cloud.valerioneri.com Port: 7080
+L->  FileName: /opt/local_projects/gopher-project/windows/keep.sh	172 Byte 	 IP Client: 127.0.0.1 	 cloud.valerioneri.com Port: 7080

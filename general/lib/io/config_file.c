@@ -134,7 +134,7 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
 
     char buff[FILENAME_MAX];
     GetCurrentDir(buff, FILENAME_MAX);
-    //printf("%s", buff);
+    //log_ut("%s", buff);
 
 
     Assert((fp = fopen(path, "r")) != NULL, "error: configuration file open failed");
@@ -177,12 +177,12 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
 
     // for all lines
 //    for (int j = 0; j < idx; j++) {
-//        printf("%s", StringsArray[j]);
+//        log_ut("%s", StringsArray[j]);
 //    }
     for (it = 0; it < idx; it++) {
         // name of the option
         single_word = ut_strtok(StringsArray[it], " ", &saveptr1);
-//        printf("\n singleword->  %s \n", single_word);
+//        log_ut("\n singleword->  %s \n", single_word);
         // option value evaluation
         if (single_word != NULL) {
 
@@ -210,14 +210,14 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
                 //config->root_dir = calloc(sizeof(char), strlen(single_word) + 1);
                 strncpy(config->root_dir, single_word, BUFFER_SIZE);
 
-//                printf("%s %s \n", single_word, config->root_dir);
+//                log_ut("%s %s \n", single_word, config->root_dir);
             } else if (strcmp(external_ip, single_word) == 0) {
                 count_ip++;
                 // if the option is root_dir
                 single_word = ut_strtok(NULL, "\"", &saveptr1);
                 wrong |= (unsigned) Assert_nb(single_word != NULL, "Missing ip value");
                 //config->root_dir = calloc(sizeof(char), strlen(single_word) + 1);
-                printf("%s", single_word);
+                log_ut("%s", single_word);
                 //wrong |= (unsigned) Assert_nb(REG_NOMATCH !=  check_ip(single_word), "Wrong ip value");
                 if (strlen(single_word) > BUFFER_SIZE - 1) {
                     wrong |= 1;
@@ -225,7 +225,7 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
                 } else {
                     strncpy(ip_buffer, single_word, BUFFER_SIZE - 1);
                 }
-//                printf("%s %s \n", single_word, config->root_dir);
+//                log_ut("%s %s \n", single_word, config->root_dir);
             } else {
 
                 // if the option is unknown (Error)
@@ -242,14 +242,14 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
         free(StringsArray[it]);
 
     free(StringsArray);
-//    printf("\n%d\n", wrong);
+//    log_ut("\n%d\n", wrong);
     if (Assert_nb(count_ip == 1 && count_mode == 1 && count_port == 1 && count_root_dir == 1 && wrong == 0, "Something gone wrong in configuration file") == ASS_CRASH ) {
         //free(config->root_dir);
         exit(1);
     }
     configs->hostname = ip_buffer;
     config->used_OPTARG = 0;
-//    printf("\n prima di fare return  -->  %s\n ", config->root_dir);
+//    log_ut("\n prima di fare return  -->  %s\n ", config->root_dir);
     return 0;
 
 }

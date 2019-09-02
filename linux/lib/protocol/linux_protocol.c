@@ -28,7 +28,7 @@ char check_subtype(char *arg) {
     if (!result)
         return -1;
 
-//    printf("Dict Result: %c\n", result->n);
+//    log_ut("Dict Result: %c\n", result->n);
     return result->n;
 }
 
@@ -47,7 +47,7 @@ char check_type(char *arg) {
     if (!result)
         return -1;
 
-//    printf("Dict Result: %d\n", result->n);
+//    log_ut("Dict Result: %d\n", result->n);
     return result->n;
 }
 
@@ -69,7 +69,7 @@ char getGopherCode(char* path){
         return -1;
     }
 
-//    printf("Exit code: %d\n", pclose(fp)/256);
+//    log_ut("Exit code: %d\n", pclose(fp)/256);
 
     char *mime_type = NULL;
     size_t len = 0;
@@ -83,7 +83,7 @@ char getGopherCode(char* path){
     }
 
     char *file_not_found_respond = "cannot open `non-existing-file'";
-//    printf("!!cmp:%s %d!!\n", mime_type, strncmp(file_not_found_respond, mime_type, strlen(file_not_found_respond)));
+//    log_ut("!!cmp:%s %d!!\n", mime_type, strncmp(file_not_found_respond, mime_type, strlen(file_not_found_respond)));
     if (strncmp(file_not_found_respond, mime_type, strlen(file_not_found_respond)) == 0) {
         return -3;
     }
@@ -91,7 +91,7 @@ char getGopherCode(char* path){
     type = strtok_r(mime_type, "/", &strtok_ptr);
     subtype = strtok_r(NULL, "\n", &strtok_ptr);
 
-//    printf("Code: %s | %s\n", type, subtype);
+//    log_ut("Code: %s | %s\n", type, subtype);
 
 //    struct_test("kill", dict);
 
@@ -101,7 +101,7 @@ char getGopherCode(char* path){
         }
     }
 
-    printf("GopherCode: %c\n", gopher_code);
+    log_ut("GopherCode: %c\n", gopher_code);
 
     free(mime_type); // ?
     free(command);
