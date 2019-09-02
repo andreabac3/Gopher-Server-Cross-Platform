@@ -212,11 +212,14 @@ int socket_read_request(struct ThreadArgs *args, char **buf) {
         }
         ptr += got_bytes;
         if (ptr >= BUFFER_SIZE) {
-            log_ut("%s %d\n", "effettuo il drain", ptr);
 
             // DOS_PROTECTION is a switcher used in socket.c, when it is true we close the connection immediately without read the whole message, else we read the entire message and we response with error.
-            if (DOS_PROTECTION) clean_request(NULL, *buf, args);
-            socket_drain_tcp(args->fd);
+            vlog_ut(1, "Dos Protection %d\n", DOS_PROTECTION);
+            args->type_Request = 1;
+            //clean_request(NULL, *buf, args);
+
+            if (!DOS_PROTECTION)
+                socket_drain_tcp(args->fd);
             return -2;
             //socket_send_error_to_client();
         }

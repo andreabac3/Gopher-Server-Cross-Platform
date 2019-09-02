@@ -304,7 +304,7 @@ void *handle_request(void *params) {
     int ret = socket_read_request(args, &buf); // fill the buffer with the request
 
     socket_resolve_selector(args, buf, &path); // parse the request
-    if (ret == -2) socket_send_error_to_client(path, buf, args);
+    if (ret == -2) socket_send_too_long_error_to_client(path, buf, args);
     log_ut("going to socket_manage_files - full required path: %s \n", path);
     socket_manage_files(path, buf, args); // send response
     log_ut("going to clean_request exiting handle_request\n");
