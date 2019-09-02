@@ -15,7 +15,7 @@ void signal_sighup_handler(int signo){
         /*printf("received SIGINT\n");
         printf("prima del sig: %d\n", configs->port_number);
         conf_parseConfigFile("../gopher_server_configuration.txt", configs);
-        printf("dopo il sig: %d\n", configs->port_number);*/
+        log_ut("dopo il sig: %d\n", configs->port_number);*/
         int flagOne=1;
         (*configs).reset_config = &flagOne;
 

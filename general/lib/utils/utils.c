@@ -9,6 +9,8 @@
 #include <zconf.h>
 
 //#include "gopher_server_configuration_linux.h"
+#include <stdarg.h>
+#include "definitions.h"
 
 #endif
 #ifdef __cplusplus
@@ -25,7 +27,7 @@ using namespace std;
 #endif
 void help() {
     char *helpString = "";
-    printf("%s\n", helpString);
+    log_ut("%s\n", helpString);
 }
 
 /*
@@ -181,7 +183,7 @@ void ut_clone_configs(struct Configs *c, struct Configs *n) {
    configs->root_dir = "alterata";
 
    printf("struct n: port:%d mode:%d dir:%s\n", n->port_number, n->mode_concurrency, n->root_dir);
-   printf("struct c: port:%d mode:%d dir:%s\n", configs->port_number, configs->mode_concurrency, configs->root_dir);
+   log_ut("struct c: port:%d mode:%d dir:%s\n", configs->port_number, configs->mode_concurrency, configs->root_dir);
    */
 
 }
@@ -189,9 +191,31 @@ void ut_clone_configs(struct Configs *c, struct Configs *n) {
 
 void ut_get_cwd(){
     if (getcwd(cwd, sizeof(cwd)) != NULL) {
-        printf("Current working dir: %s\n", cwd);
+        log_ut("Current working dir: %s\n", cwd);
     } else {
         perror("getcwd() error");
         exit(-2);
     }
+}
+
+int vlog_ut(int verbose, const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+
+    if(verbose <= VERBOSE_LEVEL)
+        vprintf(format, args);
+
+    va_end(args);
+}
+
+int log_ut(/*int priority, */const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+
+    if(3 <= VERBOSE_LEVEL)
+        vprintf(format, args);
+
+    va_end(args);
 }

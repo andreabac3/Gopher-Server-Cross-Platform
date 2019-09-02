@@ -29,6 +29,7 @@
 #include "linux_socket.h"
 #include "linux_files_interaction.h"
 #include "files_interaction.h"
+#include "utils.h"
 
 void close_mutex() {
     if (configs->mode_concurrency == M_THREAD) {
@@ -41,7 +42,7 @@ void close_mutex() {
 void start_mutex() {
 
     if (configs->mode_concurrency == M_THREAD) {
-        printf("pthread_mutex_init/Lock setted \n");
+        log_ut("pthread_mutex_init/Lock setted \n");
         if (pthread_mutex_init(&p_mutex, NULL) != 0) {
             perror("pthread_mutex_init");
         }
@@ -67,7 +68,7 @@ int start_server(unsigned int port, int queue_size) {
     fd = socket(PF_INET, SOCK_STREAM, 0);
     if (fd == -1) return -1;
 
-//    printf("File descriptor for socket is %d\n", fd);
+//    log_ut("File descriptor for socket is %d\n", fd);
     int opts = 1;
     if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opts, sizeof(opts)) != 0) {
         perror("start_server/setsockopt");
@@ -83,7 +84,7 @@ int start_server(unsigned int port, int queue_size) {
     // todo perche la dimensione e diversa?
     if (bind(fd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0)
         return -1;
-    printf("Socket bound to port %d\n", port);
+    log_ut("Socket bound to port %d\n", port);
 
     // Make it a listening socket
     if (listen(fd, queue_size) == -1) {
@@ -101,7 +102,7 @@ int run_concurrency(struct ThreadArgs *args) {
         pthread_attr_init(&attr);
         pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);*/
         if ((pthread_create(&thread, NULL, handle_request_thread, (void *) args)) != 0) {
-            // printf("%s\n", "Could not create thread, continue non-threaded...");
+            // log_ut("%s\n", "Could not create thread, continue non-threaded...");
             perror("Could not create thread");
             return -1;
             // handle_request(req_fd);
@@ -134,7 +135,7 @@ int run_concurrency(struct ThreadArgs *args) {
 int linux_socket(struct Configs *configs) {
     fd_set rset;
     int n_ready;
-    printf("%s\n", "Starting gopher server");
+    vlog_ut(1, "%s\n", "Starting gopher server");
     int fd_server;
     if ((fd_server = start_server(configs->port_number, CONNECTION_QUEUE)) < 0) {
         perror(NULL);
@@ -145,7 +146,7 @@ int linux_socket(struct Configs *configs) {
     // Accept connections, blocking
     int accept_fd;
 
-//    printf("%s\n", "Going to acceptance");
+//    log_ut("%s\n", "Going to acceptance");
     struct sockaddr_in client_addr;
     socklen_t slen = sizeof(client_addr);
 
@@ -157,15 +158,14 @@ int linux_socket(struct Configs *configs) {
     for (;;) {
         FD_SET(fd_server, &rset);
 
-        printf("sono qui\n");
+        log_ut("sono qui\n");
 
 
         if ((n_ready = select(maxfdp1, &rset, NULL, NULL, NULL)) < 0) {
             if (errno == EINTR) {
                 if (configs->reset_config != NULL) {
                     //end_server(fd_server);
-                    printf("sono qua dentro\n");
-                    printf("Reset configs\n");
+                    vlog_ut(1, "Reset configs\n");
                     end_server(fd_server);
                     return -1;
                 }
@@ -211,7 +211,7 @@ int linux_socket(struct Configs *configs) {
                 continue;
             }
 
-            printf("%s\n", "Accepted request");
+            vlog_ut(1, "%s\n", "Accepted request");
 
         }
 
@@ -222,7 +222,7 @@ int linux_socket(struct Configs *configs) {
         perror(NULL);
         return EXIT_FAILURE;
     }
-    printf("%s\n", "Socket released");
+    log_ut("%s\n", "Socket released");
     return EXIT_SUCCESS;
 }
 
@@ -298,16 +298,16 @@ void *handle_request(void *params) {
     struct ThreadArgs *args;
     args = (struct ThreadArgs *) params;
 
-    printf("%s\n", "------- new handle request ---------------");
-//    printf("args: %d\n", args->fd);
+    log_ut("%s\n", "------- new handle request ---------------");
+//    log_ut("args: %d\n", args->fd);
 
     int ret = socket_read_request(args, &buf); // fill the buffer with the request
 
     socket_resolve_selector(args, buf, &path); // parse the request
     if (ret == -2) socket_send_error_to_client(path, buf, args);
-    printf("going to socket_manage_files - full required path: %s \n", path);
+    log_ut("going to socket_manage_files - full required path: %s \n", path);
     socket_manage_files(path, buf, args); // send response
-    printf("going to clean_request exiting handle_request\n");
+    log_ut("going to clean_request exiting handle_request\n");
     clean_request(path, buf, args);
     return 0;
     //return 0;
@@ -364,7 +364,7 @@ int getServerIP(){
                 continue;
             }
             if ((strncmp(iface->ifa_name, "docker", strlen("docker")) != 0  &&  addrp[3] == '.' && strncmp(addrp, "127.0", strlen("127.0")) != 0 ) ){
-                printf("Interface %s has address %s\n", iface->ifa_name, addrp);
+                log_ut("Interface %s has address %s\n", iface->ifa_name, addrp);
                 strncpy(ip_buffer, addrp, BUFFER_SIZE-1);
                 ip_buffer[BUFFER_SIZE] = '\0';
                 break;

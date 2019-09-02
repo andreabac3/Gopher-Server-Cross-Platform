@@ -80,7 +80,7 @@ int protocol_response(char type, char *filename, char *path, const char *host, i
         if (sprintf(*result, "%c%s\t%s\t%s\t%d\n", type, filename, path, host, port) < 0) {
             return NEED_TO_FREE;
         }
-        printf("protocol_response/result %s\n", *result);
+        log_ut("protocol_response/result %s\n", *result);
     }
     return 0;
 }
@@ -110,7 +110,7 @@ int print_directory(char *path, int (*socket_send_f)(int, char *), int fd, int p
         if (entry->d_name[0] == '.') continue; // don't print hidden files/dirs
         char *filename = entry->d_name;
 
-        //printf("%s\n", "Fin qui si");
+        //log_ut("%s\n", "Fin qui si");
 
 
         char *fullpath = calloc(pathlen + strlen(filename) + 5, sizeof(char));
@@ -132,7 +132,7 @@ int print_directory(char *path, int (*socket_send_f)(int, char *), int fd, int p
 
         // get line to send for gopher
         char *response_line;
-        printf("SONO HOSTNAME");
+        log_ut("SONO HOSTNAME");
         err = protocol_response(code, filename, fullpath, ip_buffer, port, &response_line);
 
         if (err != 0) {

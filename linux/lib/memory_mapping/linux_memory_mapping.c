@@ -39,7 +39,7 @@ int linux_memory_mapping(void *params) {
 
     struct MemoryMappingArgs *args = (struct MemoryMappingArgs *) params;
 
-//    printf("FD %d \n PATH %s \n %d\n", args->fd, args->path, args->mode_concurrency);
+//    log_ut("FD %d \n PATH %s \n %d\n", args->fd, args->path, args->mode_concurrency);
     struct stat sb;
 
     int fd = open(args->path, O_RDONLY);
@@ -48,19 +48,26 @@ int linux_memory_mapping(void *params) {
         return -1;
     }
 
+    printf("fd valid: %d\n", fd_is_valid(fd));
+
+    vlog_ut(1, "Lock status: %d\n", lockf(fd, F_TLOCK, 0));
+    perror("linux_memory_mapping/lockf F_TLOCK failed");
     if (args->mode_concurrency == M_PROCESS) {
-        if(lockf(fd, F_LOCK, 0) != 0){
-            perror("linux_memory_mapping/lockf failed");
+        if (lockf(fd, F_LOCK, 0) == -1) {
+
+            vlog_ut(1, "Lock status: %d\n", lockf(fd, F_TLOCK, 0));
+            perror("linux_memory_mapping/lockf F_LOCK failed");
+
         }
     } else {
-        if(pthread_mutex_lock(&p_mutex)!= 0){
+        if (pthread_mutex_lock(&p_mutex) != 0) {
             perror("linux_memory_mapping/pthread_mutex_lock failed");
         }
     }
 
     if (fstat(fd, &sb) < 0) {
         perror("linux_memory_mapping/fstat");
-        if(lockf(fd, F_ULOCK, 0)!= 0){
+        if (lockf(fd, F_ULOCK, 0) != 0) {
             perror("linux_memory_mapping/lockf failed");
         }
         close(fd);
@@ -75,7 +82,7 @@ int linux_memory_mapping(void *params) {
 
      */
 
-    if(sb.st_size == 0){
+    if (sb.st_size == 0) {
         return 0;
     }
 
@@ -83,7 +90,7 @@ int linux_memory_mapping(void *params) {
 
     if (addr == MAP_FAILED) {
         perror("linux_memory_mapping/mmap");
-        if(lockf(fd, F_ULOCK, 0)!= 0){
+        if (lockf(fd, F_ULOCK, 0) != 0) {
             perror("linux_memory_mapping/lockf failed");
         }
 
@@ -101,9 +108,9 @@ int linux_memory_mapping(void *params) {
 
     pthread_t thread;
     if ((pthread_create(&thread, NULL, linux_sendFile, (void *) &send_args)) != 0) {
-            perror("Could not create thread, continue non-threaded...");
-            linux_sendFile((void *) &send_args);
-        }
+        perror("Could not create thread, continue non-threaded...");
+        linux_sendFile((void *) &send_args);
+    }
     pthread_join(thread, NULL);
     // l_sendFile(&send_args);
 
@@ -112,11 +119,11 @@ int linux_memory_mapping(void *params) {
     }
 
     if (args->mode_concurrency == M_PROCESS) {
-        if(lockf(fd, F_ULOCK, 0)!= 0){
+        if (lockf(fd, F_ULOCK, 0) != 0) {
             perror("linux_memory_mapping/lockf failed");
         }
     } else {
-        if(pthread_mutex_unlock(&p_mutex)!= 0){
+        if (pthread_mutex_unlock(&p_mutex) != 0) {
             perror("linux_memory_mapping/pthread_mutex_unlock failed");
         }
     }

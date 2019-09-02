@@ -85,8 +85,8 @@ void run_in_daemon() {
 
 int main(int argc, char *argv[]) {
     DOS_PROTECTION = 0;
-    printf("%s\n", "Gopher start ...");
-    printf("PID: %d\n", getpid());
+    vlog_ut(1, "%s\n", "Gopher start ...");
+    vlog_ut(1, "PID: %d\n", getpid());
 
     //perror("main#");
 
@@ -121,8 +121,7 @@ int main(int argc, char *argv[]) {
     c.reset_config = NULL;
     configs = &c;
 
-    printf("Inizio del main\n");
-
+    log_ut("Inizio del main\n");
 
 
 
@@ -132,8 +131,8 @@ int main(int argc, char *argv[]) {
     }
 
 
-
-    printf("port:%d mode:%d %lu dir:%s\n", configs->port_number, configs->mode_concurrency, strlen(configs->root_dir),
+    vlog_ut(2, "port:%d mode:%d %lu dir:%s\n", configs->port_number, configs->mode_concurrency,
+           strlen(configs->root_dir),
            configs->root_dir);
 
 
@@ -141,11 +140,10 @@ int main(int argc, char *argv[]) {
     ut_get_cwd();
 
 
-
 #if defined(__unix__) || defined(__APPLE__)
 
     //getServerIP();
-    printf("\n%s IP DEL SERVER\n", ip_buffer);
+    vlog_ut(1, "\n%s IP DEL SERVER\n", ip_buffer);
 
     if(!LOG_WITH_MULTIPLE_PROCESS){
         socket_pipe_single_process(global_fd_pipe);
@@ -160,7 +158,7 @@ int main(int argc, char *argv[]) {
 
     while (true) {
 
-        printf("conf root dir %s\n", configs->root_dir);
+        log_ut("conf root dir %s\n", configs->root_dir);
         linux_socket(configs);
 
         //c.reset_config = NULL;
@@ -170,7 +168,7 @@ int main(int argc, char *argv[]) {
         conf_parseConfigFile("../gopher_server_configuration.txt", configs);
 
     }
-    printf("close server");
+    log_ut("close server");
     close_mutex();
 
     if(!LOG_WITH_MULTIPLE_PROCESS){
