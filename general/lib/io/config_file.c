@@ -59,7 +59,7 @@ char *conf_opts_root_dir(char *opt) {
 int conf_read_opt(int argc, char *argv[], struct Configs *configs) {
     int opt;
 
-    while ((opt = getopt(argc, argv, "m:d:p:i:h")) != -1) {
+    while ((opt = getopt(argc, argv, "m:d:p:i:s")) != -1) {
         switch (opt) {
             case 'p':
                 configs->port_number = conf_opts_port_number(optarg);
@@ -67,7 +67,7 @@ int conf_read_opt(int argc, char *argv[], struct Configs *configs) {
             case 'm':
                 configs->mode_concurrency = conf_opts_mode_concurrency(optarg);
                 break;
-            case 'h':
+            case 's':
                 DOS_PROTECTION = 1;
                 break;
             case 'i':
