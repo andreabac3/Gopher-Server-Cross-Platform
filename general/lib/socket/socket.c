@@ -318,15 +318,28 @@ int socket_send_error_to_client(char *path, char *buf, struct ThreadArgs *args) 
     if (err != 0) {
         clean_request(path, buf, args);
     } else {
-
-        log_ut("%s", m);
-        //send(args->fd, m, sizeof(char) * strlen(m), 0);
         socket_send_message(args->fd, m);
         if (m != NULL) {
             free(m);
         }
     }
+
+    socket_send_message(args->fd, m);
+    if (m != NULL) {
+        free(m);
+    }
     clean_request(path, buf, args);
+    return 0;
+}
+
+int socket_send_too_long_error_to_client(char *path, char *buf, struct ThreadArgs *args) {
+    char mes[50] = {0};
+    if ( 0 <= sprintf(mes, "\n3requested path to long\terror.host\t%d\n", args->configs.port_number)){
+        socket_send_message(args->fd, mes);
+    }
+    clean_request(path, buf, args);
+
+    //send(args->fd, m, sizeof(char) * strlen(m), 0);
     return 0;
 }
 

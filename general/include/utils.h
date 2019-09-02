@@ -33,9 +33,9 @@ int ut_get_line(char *buf, size_t size);
 
 void ut_clone_configs(struct Configs *c, struct Configs *n);
 
-int log_ut(/*int priority, */const char *format, ...);
+void log_ut(/*int priority, */const char *format, ...);
 
-int vlog_ut(int verbose, const char *format, ...);
+void vlog_ut(int verbose, const char *format, ...);
 
 
 #endif //GOPHER_UTILS_H

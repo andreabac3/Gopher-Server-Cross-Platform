@@ -198,7 +198,7 @@ void ut_get_cwd(){
     }
 }
 
-int vlog_ut(int verbose, const char *format, ...)
+void vlog_ut(int verbose, const char *format, ...)
 {
     va_list args;
     va_start(args, format);
@@ -209,7 +209,7 @@ int vlog_ut(int verbose, const char *format, ...)
     va_end(args);
 }
 
-int log_ut(/*int priority, */const char *format, ...)
+void log_ut(/*int priority, */const char *format, ...)
 {
     va_list args;
     va_start(args, format);
