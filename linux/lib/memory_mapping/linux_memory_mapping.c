@@ -42,7 +42,7 @@ int linux_memory_mapping(void *params) {
 //    log_ut("FD %d \n PATH %s \n %d\n", args->fd, args->path, args->mode_concurrency);
     struct stat sb;
 
-    int fd = open(args->path, O_RDONLY);
+    int fd = open(args->path, O_RDWR);
     if (fd == -1) {
         perror("linux_memory_mapping/open");
         return -1;
@@ -50,14 +50,9 @@ int linux_memory_mapping(void *params) {
 
     printf("fd valid: %d\n", fd_is_valid(fd));
 
-    vlog_ut(1, "Lock status: %d\n", lockf(fd, F_TLOCK, 0));
-    perror("linux_memory_mapping/lockf F_TLOCK failed");
     if (args->mode_concurrency == M_PROCESS) {
         if (lockf(fd, F_LOCK, 0) == -1) {
-
-            vlog_ut(1, "Lock status: %d\n", lockf(fd, F_TLOCK, 0));
             perror("linux_memory_mapping/lockf F_LOCK failed");
-
         }
     } else {
         if (pthread_mutex_lock(&p_mutex) != 0) {
