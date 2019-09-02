@@ -258,11 +258,13 @@ DWORD WINAPI handle_request(void *params) {
     printf("%s\n", "Running in thread - handle request");
     printf("args: %d\n", args->fd);
 
-    socket_read_request(args, &buf); // fill the buffer with the request
+    int ret = socket_read_request(args, &buf); // fill the buffer with the request
 
     printf("%s\n", buf);
 
     socket_resolve_selector(args, buf, &path); // parse the request
+
+    if (ret == -2) socket_send_too_long_error_to_client(path, buf, args);
 
     // todo fix resolve_selector come su linux
     printf("full path %s \n", path);

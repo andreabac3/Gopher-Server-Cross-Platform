@@ -29,6 +29,8 @@ int socket_send_message(int fd, char *message_string);
 
 void socket_manage_files(char *path, char *buf, struct ThreadArgs *args);
 
+int socket_send_too_long_error_to_client(char *path, char *buf, struct ThreadArgs *args);
+
 #if defined(__unix__) || defined(__APPLE__)
 
 int writeToPipe(char *path, char *ip_client);
