@@ -48,8 +48,6 @@ int linux_memory_mapping(void *params) {
         return -1;
     }
 
-    printf("fd valid: %d\n", fd_is_valid(fd));
-
     if (args->mode_concurrency == M_PROCESS) {
         if (lockf(fd, F_LOCK, 0) == -1) {
             perror("linux_memory_mapping/lockf F_LOCK failed");
