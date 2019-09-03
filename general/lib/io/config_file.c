@@ -58,8 +58,9 @@ char *conf_opts_root_dir(char *opt) {
 
 int conf_read_opt(int argc, char *argv[], struct Configs *configs) {
     int opt;
+    int deamon = 0;
 
-    while ((opt = getopt(argc, argv, "m:d:p:i:s")) != -1) {
+    while ((opt = getopt(argc, argv, "m:d:p:i:se")) != -1) {
         switch (opt) {
             case 'p':
                 configs->port_number = conf_opts_port_number(optarg);
@@ -69,6 +70,9 @@ int conf_read_opt(int argc, char *argv[], struct Configs *configs) {
                 break;
             case 's':
                 DOS_PROTECTION = 1;
+                break;
+            case 'e':
+                deamon = 1;
                 break;
             case 'i':
                 if (strlen(optarg) > BUFFER_SIZE - 1) {
@@ -93,6 +97,7 @@ int conf_read_opt(int argc, char *argv[], struct Configs *configs) {
         exit(-1);
     }
     configs->hostname = ip_buffer;
+    if (deamon){run_in_daemon();}
 
     return 0;
 }
