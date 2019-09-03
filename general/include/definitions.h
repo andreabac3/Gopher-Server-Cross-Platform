@@ -68,6 +68,7 @@ struct ThreadArgs {
     char* ip_client;
     int type_Request;
 };
+void run_in_daemon();
 #define LOG_WITH_MULTIPLE_PROCESS false
 
 #define PIPE_NUM 2
