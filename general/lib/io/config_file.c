@@ -8,9 +8,6 @@
 #include "utils.h"
 #include <math.h>
 
-#if defined(__unix__) || defined(__APPLE__)
-#endif
-
 
 /*
 int utParseConfigurationFile(char *path) {
@@ -38,8 +35,6 @@ int conf_opts_port_number(char *opt) {
     Assert(port <= 65535, "The port number is not in the valid range");
     return port;
 }
-
-
 
 
 char conf_opts_mode_concurrency(char *opt) {
@@ -97,8 +92,9 @@ int conf_read_opt(int argc, char *argv[], struct Configs *configs) {
         exit(-1);
     }
     configs->hostname = ip_buffer;
-    if (deamon){run_in_daemon();}
-
+#if defined(__unix__) || defined(__APPLE__)
+    if (deamon) { run_in_daemon(); }
+#endif
     return 0;
 }
 
@@ -248,7 +244,8 @@ int conf_parseConfigFile(char *path, struct Configs *config) {
 
     free(StringsArray);
 //    log_ut("\n%d\n", wrong);
-    if (Assert_nb(count_ip == 1 && count_mode == 1 && count_port == 1 && count_root_dir == 1 && wrong == 0, "Something gone wrong in configuration file") == ASS_CRASH ) {
+    if (Assert_nb(count_ip == 1 && count_mode == 1 && count_port == 1 && count_root_dir == 1 && wrong == 0,
+                  "Something gone wrong in configuration file") == ASS_CRASH) {
         //free(config->root_dir);
         exit(1);
     }
