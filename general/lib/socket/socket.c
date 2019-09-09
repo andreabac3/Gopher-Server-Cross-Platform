@@ -320,11 +320,6 @@ int socket_send_error_to_client(char *path, char *buf, struct ThreadArgs *args) 
     int err = protocol_response('3', buf, path, "localhost", args->configs.port_number, &m);
     if (err != 0) {
         clean_request(path, buf, args);
-    } else {
-        socket_send_message(args->fd, m);
-        if (m != NULL) {
-            free(m);
-        }
     }
 
     socket_send_message(args->fd, m);

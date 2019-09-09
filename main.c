@@ -156,7 +156,7 @@ int main(int argc, char *argv[]) {
 
     start_mutex();
 
-    while (true) {
+    while(true){
 
         log_ut("conf root dir %s\n", configs->root_dir);
         linux_socket(configs);
@@ -166,7 +166,6 @@ int main(int argc, char *argv[]) {
         configs->reset_config = NULL;
         //free(configs->root_dir);
         conf_parseConfigFile("../gopher_server_configuration.txt", configs);
-
     }
     log_ut("close server");
     close_mutex();
