@@ -10001,3 +10001,7 @@ L->  FileName: /opt/local_projects/gopher-project/main.c	5041 Byte 	 IP Client: 
 W -> FileName: C:\Projects\gopher3\gopher-project\/windows/keep.sh	4 KByte 	 IP Client: 192.168.1.27	 Port: 7080 
 L->  FileName: /opt/local_projects/gopher-project/README.md	124 Byte 	 IP Client: 127.0.0.1 	 cloud.valerioneri.com Port: 7080
 L->  
+L->  FileName: /opt/local_projects/gopher-project/main_HandleRequest.c	8873 Byte 	 IP Client: 127.0.0.1 	 localhost Port: 7080
+L->  FileName: /opt/local_projects/gopher-project/cmake-build-debug/Makefile	25240 Byte 	 IP Client: 127.0.0.1 	 localhost Port: 7080
+L->  FileName: /opt/local_projects/gopher-project/main.c	5038 Byte 	 IP Client: 127.0.0.1 	 localhost Port: 7080
+L->  FileName: /opt/local_projects/gopher-project/README.md	124 Byte 	 IP Client: 127.0.0.1 	 localhost Port: 7080

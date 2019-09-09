@@ -94,7 +94,7 @@ int protocol_response(char type, char *filename, char *path, const char *host, i
 //}
 
 
-int print_directory(char *path, int (*socket_send_f)(int, char *), int fd, int port) {
+int print_directory(char *path, int (*socket_send_f)(int, char *), int fd, int port, char *buf) {
 
     struct dirent *entry = NULL;
 
@@ -105,6 +105,7 @@ int print_directory(char *path, int (*socket_send_f)(int, char *), int fd, int p
     }
 
     size_t pathlen = strlen(path);
+    size_t buflen = strlen(buf);
 
     while ((entry = readdir(dir)) != NULL) {
         if (entry->d_name[0] == '.') continue; // don't print hidden files/dirs
@@ -113,6 +114,7 @@ int print_directory(char *path, int (*socket_send_f)(int, char *), int fd, int p
         //log_ut("%s\n", "Fin qui si");
 
 
+        // Manage full path (os path)
         char *fullpath = calloc(pathlen + strlen(filename) + 5, sizeof(char));
         if (fullpath == NULL){
             return -1;
@@ -129,11 +131,25 @@ int print_directory(char *path, int (*socket_send_f)(int, char *), int fd, int p
 
         char code = getGopherCode(fullpath);
 
+        // Manage relative path (gopher path)
+        char *gopher_path = calloc(buflen + strlen(filename) + 5, sizeof(char));
+        if (gopher_path == NULL){
+            return -1;
+        }
+        err = sprintf(gopher_path, "%s/%s", buf, filename);
+
+        if (err < 0) {
+            //linux_sock_send_error(fd);
+            perror("Error:print_directory/sprintf");
+            free(gopher_path);
+
+            return -1;
+        }
 
         // get line to send for gopher
         char *response_line;
         log_ut("SONO HOSTNAME");
-        err = protocol_response(code, filename, fullpath, ip_buffer, port, &response_line);
+        err = protocol_response(code, filename, gopher_path, ip_buffer, port, &response_line);
 
         if (err != 0) {
 
@@ -150,6 +166,7 @@ int print_directory(char *path, int (*socket_send_f)(int, char *), int fd, int p
         int ret = (*socket_send_f)(fd, response_line);
 
         free(fullpath);
+        free(gopher_path);
         free(response_line);
 
         if (0 > ret) {

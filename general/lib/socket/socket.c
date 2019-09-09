@@ -363,7 +363,7 @@ void socket_manage_files(char *path, char *buf, struct ThreadArgs *args) {
         // it's a directory
         log_ut("%s\n", "Sending Directory");
         // TODO che for exit code of print_directory
-        print_directory(path, &socket_send_message, args->fd, args->configs.port_number);
+        print_directory(path, &socket_send_message, args->fd, args->configs.port_number, buf);
     } else if (FILES_IS_REG_FILE == type_file) { // FILES_IS_FILE
         // it's some kind of files
         log_ut("%s\n", "Sending File");
