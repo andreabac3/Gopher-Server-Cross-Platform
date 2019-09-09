@@ -210,7 +210,6 @@ int linux_socket(struct Configs *configs) {
                 perror("linux_socket.c/linux_socket  unable to run run_concurrency");
                 continue;
             }
-
             vlog_ut(1, "%s\n", "Accepted request");
 
         }
