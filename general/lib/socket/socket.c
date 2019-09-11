@@ -145,7 +145,8 @@ void clean_request(char *path, char *buf, struct ThreadArgs *args) {
 
     // shutdown(*fd, SHUT_WR);
     if (args->type_Request) {
-        int err = close(args->fd);
+        //int err = close(args->fd);
+        int err = shutdown(args->fd, SHUT_RDWR );
         if (err != 0) {
             perror("Close in clean request");
         }
