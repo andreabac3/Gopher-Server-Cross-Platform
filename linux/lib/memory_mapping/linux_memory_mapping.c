@@ -123,6 +123,7 @@ int linux_memory_mapping(void *params) {
 
 
     close(fd);
+    shutdown(args->fd, SHUT_RDWR);
     close(args->fd);
     return sb.st_size;
 }
