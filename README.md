@@ -50,7 +50,8 @@ You can find the stress script in the root of the project, It's a file bash call
 # Known Issues
 Lost the compatibility with macOS due to an unresolved Apple bug. 90% of the software is compatible with macOS X Mojave. <br>
 Lost the compatibility with Ubuntu, it's easy to fix. <br>
-
+### Future Works
+Clean the code and fix the known issues.
 # Authors
 
 * **Andrea Bacciu**  - [github](https://github.com/andreabac3)
