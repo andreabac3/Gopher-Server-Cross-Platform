@@ -21,7 +21,7 @@ endif (WIN32)
 
 if (WIN32)
     project(gopherWinPipeProcess C)
-    add_executable(gopherWinPipeProcess main2.c general/include/definitions.h windows/lib/utils/windows_utils.c windows/include/windows_utils.h)
+    add_executable(gopherWinPipeProcess main_LogProcess.c general/include/definitions.h windows/lib/utils/windows_utils.c windows/include/windows_utils.h)
 endif (WIN32)
 if (WIN32)
     project(gopherWinHandleRequestProcess C)
