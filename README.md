@@ -40,7 +40,7 @@ external_ip gopher.theprotocol.it
 # Tests
 The Gopher server supports more than 50.000 requests simultaneously. Has limited use of memory, tests with Valgrind report zero errors or warnings. <br>
 You can find the stress script in the root of the project, It's a file bash called stressCurl.sh
-## Operating System tested
+## Operating Systems tested
 ##### Windows 10
 ##### Linux:
 * **Arch Linux**
