@@ -2,6 +2,9 @@
 This is a Gopher server written purely in C. It was presented as a project for the System Programming course under the supervision of professor Massimo Bernaschi.
 As required for the exam, in addition to the implementation of the Gopher server, it is necessary to develop a process for writing Logs, using the 'Select' and other features to increase the total complexity of the project.
 The software is compatible with both Windows 10 and Linux.
+# The Gopher Protocol
+
+Wikipedia: The Gopher protocol is a communications protocol designed for distributing, searching, and retrieving documents in Internet Protocol networks. The design of the Gopher protocol and user interface is menu-driven, and presented an alternative to the World Wide Web in its early stages, but ultimately fell into disfavor, yielding to the Hypertext Transfer Protocol (HTTP). The Gopher ecosystem is often regarded as the effective predecessor of the World Wide Web.
 # Getting Started
 
 ## How to install
