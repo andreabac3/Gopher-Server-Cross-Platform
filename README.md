@@ -7,6 +7,12 @@ The software is compatible with both Windows 10 and Linux.
 Wikipedia: The Gopher protocol is a communications protocol designed for distributing, searching, and retrieving documents in Internet Protocol networks. The design of the Gopher protocol and user interface is menu-driven, and presented an alternative to the World Wide Web in its early stages, but ultimately fell into disfavor, yielding to the Hypertext Transfer Protocol (HTTP). The Gopher ecosystem is often regarded as the effective predecessor of the World Wide Web.
 # Getting Started
 
+## Compilers
+##### Linux:
+* GCC 9.x 
+##### Windows 10:
+* Mingw
+
 ## How to install
 Compile with CMakeLists.txt, this software is compatible with Linux and Windows 10.
 Execute the following command in the cmake-build-debug folder.
