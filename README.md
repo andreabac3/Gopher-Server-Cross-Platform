@@ -21,6 +21,12 @@ $ cmake
 $ make
 $ ./gopherLinux
 ```
+
+For use with the ubuntu distribution you need to run the following command
+```sh
+$ sudo apt-get install build-essential zlib1g-dev
+```
+
 The structure of this project is 100% compatible with Clion and other JetBrains products.
 ## CommandLine Option
 For each option having {param}, replace param with an appropriate argument.<br>
@@ -58,7 +64,6 @@ You can find the stress script in the root of the project, It's a file bash call
 
 # Known Issues
 Lost the compatibility with macOS due to an unresolved Apple bug. 90% of the software is compatible with macOS X Mojave. <br>
-Lost the compatibility with Ubuntu, it's easy to fix. <br>
 ### Future Works
 Clean the code and fix the known issues.
 # Authors

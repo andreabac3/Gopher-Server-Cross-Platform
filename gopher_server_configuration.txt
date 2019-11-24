@@ -1,4 +1,4 @@
 port 7080
-root_dir "/opt/local_projects/gopher-project"
+root_dir "."
 mode_concurrency Thread
-external_ip cloud.valerioneri.com
+external_ip cloud.yourHostname.com
