@@ -202,7 +202,7 @@ int main(int argc, char *argv[]) {
         //configs = &c;
         configs->reset_config = NULL;
         conf_parseConfigFile("../gopher_server_configuration.txt", configs);
-        printf("After EVENT port:%d mode:%d %lu dir:%s\n", configs->port_number, configs->mode_concurrency, strlen(configs->root_dir),
+        printf("After EVENT port:%d mode:%d %zu dir:%s\n", configs->port_number, configs->mode_concurrency, strlen(configs->root_dir),
                configs->root_dir);
 
         /*

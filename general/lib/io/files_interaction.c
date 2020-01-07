@@ -55,9 +55,3 @@ int write_log_accessFile(char *string, FILE *fp) {
 }
 
 
-// experiment.php
-
-//nasan quando gli chiediamo dei compiti
-// resolve = nowornever
-
-

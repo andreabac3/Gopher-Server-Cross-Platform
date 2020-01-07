@@ -83,7 +83,8 @@ void run_process(struct ThreadArgs *args, SOCKADDR_IN *clientAddr, SOCKET client
 
 
     if (err) {
-        fprintf(stderr, "WSADuplicateSocket(): failed. Error = %d, %s\n", WSAGetLastError()), windows_perror();
+        fprintf(stderr, "WSADuplicateSocket(): failed. Error = %d\n", WSAGetLastError());
+        windows_perror();
         //DoCleanup();
         exit(1);
     }

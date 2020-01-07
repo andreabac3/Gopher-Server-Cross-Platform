@@ -1,4 +1,6 @@
+#!/usr/bin/env bash
+
 for D in `find . -type d`
                                       do
-                                          touch ${D}/.gitkeep
+                                          touch "${D}"/.gitkeep
                                       done

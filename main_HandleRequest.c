@@ -26,7 +26,7 @@
 
 
 int main(int argc, char *argv[]) {
-    printf("I am handle request.exe, my args are: %s %s %s %s %s", argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
+    printf("I am handle request.exe, my args are: %s %s %s %s %s %s", argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
     struct Configs h_configs;
     h_configs.port_number = atoi(argv[1]);
     h_configs.mode_concurrency = argv[3][0];
