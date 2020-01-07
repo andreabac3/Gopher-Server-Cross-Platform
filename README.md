@@ -1,5 +1,7 @@
 # GOPHER-PROJECT
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/cbc8e89ec90b422792271f36bf8b4adf)](https://www.codacy.com/manual/andreabac3/Gopher-Server-Cross-Platform?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=andreabac3/Gopher-Server-Cross-Platform&amp;utm_campaign=Badge_Grade)
+
 This is a Gopher server written purely in C. It was presented as a project for the System Programming course under the supervision of professor Massimo Bernaschi.
 As required for the exam, in addition to the implementation of the Gopher server, it is necessary to develop a process for writing Logs, using the 'Select' and other features to increase the total complexity of the project.
 The software is compatible with both Windows 10 and Linux.
